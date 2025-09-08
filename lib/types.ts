@@ -46,7 +46,7 @@ export type Transaction = {
 };
 
 export type NFTCollectible = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   image: string;
