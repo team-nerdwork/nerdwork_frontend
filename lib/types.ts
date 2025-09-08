@@ -7,7 +7,7 @@ export type Comic = {
   noOfChapters: number;
   slug?: string;
   updatedAt: string;
-  createdAt?: string;
+  createdAt: string;
   creatorName?: string;
   genre?: string[];
   ageRating?: string;
