@@ -18,8 +18,6 @@ const SearchResultsPanel = ({ query }: SearchResultsPanelProps) => {
   const [results, setResults] = useState<Comic[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // const comics = comicData ?? [];
-
   const {
     data: comicData,
     isLoading: isComicLoading,
@@ -99,7 +97,7 @@ const SearchResultsPanel = ({ query }: SearchResultsPanelProps) => {
                   alt={`${comic.title} cover`}
                   className="h-16 object-cover"
                 />
-                <Link href={`/r/comics/${comic.id}`} className="block">
+                <Link href={`/r/comics/${comic.slug}`} className="block">
                   <h4 className="text-white text-base">{comic.title}</h4>
                   <p className="text-sm text-nerd-muted">{comic.description}</p>
                 </Link>

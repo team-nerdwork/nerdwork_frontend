@@ -47,6 +47,11 @@ const ComicSearch = () => {
 
   const comics: Comic[] = comicData?.data?.comics ?? [];
 
+  const data = comics.filter(
+    (comic) =>
+      search && comic.title.toLowerCase().includes(search.toLowerCase())
+  );
+
   const [showFree, setShowFree] = React.useState<Checked>(false);
   const [showPaid, setShowPaid] = React.useState<Checked>(false);
   const [showOngoing, setShowOngoing] = React.useState<Checked>(false);
@@ -54,7 +59,7 @@ const ComicSearch = () => {
   const [sortFilter, setSortFilter] = React.useState("");
 
   const filteredComics = React.useMemo(() => {
-    let tempComics = [...comics];
+    let tempComics = [...data];
 
     if (showFree) {
       tempComics = tempComics.filter((comic) => !comic.isPaid);
@@ -77,6 +82,9 @@ const ComicSearch = () => {
           return b.title.localeCompare(a.title);
         }
         // Add other sort options here (e.g., 'newest', 'relevant')
+        if (sortFilter === "newest") {
+          return b.createdAt.localeCompare(a.createdAt);
+        }
         return 0;
       });
     }
@@ -92,7 +100,7 @@ const ComicSearch = () => {
         <section className="max-w-[1200px] mx-auto mt-6 px-5 pb-4 flex max-md:flex-col justify-between md:items-center">
           <h3 className="text-2xl font-semibold capitalize">{search}</h3>
           <div className="flex items-center gap-4 text-sm">
-            <p className="mr-4">{comics.length} Results</p>
+            <p className="mr-4">{data.length} Results</p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
