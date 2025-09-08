@@ -1,5 +1,5 @@
 "use client";
-import { comicData } from "@/components/data";
+// import { comicData } from "@/components/data";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import RComics from "../../_components/RComics";
@@ -22,6 +22,9 @@ import {
 } from "@/components/ui/select";
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { LucideChevronDown } from "lucide-react";
+import { Comic } from "@/lib/types";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { getAllComicsForReader } from "@/actions/comic.actions";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
@@ -29,7 +32,19 @@ const ComicSearch = () => {
   const searchParams = useSearchParams();
   const search = searchParams.get("q");
 
-  const comics = comicData ?? [];
+  const {
+    data: comicData,
+    isLoading: isComicLoading,
+    // error,
+  } = useQuery({
+    queryKey: ["comics"],
+    queryFn: getAllComicsForReader,
+    placeholderData: keepPreviousData,
+    refetchInterval: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
+  const comics: Comic[] = comicData?.data?.comics ?? [];
 
   const [showFree, setShowFree] = React.useState<Checked>(false);
   const [showPaid, setShowPaid] = React.useState<Checked>(false);
