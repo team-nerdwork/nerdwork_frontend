@@ -25,6 +25,7 @@ import { LucideChevronDown } from "lucide-react";
 import { Comic } from "@/lib/types";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAllComicsForReader } from "@/actions/comic.actions";
+import LoaderScreen from "@/components/loading-screen";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
@@ -34,7 +35,7 @@ const ComicSearch = () => {
 
   const {
     data: comicData,
-    isLoading: isComicLoading,
+    isLoading,
     // error,
   } = useQuery({
     queryKey: ["comics"],
@@ -82,6 +83,8 @@ const ComicSearch = () => {
 
     return tempComics;
   }, [comics, showFree, showPaid, showOngoing, showCompleted, sortFilter]);
+
+  if (isLoading) return <LoaderScreen />;
 
   return (
     <main className="pt-20">
