@@ -11,9 +11,13 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
-import { creatorTransactions } from "@/components/data";
 import PurchaseTokenModal from "@/components/wallet/PurchaseTokenModal";
 import { useUserSession } from "@/lib/api/queries";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { getReaderTransactionHistory } from "@/actions/transaction.action";
+import { UserTransaction } from "@/lib/types";
+import LoaderScreen from "@/components/loading-screen";
+import { toast } from "sonner";
 
 const ReaderWalletPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
@@ -26,13 +30,31 @@ const ReaderWalletPage = () => {
   const calculateUSD = (amount: number) => amount * usdPerNwt;
   const usdEquivalent = calculateUSD(readerProfile?.walletBalance);
 
-  const transactionData = creatorTransactions ?? [];
+  const {
+    data: transactions,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["comic"],
+    queryFn: getReaderTransactionHistory,
+    placeholderData: keepPreviousData,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
+  if (error)
+    toast.error(error?.message || "Error getting transactions details");
+
+  const transactionData: UserTransaction[] =
+    transactions?.data.transaction ?? [];
 
   const filteredAndSortedData = useMemo(() => {
     let filteredData = transactionData;
 
     if (typeFilter !== "all" && typeFilter !== "") {
-      filteredData = filteredData.filter((item) => item.type === typeFilter);
+      filteredData = filteredData.filter(
+        (item) => item.spendCategory === typeFilter
+      );
     }
     if (statusFilter !== "all" && statusFilter !== "") {
       filteredData = filteredData.filter(
@@ -42,15 +64,17 @@ const ReaderWalletPage = () => {
 
     if (sort !== "all" && sort !== "") {
       filteredData = [...filteredData].sort((a, b) => {
-        if (sort === "amount") {
-          return a.amount - b.amount;
+        if (sort === "nwtAmount") {
+          return b.nwtAmount - a.nwtAmount;
         }
         if (sort === "date") {
           // Assuming date is a string that can be compared or converted to a Date object
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
+          return (
+            new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+          );
         }
         if (sort === "type") {
-          return a.type.localeCompare(b.type);
+          return a.spendCategory.localeCompare(b.spendCategory);
         }
         return 0;
       });
@@ -58,6 +82,8 @@ const ReaderWalletPage = () => {
 
     return filteredData;
   }, [transactionData, typeFilter, statusFilter, sort]);
+
+  if (isLoading) return <LoaderScreen />;
 
   return (
     <main className="text-white font-inter pt-20">
@@ -145,7 +171,7 @@ const ReaderWalletPage = () => {
             </SelectTrigger>
             <SelectContent className="bg-[#1D1E21] border-none text-white">
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="earning">Earning</SelectItem>
+              <SelectItem value="chapter_unlock">Chapter Unlock</SelectItem>
               <SelectItem value="gift">Gift</SelectItem>
               <SelectItem value="purchase">Purchase</SelectItem>
               <SelectItem value="withdrawal">Withdrawal</SelectItem>
@@ -170,7 +196,7 @@ const ReaderWalletPage = () => {
             <SelectContent className="bg-[#1D1E21] border-none text-white">
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="type">Type</SelectItem>
-              <SelectItem value="amount">Amount</SelectItem>
+              <SelectItem value="nwtAmount">Amount</SelectItem>
               <SelectItem value="date">Date</SelectItem>
             </SelectContent>
           </Select>

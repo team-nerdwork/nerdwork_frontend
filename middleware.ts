@@ -1,3 +1,4 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 import { auth } from "./auth";
 
@@ -7,61 +8,57 @@ const ONBOARDING_PREFIX = "/onboarding";
 export default auth((req) => {
   const { pathname, origin, search } = req.nextUrl;
   const isAuthenticated = !!req.auth;
-  const isCreator = req.auth?.cProfile;
-  const isReader = req.auth?.rProfile;
+  const isCreator = req.auth?.user?.cProfile;
+  const isReader = req.auth?.user?.rProfile;
   const isAuthPage = pathname === "/signin";
   const isOnboardingPage = pathname.startsWith(ONBOARDING_PREFIX);
+  const isSelectRolePage = pathname === "/role";
+  const hasCompletedOnboarding = isCreator || isReader;
+  const isDualUser = isCreator && isReader;
 
   if (!isAuthenticated) {
-    if (PROTECTED_PAGES.some((p) => pathname.startsWith(p))) {
+    if (
+      PROTECTED_PAGES.some((p) => pathname.startsWith(p)) ||
+      isOnboardingPage
+    ) {
       const redirectUrl = new URL("/signin", origin);
       redirectUrl.searchParams.set("callbackUrl", `${pathname}${search}`);
       return NextResponse.redirect(redirectUrl);
     }
-
-    if (isOnboardingPage) {
-      return NextResponse.redirect(new URL("/signin", origin));
-    }
-
     return NextResponse.next();
   }
 
-  if (isAuthenticated) {
-    const hasCompletedOnboarding = isCreator || isReader;
+  if (!hasCompletedOnboarding && !isOnboardingPage) {
+    return NextResponse.redirect(new URL(ONBOARDING_PREFIX, origin));
+  }
 
-    if (!hasCompletedOnboarding) {
-      if (!isOnboardingPage) {
-        return NextResponse.redirect(new URL(ONBOARDING_PREFIX, origin));
-      }
-
-      return NextResponse.next();
+  if (hasCompletedOnboarding && (isAuthPage || isOnboardingPage)) {
+    if (isDualUser) {
+      return NextResponse.redirect(new URL("/role", origin));
     }
-
-    if (isAuthPage) {
-      if (isCreator) {
-        return NextResponse.redirect(new URL("/creator/comics", origin));
-      } else if (isReader) {
-        return NextResponse.redirect(new URL("/r/comics", origin));
-      }
-    }
-
-    if (isOnboardingPage && hasCompletedOnboarding) {
-      // If they have both profiles, redirect to a default home page, e.g., reader dashboard
-      if (isReader) {
-        return NextResponse.redirect(new URL("/r/comics", origin));
-      } else {
-        return NextResponse.redirect(new URL("/creator/comics", origin));
-      }
-    }
-
-    if (pathname.startsWith("/creator") && !isCreator) {
-      return NextResponse.redirect(new URL("/r/comics", origin));
-    }
-    if (pathname.startsWith("/r") && !isReader) {
+    if (isCreator) {
       return NextResponse.redirect(new URL("/creator/comics", origin));
     }
+    if (isReader) {
+      return NextResponse.redirect(new URL("/r/comics", origin));
+    }
+  }
 
-    return NextResponse.next();
+  if (!isDualUser && isSelectRolePage) {
+    if (isCreator) {
+      return NextResponse.redirect(new URL("/creator/comics", origin));
+    }
+    if (isReader) {
+      return NextResponse.redirect(new URL("/r/comics", origin));
+    }
+    return NextResponse.redirect(new URL(ONBOARDING_PREFIX, origin));
+  }
+
+  if (pathname.startsWith("/creator") && !isCreator) {
+    return NextResponse.redirect(new URL("/r/comics", origin));
+  }
+  if (pathname.startsWith("/r") && !isReader) {
+    return NextResponse.redirect(new URL("/creator/comics", origin));
   }
 
   return NextResponse.next();

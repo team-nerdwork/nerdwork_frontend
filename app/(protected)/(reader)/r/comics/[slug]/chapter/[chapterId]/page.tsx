@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import ComicInfo from "@/app/(protected)/(reader)/_components/ComicInfo";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   getChapterPages,
   getReaderComicChapters,
@@ -93,7 +93,7 @@ const ComicReader = ({
   const { data: pagesData, isLoading } = useQuery({
     queryKey: ["pages"],
     queryFn: () => getChapterPages(chapterId),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
@@ -101,7 +101,7 @@ const ComicReader = ({
   const { data: chaptersData } = useQuery({
     queryKey: ["chapters"],
     queryFn: () => getReaderComicChapters(slug),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });

@@ -11,7 +11,7 @@ import ComicActions from "../../../_components/comics/DesktopComicActions";
 import MobileComicActions from "../../../_components/comics/MobileComicActions";
 import ChaptersEmptyState from "../../../_components/comics/ChaptersEmptyState";
 import ChapterComics from "../../../_components/comics/ChapterComics";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   getComicChaptersBySlug,
   getSingleComic,
@@ -39,7 +39,7 @@ const ComicDetailsPage = ({
   } = useQuery({
     queryKey: ["comic"],
     queryFn: () => getSingleComic(slug),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
@@ -51,7 +51,7 @@ const ComicDetailsPage = ({
   } = useQuery({
     queryKey: ["chapters"],
     queryFn: () => getComicChaptersBySlug(slug),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });

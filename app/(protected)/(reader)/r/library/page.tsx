@@ -23,7 +23,7 @@ import {
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { LucideChevronDown } from "lucide-react";
 import { getLibraryComics } from "@/actions/library.actions";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import LoaderScreen from "@/components/loading-screen";
 import { Comic } from "@/lib/types";
 
@@ -41,7 +41,7 @@ const LibraryPage = () => {
   const { data: libraryData, isLoading } = useQuery({
     queryKey: ["comics"],
     queryFn: () => getLibraryComics(),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });

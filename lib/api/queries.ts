@@ -1,6 +1,6 @@
 import { getCreatorProfile, getReaderProfile } from "@/actions/profile.actions";
 import { useQuery } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export const useUserSession = () => {
   const { data: session } = useSession();
@@ -30,6 +30,11 @@ export const useUserSession = () => {
         if (readerData?.success && readerData?.data?.profile) {
           readerProfile = readerData.data.profile;
         }
+      }
+
+      if (!creatorProfile && !readerProfile) {
+        signOut({ callbackUrl: "/signin" });
+        return null;
       }
 
       // Return an object containing both profiles.

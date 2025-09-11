@@ -92,6 +92,11 @@ export default function CreatorNav() {
                 <Menu size={16} strokeWidth={2} absoluteStrokeWidth={true} />
               </MenubarTrigger>
               <MenubarContent className="bg-[#1D1E21] text-white border-0 absolute -right-[30px]">
+                <div className="text-sm p-2">
+                  <p>{creatorProfile.creatorName}</p>
+                  <p className="text-nerd-muted">{user?.email}</p>
+                </div>
+                <MenubarSeparator />
                 <MenubarItem>
                   <Link className="flex items-center gap-3 w-full" href={""}>
                     <User2 className="text-white" />
@@ -139,13 +144,19 @@ export default function CreatorNav() {
         <div className="flex items-center gap-3">
           <Search size={16} />
           <p className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] text-sm flex items-center gap-1">
-            100 <Image src={NWT} width={16} height={16} alt="nwt" />
+            {creatorProfile?.walletBalance ?? ""}
+            <Image src={NWT} width={16} height={16} alt="nwt" />
           </p>
           <DropdownMenu>
             <DropdownMenuTrigger className="bg-[#1D1E21] h-8 w-8 flex justify-center items-center cursor-pointer rounded-full outline-none border-none ring-0">
               <Menu size={16} strokeWidth={2} absoluteStrokeWidth={true} />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[#1D1E21] text-white border-0 mx-5 w-[250px] mt-2">
+              <div className="text-sm p-2">
+                <p>{creatorProfile.fullName}</p>
+                <p className="text-nerd-muted">{user?.email}</p>
+              </div>
+              <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Link className="flex items-center gap-3" href={""}>
                   <LibraryBig className="text-white" /> Comics

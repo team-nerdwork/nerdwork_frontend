@@ -234,3 +234,30 @@
   transform: none !important;
   max-width: 100% !important;
 }
+
+/* Add this to your app/globals.css */
+html {
+  transform: none !important;
+  transition: none !important;
+}
+
+html[style*="--wcm"] {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Prevent any WCM modals from animating strangely */
+div[id*="wcm-modal"],
+div[class*="wcm-modal"],
+wcm-modal {
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Ensure your checkout modal stays in place */
+.helio-checkout-container {
+  position: relative;
+  z-index: 1000;
+}

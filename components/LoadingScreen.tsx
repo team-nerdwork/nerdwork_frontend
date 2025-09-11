@@ -28,7 +28,7 @@ export default function LoadingScreen({
   if (!shouldShow) return null;
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0d0d0d] transition-all duration-400 ${
+      className={`fixed inset-0 z-[70] flex flex-col items-center justify-center bg-[#0d0d0d] transition-all duration-400 ${
         isLoading ? "opacity-100" : "opacity-0"
       }`}
     >

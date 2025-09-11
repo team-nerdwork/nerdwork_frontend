@@ -45,6 +45,17 @@ export type Transaction = {
   date: string;
 };
 
+export type UserTransaction = {
+  id: string;
+  transactionType: string;
+  status: string;
+  description: string;
+  nwtAmount: number;
+  spendCategory: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type NFTCollectible = {
   id: string;
   name: string;

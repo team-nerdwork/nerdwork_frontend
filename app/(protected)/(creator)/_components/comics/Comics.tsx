@@ -19,7 +19,7 @@ const Comics = () => {
     queryKey: ["comics"],
     queryFn: getCreatorComics,
     placeholderData: keepPreviousData,
-    refetchInterval: 2 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 

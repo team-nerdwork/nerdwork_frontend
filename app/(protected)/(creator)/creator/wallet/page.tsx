@@ -12,10 +12,14 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
-import { creatorTransactions } from "@/components/data";
 import WithdrawEarningsModal from "@/components/wallet/WithdrawEarningsModal";
 import { useUserSession } from "@/lib/api/queries";
 import { ConnectWalletModal } from "../../../../../components/wallet/ConnectWalletModal";
+import { getCreatorTransactionHistory } from "@/actions/transaction.action";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { UserTransaction } from "@/lib/types";
+import LoaderScreen from "@/components/loading-screen";
 
 const WalletPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
@@ -28,13 +32,31 @@ const WalletPage = () => {
   const calculateUSD = (amount: number) => amount * usdPerNwt;
   const usdEquivalent = calculateUSD(creatorProfile?.walletBalance);
 
-  const transactionData = creatorTransactions ?? [];
+  const {
+    data: transactions,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["comic"],
+    queryFn: getCreatorTransactionHistory,
+    placeholderData: keepPreviousData,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+
+  if (error)
+    toast.error(error?.message || "Error getting transactions details");
+
+  const transactionData: UserTransaction[] =
+    transactions?.data.transaction ?? [];
 
   const filteredAndSortedData = useMemo(() => {
     let filteredData = transactionData;
 
     if (typeFilter !== "all" && typeFilter !== "") {
-      filteredData = filteredData.filter((item) => item.type === typeFilter);
+      filteredData = filteredData.filter(
+        (item) => item.spendCategory === typeFilter
+      );
     }
     if (statusFilter !== "all" && statusFilter !== "") {
       filteredData = filteredData.filter(
@@ -44,15 +66,17 @@ const WalletPage = () => {
 
     if (sort !== "all" && sort !== "") {
       filteredData = [...filteredData].sort((a, b) => {
-        if (sort === "amount") {
-          return a.amount - b.amount;
+        if (sort === "nwtAmount") {
+          return a.nwtAmount - b.nwtAmount;
         }
-        if (sort === "date") {
+        if (sort === "updatedAt") {
           // Assuming date is a string that can be compared or converted to a Date object
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
+          return (
+            new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+          );
         }
-        if (sort === "type") {
-          return a.type.localeCompare(b.type);
+        if (sort === "spendCategory") {
+          return a.spendCategory.localeCompare(b.spendCategory);
         }
         return 0;
       });
@@ -60,6 +84,8 @@ const WalletPage = () => {
 
     return filteredData;
   }, [transactionData, typeFilter, statusFilter, sort]);
+
+  if (isLoading) return <LoaderScreen />;
 
   return (
     <main className="text-white font-inter">
@@ -133,7 +159,7 @@ const WalletPage = () => {
               </div>
             </div>
             <hr className="!text-[#292A2E] h-0 border-t border-[#292A2E]" />
-            <div className="p-6 text-xs text-nerd-muted flex flex-col gap-1 mt-4">
+            <div className="p-6 text-xs text-nerd-muted flex flex-col gap-1">
               <p className="flex justify-between">
                 Fees: <span>1% on all transactions.</span>
               </p>
@@ -163,7 +189,7 @@ const WalletPage = () => {
             </SelectTrigger>
             <SelectContent className="bg-[#1D1E21] border-none text-white">
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="earning">Earning</SelectItem>
+              <SelectItem value="chapter_unlock">Chapter Unlock</SelectItem>
               <SelectItem value="gift">Gift</SelectItem>
               <SelectItem value="purchase">Purchase</SelectItem>
               <SelectItem value="withdrawal">Withdrawal</SelectItem>
@@ -187,9 +213,9 @@ const WalletPage = () => {
             </SelectTrigger>
             <SelectContent className="bg-[#1D1E21] border-none text-white">
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="type">Type</SelectItem>
-              <SelectItem value="amount">Amount</SelectItem>
-              <SelectItem value="date">Date</SelectItem>
+              <SelectItem value="spendCategory">Type</SelectItem>
+              <SelectItem value="nwtAmount">Amount</SelectItem>
+              <SelectItem value="updatedAt">Date</SelectItem>
             </SelectContent>
           </Select>
         </div>

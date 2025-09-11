@@ -197,6 +197,11 @@ const ReaderNav = () => {
                   <Menu size={16} strokeWidth={2} absoluteStrokeWidth={true} />
                 </MenubarTrigger>
                 <MenubarContent className="bg-[#1D1E21] text-white border-0 absolute -right-[30px]">
+                  <div className="text-sm p-2">
+                    <p>{readerProfile.fullName}</p>
+                    <p className="text-nerd-muted">{user?.email}</p>
+                  </div>
+                  <MenubarSeparator />
                   <MenubarItem>
                     <Link
                       className="flex items-center gap-3 w-full"
@@ -303,6 +308,11 @@ const ReaderNav = () => {
               <Menu size={16} strokeWidth={2} absoluteStrokeWidth={true} />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[#1D1E21] text-white border-0 mx-5 w-[250px] mt-2">
+              <div className="text-sm p-2">
+                <p>{readerProfile.fullName}</p>
+                <p className="text-nerd-muted">{user?.email}</p>
+              </div>
+              <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Link
                   className="flex items-center gap-3 w-full"
