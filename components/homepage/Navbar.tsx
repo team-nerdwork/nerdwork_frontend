@@ -42,11 +42,11 @@ export default function Navbar() {
             <li>Company</li>
           </ul>
           <div className="flex gap-4">
-            <Button asChild>
+            {/* <Button asChild>
               <Link href={"/signin"}>Log In</Link>
-            </Button>
+            </Button> */}
             <Button asChild variant={"primary"}>
-              <Link href={"/signin"}>Sign Up</Link>
+              <Link href={"/signin"}>Sign In</Link>
             </Button>
           </div>
         </section>
@@ -91,11 +91,11 @@ export default function Navbar() {
                 <li>Company</li>
               </ul>
               <div className="flex justify-between gap-4 w-full">
-                <Button asChild className="bg-[#343435] w-1/2">
+                {/* <Button asChild className="bg-[#343435] w-1/2">
                   <Link href={"/signin"}>Log In</Link>
-                </Button>
+                </Button> */}
                 <Button asChild className="bg-[#3373D9] w-1/2">
-                  <Link href={"/signin"}>Sign Up</Link>
+                  <Link href={"/signin"}>Sign In</Link>
                 </Button>
               </div>
             </div>

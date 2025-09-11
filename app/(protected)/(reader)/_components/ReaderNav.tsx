@@ -76,7 +76,7 @@ const ReaderNav = () => {
   const user = session?.user;
   const { profile } = useUserSession();
 
-  const readerProfile: Profile = profile;
+  const readerProfile: Profile = profile?.readerProfile;
 
   useEffect(() => {
     if (!isReadingRoute) {

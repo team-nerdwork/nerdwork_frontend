@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { comicData } from "@/components/data";
 import RComics from "../../_components/RComics";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -21,7 +20,7 @@ const TABS = [
 ];
 
 const ReaderComics = () => {
-  const [tab, setTab] = React.useState<string>("adventure");
+  const [tab, setTab] = React.useState<string>("all");
 
   const {
     data: comicData,
@@ -40,7 +39,9 @@ const ReaderComics = () => {
   const comics: Comic[] = comicData?.data?.comics ?? [];
 
   const filteredComics = comics.filter((comic) =>
-    comic.genre?.some((genre) => genre.toLowerCase() === tab.toLowerCase())
+    tab === "all"
+      ? true
+      : comic.genre?.some((genre) => genre.toLowerCase() === tab.toLowerCase())
   );
 
   return (
@@ -49,12 +50,18 @@ const ReaderComics = () => {
         <Tabs
           value={tab}
           onValueChange={setTab}
-          defaultValue="adventure"
+          defaultValue="all"
           className="bg-transparent mt-5"
         >
           <div className="flex flex-col items-start w-full max-w-[1200px] mx-auto">
             <ScrollArea className="max-md:w-[335px] max-md:mx-auto max-md:px-5">
               <TabsList className="bg-transparent text-white flex lg:gap-10 max-xl:px-5 p-0">
+                <TabsTrigger
+                  className="data-[state=active]:border-b !data-[state=active]:border-white pb-5 max-md:font-normal border-white !data-[state=active]:shadow-none text-white rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none !data-[state=active]:shadow-none"
+                  value="all"
+                >
+                  All
+                </TabsTrigger>
                 {TABS.map((genre, index) => (
                   <TabsTrigger
                     className="data-[state=active]:border-b !data-[state=active]:border-white capitalize pb-5 max-md:font-normal border-white !data-[state=active]:shadow-none text-white rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none !data-[state=active]:shadow-none"

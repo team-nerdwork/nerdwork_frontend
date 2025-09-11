@@ -14,11 +14,19 @@ import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { creatorTransactions } from "@/components/data";
 import WithdrawEarningsModal from "@/components/wallet/WithdrawEarningsModal";
+import { useUserSession } from "@/lib/api/queries";
+import { ConnectWalletModal } from "../../../../../components/wallet/ConnectWalletModal";
 
 const WalletPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sort, setSort] = useState("");
+  const { profile } = useUserSession();
+  const creatorProfile = profile?.creatorProfile;
+
+  const usdPerNwt = 0.01;
+  const calculateUSD = (amount: number) => amount * usdPerNwt;
+  const usdEquivalent = calculateUSD(creatorProfile?.walletBalance);
 
   const transactionData = creatorTransactions ?? [];
 
@@ -75,11 +83,11 @@ const WalletPage = () => {
               <p className="text-sm">Available Balance</p>
               <p className="text-[64px] text-[#09FFFF] flex items-center gap-3 font-bold">
                 <Image src={NWT} width={64} height={64} alt="" />
-                100
+                {creatorProfile?.walletBalance}
               </p>
             </div>
             <p className="text-right font-bold text-[#598EE2] opacity-55 text-5xl">
-              ≈ $427.05
+              ≈ ${usdEquivalent.toFixed(3)}
             </p>
           </div>
 
@@ -88,13 +96,20 @@ const WalletPage = () => {
               <p>Wallet Information</p>
               <p className="text-nerd-muted">Manage your payout destination</p>
             </div>
-            <div className="flex flex-col gap-5">
-              <div>
-                <p>Solflare (Solana Wallet)</p>
-                <p className="text-nerd-muted">0xDEAF...fB8B</p>
+            {creatorProfile?.walletAddress ? (
+              <div className="flex flex-col gap-5">
+                <div>
+                  <p>Solflare (Solana Wallet)</p>
+                  <p className="text-nerd-muted">
+                    {creatorProfile?.walletAddress.slice(0, 4)}...
+                    {creatorProfile?.walletAddress.slice(-4)}
+                  </p>
+                </div>
+                <Button className="bg-nerd-default w-fit">Edit Wallet</Button>
               </div>
-              <Button className="bg-nerd-default w-fit">Edit Wallet</Button>
-            </div>
+            ) : (
+              <ConnectWalletModal />
+            )}
             <p className="text-nerd-muted text-xs">
               Payouts are completed every 3 working days
             </p>
@@ -110,7 +125,7 @@ const WalletPage = () => {
               </div>
               <div className="font-medium">
                 <p className="flex justify-between">
-                  1 NWT <span>$10.05</span>
+                  1 NWT <span>$0.01</span>
                 </p>
                 <p className="flex justify-between">
                   1 SOL <span>$10.05</span>

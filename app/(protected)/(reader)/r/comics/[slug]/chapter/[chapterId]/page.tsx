@@ -19,6 +19,7 @@ import {
 import LoaderScreen from "@/components/loading-screen";
 import { Chapter } from "@/lib/types";
 import Link from "next/link";
+import ComicPaymentFlow from "@/app/(protected)/(reader)/_components/ComicPaymentFlow";
 
 const ComicReader = ({
   params,
@@ -115,6 +116,9 @@ const ComicReader = ({
     currentIndex !== -1 && currentIndex < chapters.length - 1
       ? chapters[currentIndex + 1].uniqueCode
       : null;
+
+  const isNextChapterPaid = chapters[currentIndex + 1]?.chapterType == "paid";
+  const hasUnlocked = chapters[currentIndex + 1]?.hasPaid;
 
   if (isLoading) return <LoaderScreen />;
 
@@ -363,12 +367,18 @@ const ComicReader = ({
           </figure>
         ))}
 
-        <Link
-          className="text-center"
-          href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
-        >
-          <Button>Next Chapter</Button>
-        </Link>
+        {isNextChapterPaid && hasUnlocked == false ? (
+          <div className="mt-5">
+            <ComicPaymentFlow chapter={chapters[currentIndex + 1]} />
+          </div>
+        ) : (
+          <Link
+            className="text-center"
+            href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
+          >
+            <Button>Next Chapter</Button>
+          </Link>
+        )}
       </main>
       {FooterPanel}
     </>

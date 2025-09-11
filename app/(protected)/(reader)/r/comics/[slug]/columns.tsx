@@ -51,7 +51,8 @@ export const columns: ColumnDef<Chapter>[] = [
     cell: ({ row }) => {
       return (
         <div className="text-center">
-          {row.original.chapterType == "free" ? (
+          {row.original.chapterType == "free" ||
+          row.original.hasPaid == true ? (
             <ReadButton chapterCode={row.original.uniqueCode ?? ""} />
           ) : (
             <ComicPaymentFlow chapter={row.original} />

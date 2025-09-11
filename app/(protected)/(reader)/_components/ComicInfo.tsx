@@ -17,8 +17,8 @@ const ComicInfo = ({ chapter, slug }: { chapter: Chapter; slug: string }) => {
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            variant={"ghost"}
-            className="max-w-1/2 flex items-center gap-1.5"
+            variant={"outline"}
+            className="max-w-1/2 flex items-center gap-1.5 hover:bg-nerd-default hover:text-white"
           >
             <p className="max-md:truncate">{chapter?.title}</p>
             <Info size={16} />

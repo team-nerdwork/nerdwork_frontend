@@ -181,3 +181,35 @@ export const setReaderPin = async (data: string) => {
     };
   }
 };
+
+export const setCreatorAddress = async (data: string) => {
+  try {
+    console.log("wallet:", data);
+    const response = await axiosPut("/profile/creator", { address: data });
+    console.log(response.data);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Creator wallet set successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Creator wallet set failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to set creator wallet address. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to set creator wallet address. Please try again.",
+    };
+  }
+};

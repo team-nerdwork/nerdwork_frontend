@@ -23,9 +23,9 @@ const Comics = () => {
     refetchOnWindowFocus: true,
   });
 
-  const comics: Comic[] = comicData?.data.comics ?? [];
+  const comics: Comic[] = comicData?.data?.comics ?? [];
 
-  if (!comics || isLoading) return <MyComicsEmptyState />;
+  if (comics.length == 0 || isLoading) return <MyComicsEmptyState />;
 
   const counts = {
     all: comics.length,

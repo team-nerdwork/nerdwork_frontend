@@ -30,6 +30,7 @@ const ComicDetailsPage = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [tab, setTab] = useState<string>("all");
   const { profile } = useUserSession();
+  const creatorProfile = profile?.creatorProfile;
 
   const {
     data: comicData,
@@ -62,7 +63,7 @@ const ComicDetailsPage = ({
       error?.message || chapterError?.message || "Error getting chapter details"
     );
 
-  const comic: Comic = comicData?.data?.comic;
+  const comic: Comic = comicData?.data?.data;
   const chapters: Chapter[] = chaptersData?.data?.data ?? [];
 
   const truncatedText = comic?.description.substring(0, 200);
@@ -156,7 +157,7 @@ const ComicDetailsPage = ({
               </li>
               <li className="capitalize">{comic?.noOfChapters} chapters</li>
               <li className="capitalize">{comic?.ageRating} Rating</li>
-              <li>Creator: {profile?.creatorName ?? ""}</li>
+              <li>Creator: {creatorProfile?.creatorName ?? ""}</li>
             </ul>
             <button
               className="md:hidden cursor-pointer text-left text-[#707073] font-normal"

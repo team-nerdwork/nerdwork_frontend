@@ -45,12 +45,20 @@ export default auth((req) => {
       }
     }
 
-    if (isOnboardingPage) {
-      if (isCreator) {
-        return NextResponse.redirect(new URL("/creator/comics", origin));
-      } else if (isReader) {
+    if (isOnboardingPage && hasCompletedOnboarding) {
+      // If they have both profiles, redirect to a default home page, e.g., reader dashboard
+      if (isReader) {
         return NextResponse.redirect(new URL("/r/comics", origin));
+      } else {
+        return NextResponse.redirect(new URL("/creator/comics", origin));
       }
+    }
+
+    if (pathname.startsWith("/creator") && !isCreator) {
+      return NextResponse.redirect(new URL("/r/comics", origin));
+    }
+    if (pathname.startsWith("/r") && !isReader) {
+      return NextResponse.redirect(new URL("/creator/comics", origin));
     }
 
     return NextResponse.next();

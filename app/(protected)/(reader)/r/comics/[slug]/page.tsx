@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { ArrowLeft, Check } from "lucide-react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   getReaderComicChapters,
   getSingleComicReader,
@@ -30,7 +30,7 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
   } = useQuery({
     queryKey: ["comic"],
     queryFn: () => getSingleComicReader(slug),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
@@ -38,14 +38,14 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { data: chaptersData, isLoading: isChaptersLoading } = useQuery({
     queryKey: ["chapters"],
     queryFn: () => getReaderComicChapters(slug),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 
   if (isLoading || isChaptersLoading) return <LoaderScreen />;
 
-  const comic: Comic = comicData?.data?.data?.comic;
+  const comic: Comic = comicData?.data?.data;
   const creator = comicData?.data?.data?.creatorName ?? "";
   const isInLibrary = comicData?.data?.data?.inLibrary;
 
@@ -136,7 +136,7 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
 
               <div className="space-x-4 flex items-stretch">
                 <Link
-                  href={`/r/comics/${slug}/chapter/${chapters[0].uniqueCode}`}
+                  href={`/r/comics/${slug}/chapter/${chapters[0]?.uniqueCode}`}
                 >
                   <Button variant={"primary"}>Start Reading</Button>
                 </Link>
@@ -169,7 +169,7 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
                 width={323}
                 height={500}
                 alt={`${comic.title} cover`}
-                className="h-[500px] w-[323px] max-md:h-[200px] max-md:w-auto object-cover"
+                className="h-[500px] w-[323px] max-md:h-[200px] max-md:w-auto object-contain"
               />
             )}
           </section>

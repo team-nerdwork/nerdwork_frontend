@@ -371,3 +371,45 @@ export const getChapterPages = async (code: string) => {
     };
   }
 };
+
+export const purchaseChapterComic = async (
+  nwtAmount: number,
+  pin: string,
+  chapterId: string
+) => {
+  try {
+    const requestBody = {
+      nwtAmount,
+      pin,
+      chapterId,
+    };
+    console.log(requestBody);
+
+    const response = await axiosPost("/chapters/purchase", requestBody);
+    console.log(response.data);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Chapter purchased successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Chapter purchased failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to purchased comic. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to purchase comics. Please try again.",
+    };
+  }
+};

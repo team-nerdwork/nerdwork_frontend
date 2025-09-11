@@ -27,7 +27,7 @@ export type Chapter = {
   date: string;
   views?: number;
   read?: boolean;
-  unlocked?: boolean;
+  hasPaid?: boolean;
   uniqueCode?: string;
   slug?: string;
   chapterPages: string[];

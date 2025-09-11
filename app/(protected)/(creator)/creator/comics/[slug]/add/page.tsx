@@ -64,7 +64,7 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
     refetchOnWindowFocus: true,
   });
 
-  const comic: Comic = comicData?.data?.comic;
+  const comic: Comic = comicData?.data?.data;
   const comicId = comic?.id;
 
   const [publishLoading, setPublishLoading] = useState(false);

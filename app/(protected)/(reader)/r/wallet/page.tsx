@@ -13,11 +13,18 @@ import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { creatorTransactions } from "@/components/data";
 import PurchaseTokenModal from "@/components/wallet/PurchaseTokenModal";
+import { useUserSession } from "@/lib/api/queries";
 
 const ReaderWalletPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sort, setSort] = useState("");
+  const { profile } = useUserSession();
+  const readerProfile = profile?.readerProfile;
+
+  const usdPerNwt = 0.01;
+  const calculateUSD = (amount: number) => amount * usdPerNwt;
+  const usdEquivalent = calculateUSD(readerProfile?.walletBalance);
 
   const transactionData = creatorTransactions ?? [];
 
@@ -73,11 +80,11 @@ const ReaderWalletPage = () => {
               <p className="text-sm">Available Balance</p>
               <p className="text-[64px] text-[#09FFFF] flex items-center gap-3 font-bold">
                 <Image src={NWT} width={64} height={64} alt="" />
-                100
+                {readerProfile?.walletBalance}
               </p>
             </div>
             <p className="text-right font-bold text-[#598EE2] opacity-55 text-5xl">
-              ≈ $427.05
+              ≈ ${usdEquivalent.toFixed(3)}
             </p>
           </div>
 
@@ -88,8 +95,8 @@ const ReaderWalletPage = () => {
             </div>
             <div className="flex flex-col gap-5">
               <div>
-                <p>Solflare (Solana Wallet)</p>
-                <p className="text-nerd-muted">0xDEAF...fB8B</p>
+                <p>NWT Internal Wallet</p>
+                <p className="text-nerd-muted">{readerProfile?.walletId}</p>
               </div>
             </div>
           </div>
@@ -104,11 +111,11 @@ const ReaderWalletPage = () => {
               </div>
               <div className="font-medium">
                 <p className="flex justify-between">
-                  1 NWT <span>$10.05</span>
+                  100 NWT <span>$1.00</span>
                 </p>
-                <p className="flex justify-between">
+                {/* <p className="flex justify-between">
                   1 SOL <span>$10.05</span>
-                </p>
+                </p> */}
               </div>
             </div>
             <div>

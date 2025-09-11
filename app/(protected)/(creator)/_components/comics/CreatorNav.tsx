@@ -41,8 +41,7 @@ export default function CreatorNav() {
   const { data: session } = useSession();
   const user = session?.user;
   const { profile } = useUserSession();
-
-  // const readerProfile: Profile = profile;
+  const creatorProfile = profile?.creatorProfile;
 
   const handleSignOut = () => {
     toast.success("Logging out...");
@@ -56,7 +55,7 @@ export default function CreatorNav() {
             <Image src={Logo} width={146} height={40} alt="Nerdwork logo" />
           </Link>
           <ul className="flex gap-4 text-sm">
-            <Link href={""}>Comics</Link>
+            <Link href={"/r/comics"}>Comics</Link>
             <Link href={""}>Marketplace</Link>
           </ul>
         </div>
@@ -71,7 +70,7 @@ export default function CreatorNav() {
         </div>
         <div className="flex justify-between items-center gap-3">
           <p className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] flex items-center gap-1">
-            {profile?.walletBalance ?? ""}{" "}
+            {creatorProfile?.walletBalance ?? ""}
             <Image src={NWT} width={16} height={16} alt="nwt" />
           </p>
           <Avatar>
