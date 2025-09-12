@@ -344,7 +344,10 @@ const ReaderNav = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link className="flex items-center gap-3 w-full" href={""}>
+                <Link
+                  className="flex items-center gap-3 w-full"
+                  href={"/r/profile"}
+                >
                   <User2 className="text-white" /> Profile
                 </Link>
               </DropdownMenuItem>
