@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 import { purchaseChapterComic } from "@/actions/comic.actions";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ModalStep =
   | "form"
@@ -33,17 +34,26 @@ type ModalStep =
   | "loading"
   | "success";
 
-const ComicPaymentFlow = ({ chapter }: { chapter: Chapter }) => {
+const ComicPaymentFlow = ({
+  chapter,
+  internal = false,
+}: {
+  chapter: Chapter;
+  internal: boolean;
+}) => {
   const [step, setStep] = useState<ModalStep>("form");
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const user = session?.user;
   const { profile, refetch } = useUserSession();
+  const queryClient = useQueryClient();
 
   const pathname = usePathname();
   const pathSegments = pathname.split("/");
   const chapterIndex = pathSegments.indexOf("chapter");
-  const basePath = pathSegments.slice(0, chapterIndex).join("/");
+  const basePath = internal
+    ? pathSegments.slice(0, chapterIndex).join("/")
+    : pathname;
 
   const walletBalance = profile?.readerProfile?.walletBalance;
   const chapterPrice = chapter?.price ?? 0;
@@ -112,6 +122,7 @@ const ComicPaymentFlow = ({ chapter }: { chapter: Chapter }) => {
       refetch();
       toast.success("Profile Updated Successfully!");
       setStep("success");
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
     } catch (err) {
       toast.error("An unexpected error occurred.");
       setStep("enterPin");

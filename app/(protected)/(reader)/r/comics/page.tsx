@@ -3,7 +3,7 @@ import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RComics from "../../_components/RComics";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAllComicsForReader } from "@/actions/comic.actions";
 import { Comic } from "@/lib/types";
 import LoaderScreen from "@/components/loading-screen";
@@ -29,7 +29,7 @@ const ReaderComics = () => {
   } = useQuery({
     queryKey: ["ReaderComics"],
     queryFn: getAllComicsForReader,
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });

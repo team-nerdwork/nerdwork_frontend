@@ -15,7 +15,7 @@ import { setCreatorAddress } from "@/actions/profile.actions";
 const wallet = new Solflare();
 
 export function PaymentDetailsForm() {
-  const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<string>("");
   const router = useRouter();
   const { refetch } = useUserSession();
 
@@ -29,13 +29,18 @@ export function PaymentDetailsForm() {
     await wallet.connect();
 
     if (wallet!.publicKey!.toString()) {
-      toast.info("Wallet Connected... " + wallet!.publicKey!.toString());
+      toast.info("Wallet Detected..");
     } else {
       toast.info("Wallet not  Connected... ");
     }
 
+    console.log(wallet!.publicKey!.toString());
     try {
-      const response = await setCreatorAddress(wallet!.publicKey!.toString());
+      const response = await setCreatorAddress(
+        wallet!.publicKey!.toString(),
+        selectedWallet
+      );
+      console.log(response);
 
       if (!response?.success) {
         toast.error(

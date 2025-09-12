@@ -45,7 +45,7 @@ import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { MultiFileUpload } from "@/app/(protected)/(creator)/_components/comics/MultiFileUpload";
 import { LoadingButton } from "@/components/ui/LoadingButton";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   createComicChapter,
   createDraftChapter,
@@ -58,10 +58,11 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
 
   const { data: comicData } = useQuery({
-    queryKey: ["comic"],
+    queryKey: ["comic", slug],
     queryFn: () => getSingleComic(slug),
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
   });
 
   const comic: Comic = comicData?.data?.data;

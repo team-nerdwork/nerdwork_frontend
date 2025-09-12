@@ -45,13 +45,24 @@ export type Transaction = {
   date: string;
 };
 
-export type UserTransaction = {
+export type ReaderTransaction = {
   id: string;
   transactionType: string;
   status: string;
   description: string;
   nwtAmount: number;
   spendCategory: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreatorTransaction = {
+  id: string;
+  transactionType: string;
+  status: string;
+  description: string;
+  nwtAmount: number;
+  earningSource: string;
   createdAt: string;
   updatedAt: string;
 };

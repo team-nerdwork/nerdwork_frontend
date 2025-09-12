@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import ComicInfo from "@/app/(protected)/(reader)/_components/ComicInfo";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   getChapterPages,
   getReaderComicChapters,
@@ -91,19 +91,21 @@ const ComicReader = ({
   }, [readingMode]);
 
   const { data: pagesData, isLoading } = useQuery({
-    queryKey: ["pages"],
+    queryKey: ["pages", chapterId],
     queryFn: () => getChapterPages(chapterId),
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
+    enabled: !!chapterId,
   });
 
   const { data: chaptersData } = useQuery({
-    queryKey: ["chapters"],
+    queryKey: ["chapters", slug],
     queryFn: () => getReaderComicChapters(slug),
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
   });
 
   const chapters: Chapter[] = chaptersData?.data?.data ?? [];
@@ -369,15 +371,26 @@ const ComicReader = ({
 
         {isNextChapterPaid && hasUnlocked == false ? (
           <div className="mt-5">
-            <ComicPaymentFlow chapter={chapters[currentIndex + 1]} />
+            <ComicPaymentFlow
+              internal={true}
+              chapter={chapters[currentIndex + 1]}
+            />
           </div>
         ) : (
-          <Link
-            className="text-center"
-            href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
-          >
-            <Button>Next Chapter</Button>
-          </Link>
+          <>
+            {nextChapterCode ? (
+              <Link
+                className="text-center"
+                href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
+              >
+                <Button>Next Chapter</Button>
+              </Link>
+            ) : (
+              <Link className="text-center" href={`/r/comics/${slug}`}>
+                <Button variant="outline">Go back</Button>
+              </Link>
+            )}
+          </>
         )}
       </main>
       {FooterPanel}

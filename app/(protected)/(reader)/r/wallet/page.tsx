@@ -15,7 +15,7 @@ import PurchaseTokenModal from "@/components/wallet/PurchaseTokenModal";
 import { useUserSession } from "@/lib/api/queries";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getReaderTransactionHistory } from "@/actions/transaction.action";
-import { UserTransaction } from "@/lib/types";
+import { ReaderTransaction } from "@/lib/types";
 import LoaderScreen from "@/components/loading-screen";
 import { toast } from "sonner";
 
@@ -35,17 +35,16 @@ const ReaderWalletPage = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["comic"],
+    queryKey: ["transactions"],
     queryFn: getReaderTransactionHistory,
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 
-  if (error)
-    toast.error(error?.message || "Error getting transactions details");
+  if (error) toast.error(error?.message || "Error getting library details");
 
-  const transactionData: UserTransaction[] =
+  const transactionData: ReaderTransaction[] =
     transactions?.data.transaction ?? [];
 
   const filteredAndSortedData = useMemo(() => {
@@ -53,7 +52,7 @@ const ReaderWalletPage = () => {
 
     if (typeFilter !== "all" && typeFilter !== "") {
       filteredData = filteredData.filter(
-        (item) => item.spendCategory === typeFilter
+        (item) => item.transactionType === typeFilter
       );
     }
     if (statusFilter !== "all" && statusFilter !== "") {
@@ -110,7 +109,7 @@ const ReaderWalletPage = () => {
               </p>
             </div>
             <p className="text-right font-bold text-[#598EE2] opacity-55 text-5xl">
-              ≈ ${usdEquivalent.toFixed(3)}
+              ≈ ${usdEquivalent.toFixed(3) ?? 0.0}
             </p>
           </div>
 
@@ -171,10 +170,9 @@ const ReaderWalletPage = () => {
             </SelectTrigger>
             <SelectContent className="bg-[#1D1E21] border-none text-white">
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="chapter_unlock">Chapter Unlock</SelectItem>
-              <SelectItem value="gift">Gift</SelectItem>
               <SelectItem value="purchase">Purchase</SelectItem>
-              <SelectItem value="withdrawal">Withdrawal</SelectItem>
+              <SelectItem value="spend">Spending</SelectItem>
+              <SelectItem value="refund">Refund</SelectItem>
             </SelectContent>
           </Select>
 

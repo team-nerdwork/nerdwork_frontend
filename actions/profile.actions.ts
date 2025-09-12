@@ -182,11 +182,12 @@ export const setReaderPin = async (data: string) => {
   }
 };
 
-export const setCreatorAddress = async (data: string) => {
+export const setCreatorAddress = async (data: string, type: string) => {
   try {
-    console.log("wallet:", data);
-    const response = await axiosPut("/profile/creator", { address: data });
-    console.log(response.data);
+    const response = await axiosPut("/profile/creator", {
+      address: data,
+      walletType: type,
+    });
 
     return {
       success: true,

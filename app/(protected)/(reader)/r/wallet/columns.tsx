@@ -1,8 +1,8 @@
 "use client";
-import { UserTransaction } from "@/lib/types";
+import { ReaderTransaction } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<UserTransaction>[] = [
+export const columns: ColumnDef<ReaderTransaction>[] = [
   {
     accessorKey: "type",
     header: () => <div className="text-left text-nerd-muted">Type</div>,
@@ -27,7 +27,9 @@ export const columns: ColumnDef<UserTransaction>[] = [
   },
   {
     accessorKey: "amount",
-    header: () => <div className="text-center text-nerd-muted">Amount</div>,
+    header: () => (
+      <div className="max-md:text-center text-nerd-muted">Amount</div>
+    ),
     cell: ({ row }) => {
       return (
         <div
@@ -45,7 +47,9 @@ export const columns: ColumnDef<UserTransaction>[] = [
   },
   {
     accessorKey: "status",
-    header: () => <div className="text-center text-nerd-muted">Status</div>,
+    header: () => (
+      <div className="max-md:text-center text-nerd-muted">Status</div>
+    ),
     cell: ({ row }) => {
       return (
         <div
@@ -62,7 +66,9 @@ export const columns: ColumnDef<UserTransaction>[] = [
   },
   {
     accessorKey: "date",
-    header: () => <div className="text-center text-nerd-muted">Date</div>,
+    header: () => (
+      <div className="max-md:text-center text-nerd-muted">Date</div>
+    ),
     cell: ({ row }) => {
       return (
         <div className="text-left text-white font-normal">

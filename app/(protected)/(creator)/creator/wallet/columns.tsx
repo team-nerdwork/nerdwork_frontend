@@ -1,16 +1,16 @@
 "use client";
 
-import { UserTransaction } from "@/lib/types";
+import { CreatorTransaction } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<UserTransaction>[] = [
+export const columns: ColumnDef<CreatorTransaction>[] = [
   {
     accessorKey: "type",
     header: () => <div className="text-left text-nerd-muted">Type</div>,
     cell: ({ row }) => {
       return (
         <div className="text-left capitalize text-white font-normal">
-          {row.original.spendCategory}
+          {row.original.earningSource}
         </div>
       );
     },
@@ -67,7 +67,7 @@ export const columns: ColumnDef<UserTransaction>[] = [
     cell: ({ row }) => {
       return (
         <div className="text-left text-white font-normal">
-          {row.original.updatedAt}
+          {new Date(row.original.updatedAt).toLocaleDateString()}
         </div>
       );
     },

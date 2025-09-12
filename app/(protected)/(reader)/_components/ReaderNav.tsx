@@ -54,7 +54,7 @@ const ReaderNav = () => {
     { title: "Comics", path: "/r/comics" },
     { title: "Marketplace", path: "/r/marketplace" },
     { title: "Library", path: "/r/library" },
-    // { title: "Create", path: "/onboarding" },
+    { title: "Create", path: "/onboarding" },
   ];
 
   const isActive = (path: string) => {
@@ -198,7 +198,7 @@ const ReaderNav = () => {
                 </MenubarTrigger>
                 <MenubarContent className="bg-[#1D1E21] text-white border-0 absolute -right-[30px]">
                   <div className="text-sm p-2">
-                    <p>{readerProfile.fullName}</p>
+                    <p>{readerProfile?.fullName}</p>
                     <p className="text-nerd-muted">{user?.email}</p>
                   </div>
                   <MenubarSeparator />
@@ -221,7 +221,10 @@ const ReaderNav = () => {
                     </Link>
                   </MenubarItem>
                   <MenubarItem>
-                    <Link className="flex items-center gap-3 w-full" href={""}>
+                    <Link
+                      className="flex items-center gap-3 w-full"
+                      href={"/r/profile"}
+                    >
                       <User2 className="text-white" />
                       Profile
                     </Link>
@@ -299,17 +302,20 @@ const ReaderNav = () => {
             </PopoverContent>
           </Popover>
 
-          <p className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] text-sm flex items-center gap-1">
+          <Link
+            href={"/r/wallet"}
+            className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] text-sm flex items-center gap-1"
+          >
             {readerProfile?.walletBalance ?? ""}
             <Image src={NWT} width={16} height={16} alt="nwt" />
-          </p>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger className="bg-[#1D1E21] h-8 w-8 flex justify-center items-center cursor-pointer rounded-full outline-none border-none ring-0">
               <Menu size={16} strokeWidth={2} absoluteStrokeWidth={true} />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[#1D1E21] text-white border-0 mx-5 w-[250px] mt-2">
               <div className="text-sm p-2">
-                <p>{readerProfile.fullName}</p>
+                <p>{readerProfile?.fullName}</p>
                 <p className="text-nerd-muted">{user?.email}</p>
               </div>
               <DropdownMenuSeparator />

@@ -4,7 +4,7 @@ import React from "react";
 import Logo from "@/assets/nerdwork.png";
 import Link from "next/link";
 import {
-  Book,
+  BookMarkedIcon,
   HelpCircle,
   LibraryBig,
   Menu,
@@ -69,10 +69,13 @@ export default function CreatorNav() {
           </div>
         </div>
         <div className="flex justify-between items-center gap-3">
-          <p className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] flex items-center gap-1">
+          <Link
+            href={"/creator/wallet"}
+            className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] flex items-center gap-1"
+          >
             {creatorProfile?.walletBalance ?? ""}
             <Image src={NWT} width={16} height={16} alt="nwt" />
-          </p>
+          </Link>
           <Avatar>
             {user?.profilePicture && (
               <AvatarImage
@@ -93,12 +96,15 @@ export default function CreatorNav() {
               </MenubarTrigger>
               <MenubarContent className="bg-[#1D1E21] text-white border-0 absolute -right-[30px]">
                 <div className="text-sm p-2">
-                  <p>{creatorProfile.creatorName}</p>
+                  <p>{creatorProfile?.creatorName}</p>
                   <p className="text-nerd-muted">{user?.email}</p>
                 </div>
                 <MenubarSeparator />
                 <MenubarItem>
-                  <Link className="flex items-center gap-3 w-full" href={""}>
+                  <Link
+                    className="flex items-center gap-3 w-full"
+                    href={"/creator/profile"}
+                  >
                     <User2 className="text-white" />
                     Profile
                   </Link>
@@ -143,22 +149,25 @@ export default function CreatorNav() {
 
         <div className="flex items-center gap-3">
           <Search size={16} />
-          <p className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] text-sm flex items-center gap-1">
+          <Link
+            href={"/creator/wallet"}
+            className="bg-[#1D1E21] px-3 py-1.5 rounded-[20px] text-sm flex items-center gap-1"
+          >
             {creatorProfile?.walletBalance ?? ""}
             <Image src={NWT} width={16} height={16} alt="nwt" />
-          </p>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger className="bg-[#1D1E21] h-8 w-8 flex justify-center items-center cursor-pointer rounded-full outline-none border-none ring-0">
               <Menu size={16} strokeWidth={2} absoluteStrokeWidth={true} />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[#1D1E21] text-white border-0 mx-5 w-[250px] mt-2">
               <div className="text-sm p-2">
-                <p>{creatorProfile.fullName}</p>
+                <p>{creatorProfile?.creatorName}</p>
                 <p className="text-nerd-muted">{user?.email}</p>
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Link className="flex items-center gap-3" href={""}>
+                <Link className="flex items-center gap-3" href={"/r/comics"}>
                   <LibraryBig className="text-white" /> Comics
                 </Link>
               </DropdownMenuItem>
@@ -167,13 +176,26 @@ export default function CreatorNav() {
                   <ShoppingBag className="text-white" /> Marketplace
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <Link className="flex items-center gap-3" href={""}>
                   <Book className="text-white" /> Library
                 </Link>
+              </DropdownMenuItem> */}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link
+                  className="flex items-center gap-3"
+                  href={"/creator/comics"}
+                >
+                  <BookMarkedIcon className="text-white" />
+                  My Comics
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link className="flex items-center gap-3" href={""}>
+                <Link
+                  className="flex items-center gap-3"
+                  href={"/creator/profile"}
+                >
                   <User2 className="text-white" /> Profile
                 </Link>
               </DropdownMenuItem>
@@ -186,7 +208,7 @@ export default function CreatorNav() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <Link className="flex items-center gap-3" href={""}>
                   <UserCog className="text-white" /> Account Settings
                 </Link>
@@ -196,7 +218,7 @@ export default function CreatorNav() {
                   <HelpCircle className="text-white" /> Help Centre
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator /> */}
               <DropdownMenuItem
                 onClick={handleSignOut}
                 className="text-[#707073] cursor-pointer"

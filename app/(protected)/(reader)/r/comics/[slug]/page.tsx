@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { ArrowLeft, Check } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   getReaderComicChapters,
   getSingleComicReader,
@@ -28,19 +28,21 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["comic"],
+    queryKey: ["comic", slug],
     queryFn: () => getSingleComicReader(slug),
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
   });
 
   const { data: chaptersData, isLoading: isChaptersLoading } = useQuery({
-    queryKey: ["chapters"],
+    queryKey: ["chapters", slug],
     queryFn: () => getReaderComicChapters(slug),
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
   });
 
   if (isLoading || isChaptersLoading) return <LoaderScreen />;
@@ -100,7 +102,11 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
   return (
     <>
       <header className="relative min-h-[50vh] w-full pt-6">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#a0a0a0_0%,#151515_55.75%)] z-10" />
+        <div
+          style={{ backgroundImage: `url(${comic?.image})` }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,13,13,0.2)_0%,#151515_45.75%)] z-10" />
         <div className="relative z-20 text-white h-full max-w-[1000px] mx-auto">
           <section className="flex max-md:flex-col-reverse max-md:pt-20 justify-between min-h-[70vh] font-inter -mb-px max-md:gap-6 md:gap-8 items-center px-5">
             <section className="max-w-[445px] space-y-7">

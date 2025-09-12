@@ -383,10 +383,8 @@ export const purchaseChapterComic = async (
       pin,
       chapterId,
     };
-    console.log(requestBody);
 
     const response = await axiosPost("/chapters/purchase", requestBody);
-    console.log(response.data);
 
     return {
       success: true,

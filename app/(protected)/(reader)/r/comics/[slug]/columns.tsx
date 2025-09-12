@@ -55,7 +55,7 @@ export const columns: ColumnDef<Chapter>[] = [
           row.original.hasPaid == true ? (
             <ReadButton chapterCode={row.original.uniqueCode ?? ""} />
           ) : (
-            <ComicPaymentFlow chapter={row.original} />
+            <ComicPaymentFlow chapter={row.original} internal={false} />
           )}
         </div>
       );

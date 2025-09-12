@@ -18,7 +18,7 @@ import { ConnectWalletModal } from "../../../../../components/wallet/ConnectWall
 import { getCreatorTransactionHistory } from "@/actions/transaction.action";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { UserTransaction } from "@/lib/types";
+import { CreatorTransaction } from "@/lib/types";
 import LoaderScreen from "@/components/loading-screen";
 
 const WalletPage = () => {
@@ -37,7 +37,7 @@ const WalletPage = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["comic"],
+    queryKey: ["transactions"],
     queryFn: getCreatorTransactionHistory,
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
@@ -47,7 +47,7 @@ const WalletPage = () => {
   if (error)
     toast.error(error?.message || "Error getting transactions details");
 
-  const transactionData: UserTransaction[] =
+  const transactionData: CreatorTransaction[] =
     transactions?.data.transaction ?? [];
 
   const filteredAndSortedData = useMemo(() => {
@@ -55,7 +55,7 @@ const WalletPage = () => {
 
     if (typeFilter !== "all" && typeFilter !== "") {
       filteredData = filteredData.filter(
-        (item) => item.spendCategory === typeFilter
+        (item) => item.transactionType === typeFilter
       );
     }
     if (statusFilter !== "all" && statusFilter !== "") {
@@ -75,8 +75,8 @@ const WalletPage = () => {
             new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
           );
         }
-        if (sort === "spendCategory") {
-          return a.spendCategory.localeCompare(b.spendCategory);
+        if (sort === "type") {
+          return a.earningSource.localeCompare(b.earningSource);
         }
         return 0;
       });
@@ -113,7 +113,7 @@ const WalletPage = () => {
               </p>
             </div>
             <p className="text-right font-bold text-[#598EE2] opacity-55 text-5xl">
-              ≈ ${usdEquivalent.toFixed(3)}
+              ≈ ${usdEquivalent.toFixed(3) ?? 0.0}
             </p>
           </div>
 
@@ -189,9 +189,8 @@ const WalletPage = () => {
             </SelectTrigger>
             <SelectContent className="bg-[#1D1E21] border-none text-white">
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="chapter_unlock">Chapter Unlock</SelectItem>
-              <SelectItem value="gift">Gift</SelectItem>
-              <SelectItem value="purchase">Purchase</SelectItem>
+              <SelectItem value="earning">Earning</SelectItem>
+              <SelectItem value="bonus">Bonus</SelectItem>
               <SelectItem value="withdrawal">Withdrawal</SelectItem>
             </SelectContent>
           </Select>
@@ -213,7 +212,7 @@ const WalletPage = () => {
             </SelectTrigger>
             <SelectContent className="bg-[#1D1E21] border-none text-white">
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="spendCategory">Type</SelectItem>
+              <SelectItem value="type">Type</SelectItem>
               <SelectItem value="nwtAmount">Amount</SelectItem>
               <SelectItem value="updatedAt">Date</SelectItem>
             </SelectContent>

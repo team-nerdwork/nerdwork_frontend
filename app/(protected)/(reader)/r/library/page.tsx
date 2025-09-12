@@ -23,9 +23,10 @@ import {
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { LucideChevronDown } from "lucide-react";
 import { getLibraryComics } from "@/actions/library.actions";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import LoaderScreen from "@/components/loading-screen";
 import { Comic } from "@/lib/types";
+import { toast } from "sonner";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
@@ -38,15 +39,23 @@ const LibraryPage = () => {
   const [sortFilter, setSortFilter] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const { data: libraryData, isLoading } = useQuery({
-    queryKey: ["comics"],
-    queryFn: () => getLibraryComics(),
-    // placeholderData: keepPreviousData,
+  const {
+    data: libraryData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["library"],
+    queryFn: getLibraryComics,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 
-  const comics: Comic[] = libraryData?.data?.comics;
+  const comics: Comic[] = libraryData?.data?.comics ?? [];
+  console.log(libraryData);
+
+  if (error)
+    toast.error(error?.message || "Error getting transactions details");
 
   const filteredComics = React.useMemo(() => {
     let tempComics = [...comics];

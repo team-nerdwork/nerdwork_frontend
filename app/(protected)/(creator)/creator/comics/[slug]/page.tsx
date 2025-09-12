@@ -11,7 +11,7 @@ import ComicActions from "../../../_components/comics/DesktopComicActions";
 import MobileComicActions from "../../../_components/comics/MobileComicActions";
 import ChaptersEmptyState from "../../../_components/comics/ChaptersEmptyState";
 import ChapterComics from "../../../_components/comics/ChapterComics";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   getComicChaptersBySlug,
   getSingleComic,
@@ -37,11 +37,12 @@ const ComicDetailsPage = ({
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["comic"],
+    queryKey: ["comic", slug],
     queryFn: () => getSingleComic(slug),
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
   });
 
   const {
@@ -49,11 +50,12 @@ const ComicDetailsPage = ({
     isLoading: isChaptersLoading,
     error: chapterError,
   } = useQuery({
-    queryKey: ["chapters"],
+    queryKey: ["chapters", slug],
     queryFn: () => getComicChaptersBySlug(slug),
-    // placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
   });
 
   if (isLoading || isChaptersLoading) return <LoaderScreen />;

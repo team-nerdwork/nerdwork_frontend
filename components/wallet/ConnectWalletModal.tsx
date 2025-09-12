@@ -19,7 +19,7 @@ import {
 const wallet = new Solflare();
 
 export function ConnectWalletModal() {
-  const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<string>("");
   const { refetch } = useUserSession();
 
   // const walletDetected = (walletName: string) => {
@@ -31,14 +31,17 @@ export function ConnectWalletModal() {
     await wallet.connect();
 
     if (wallet!.publicKey!.toString()) {
-      toast.info("Wallet Connected");
+      toast.info("Wallet Detected. Processing...");
     } else {
       toast.info("Wallet not  Connected... ");
     }
 
     console.log(wallet!.publicKey!.toString());
     try {
-      const response = await setCreatorAddress(wallet!.publicKey!.toString());
+      const response = await setCreatorAddress(
+        wallet!.publicKey!.toString(),
+        selectedWallet
+      );
       console.log(response);
 
       if (!response?.success) {
