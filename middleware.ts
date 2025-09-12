@@ -16,6 +16,7 @@ export default auth((req) => {
   const hasCompletedOnboarding = isCreator || isReader;
   const isDualUser = isCreator && isReader;
 
+  // 1. Unauthenticated users → protect onboarding & role-based pages
   if (!isAuthenticated) {
     if (
       PROTECTED_PAGES.some((p) => pathname.startsWith(p)) ||
@@ -28,11 +29,13 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  // 2. Authenticated but no profile → force onboarding
   if (!hasCompletedOnboarding && !isOnboardingPage) {
     return NextResponse.redirect(new URL(ONBOARDING_PREFIX, origin));
   }
 
-  if (hasCompletedOnboarding && (isAuthPage || isOnboardingPage)) {
+  // 3. Prevent accessing signin when already authenticated
+  if (isAuthPage) {
     if (isDualUser) {
       return NextResponse.redirect(new URL("/role", origin));
     }
@@ -44,19 +47,36 @@ export default auth((req) => {
     }
   }
 
-  if (!isDualUser && isSelectRolePage) {
+  // 4. Onboarding handling
+  if (isOnboardingPage) {
+    if (isDualUser) {
+      return NextResponse.redirect(new URL("/role", origin));
+    }
+
+    if (isCreator && pathname.startsWith(`${ONBOARDING_PREFIX}/creator`)) {
+      return NextResponse.redirect(new URL("/creator/comics", origin));
+    }
+
+    if (isReader && pathname.startsWith(`${ONBOARDING_PREFIX}/reader`)) {
+      return NextResponse.redirect(new URL("/r/comics", origin));
+    }
+  }
+
+  // 5. Role selection page → skip if only one role
+  if (isSelectRolePage && !isDualUser) {
     if (isCreator) {
       return NextResponse.redirect(new URL("/creator/comics", origin));
     }
     if (isReader) {
       return NextResponse.redirect(new URL("/r/comics", origin));
     }
-    return NextResponse.redirect(new URL(ONBOARDING_PREFIX, origin));
   }
 
+  // 6. Role protection (safe because onboarding handled earlier)
   if (pathname.startsWith("/creator") && !isCreator) {
     return NextResponse.redirect(new URL("/r/comics", origin));
   }
+
   if (pathname.startsWith("/r") && !isReader) {
     return NextResponse.redirect(new URL("/creator/comics", origin));
   }
