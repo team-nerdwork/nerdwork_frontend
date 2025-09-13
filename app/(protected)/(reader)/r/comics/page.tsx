@@ -46,6 +46,9 @@ const ReaderComics = () => {
 
   return (
     <div className="pt-20">
+      <h2 className="max-w-[1200px] mx-auto px-6 text-2xl font-semibold pt-5 pb-2.5">
+        Available Comics
+      </h2>
       <section>
         <Tabs
           value={tab}

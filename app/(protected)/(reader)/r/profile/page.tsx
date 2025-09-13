@@ -47,7 +47,7 @@ const ReaderProfilePage = () => {
           </div>
 
           <section className="flex max-md:flex-col gap-10 justify-between">
-            <div>
+            <div className="space-y-1.5">
               <h3 className="text-base font-semibold mb-3">
                 Wallet Information
               </h3>
@@ -57,14 +57,14 @@ const ReaderProfilePage = () => {
               </p>
               <p>Address: {readerProfile?.walletId}</p>
             </div>
-            <div>
+            <div className="space-y-1.5">
               <h3 className="text-base font-semibold mb-3">User Preferences</h3>
               <p className="">
                 Genres:{"  "}
                 {readerProfile?.genres.map((gen: string, index: number) => (
-                  <span key={index} className="mr-1.5">
+                  <Badge key={index} className="mr-1.5 bg-nerd-blue">
                     {gen}
-                  </span>
+                  </Badge>
                 ))}
               </p>
               <p>

@@ -9,7 +9,7 @@ export const columns: ColumnDef<ReaderTransaction>[] = [
     cell: ({ row }) => {
       return (
         <div className="text-left capitalize text-white font-normal">
-          {row.original.spendCategory}
+          {row.original.spendCategory ?? row.original.transactionType}
         </div>
       );
     },

@@ -69,11 +69,11 @@ const ReaderWalletPage = () => {
         if (sort === "date") {
           // Assuming date is a string that can be compared or converted to a Date object
           return (
-            new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
           );
         }
         if (sort === "type") {
-          return a.spendCategory.localeCompare(b.spendCategory);
+          return a.transactionType.localeCompare(b.transactionType);
         }
         return 0;
       });
@@ -102,18 +102,24 @@ const ReaderWalletPage = () => {
         <section className="flex max-md:flex-col gap-3">
           <div className="md:w-2/4 md:h-[225px] rounded-[12px] border-[0.5px] border-[#292A2E] bg-[#1D1E21] flex flex-col justify-between p-6">
             <div>
-              <p className="text-sm">Available Balance</p>
-              <p className="text-[64px] text-[#09FFFF] flex items-center gap-3 font-bold">
-                <Image src={NWT} width={64} height={64} alt="" />
+              <p className="text-sm mb-2">Available Balance</p>
+              <p className="text-5xl md:text-[64px] text-[#09FFFF] flex items-center gap-3 font-bold">
+                <Image
+                  src={NWT}
+                  width={64}
+                  height={64}
+                  alt=""
+                  className="max-md:h-9 max-md:w-9"
+                />
                 {readerProfile?.walletBalance}
               </p>
             </div>
-            <p className="text-right font-bold text-[#598EE2] opacity-55 text-5xl">
+            <p className="text-right font-bold text-[#598EE2] opacity-55 text-4xl md:text-5xl">
               ≈ ${usdEquivalent.toFixed(3) ?? 0.0}
             </p>
           </div>
 
-          <div className="md:w-1/4 h-[225px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm p-6 flex flex-col gap-4">
+          <div className="md:w-1/4 md:h-[225px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm p-6 flex flex-col gap-4">
             <div>
               <p>Wallet Information</p>
               <p className="text-nerd-muted">Manage your internal wallet</p>
@@ -126,7 +132,7 @@ const ReaderWalletPage = () => {
             </div>
           </div>
 
-          <div className="md:w-1/4 h-[225px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm flex flex-col justify-between">
+          <div className="md:w-1/4 md:h-[225px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm flex flex-col justify-between">
             <div className="p-6 h-[60%] flex flex-col justify-between">
               <div>
                 <p>Exchange Rates</p>

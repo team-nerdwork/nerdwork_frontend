@@ -227,7 +227,8 @@
 
 /* Lock WalletConnect modal so it doesn’t float bottom-right */
 #wcm-modal,
-.wcm-modal {
+.wcm-modal,
+wcm-modal {
   position: static !important;
   inset: auto !important;
   margin: 0 auto !important;

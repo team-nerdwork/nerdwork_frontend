@@ -1,13 +1,5 @@
 "use client";
-
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -16,6 +8,15 @@ import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { handlePayment } from "@/lib/api/payment";
 import { useUserSession } from "@/lib/api/queries";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "../ui/drawer";
+import { ScrollArea } from "../ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 const HelioCheckout = dynamic(
   () =>
@@ -58,6 +59,7 @@ const HelioModal: React.FC<HelioModalProps> = ({
   >("pending");
   const [isClient, setIsClient] = React.useState(false);
   const { refetch } = useUserSession();
+  const router = useRouter();
 
   React.useEffect(() => {
     setIsClient(true);
@@ -65,19 +67,29 @@ const HelioModal: React.FC<HelioModalProps> = ({
 
   // eslint-disable-next-line
   const handlePaymentSuccess = async (payment: any) => {
-    console.log("Payment successful:", payment);
+    try {
+      const response = await handlePayment(payment);
 
-    const data = await handlePayment(payment);
-    console.log(data);
-    setPaymentStatus("success");
-    toast.success("Payment completed successfully!");
-    refetch();
+      if (!response?.success) {
+        toast.error(
+          response?.message ?? "An error occurred while submitting the form."
+        );
+        return;
+      }
 
-    // Close modal after a brief delay
-    setTimeout(() => {
-      onOpenChange(false);
-      setPaymentStatus("pending"); // Reset for next use
-    }, 2000);
+      toast.success("Payment completed successfully!");
+      setPaymentStatus("success");
+      await refetch();
+
+      setTimeout(() => {
+        onOpenChange(false);
+        setPaymentStatus("pending");
+        window.location.reload();
+      }, 5000);
+    } catch (err) {
+      toast.error("An unexpected error occurred.");
+      console.error(err);
+    }
   };
 
   // eslint-disable-next-line
@@ -134,109 +146,115 @@ const HelioModal: React.FC<HelioModalProps> = ({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#171719] text-white border-none">
-        <DialogHeader className="">
-          <DialogTitle className="text-2xl flex items-center gap-2">
-            Complete Payment
-            <Image src={Helio} width={20} height={20} alt="helio" />
-          </DialogTitle>
-          <DialogDescription className="text-nerd-muted">
-            Complete your NWT token purchase using Helio&apos;s secure payment
-            system
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Payment Summary */}
-        <div className="bg-[#1D1E21] rounded-lg p-4 space-y-3 border border-[#292A2E]">
-          <h3 className="text-lg font-semibold text-white mb-3">
-            Payment Summary
-          </h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-nerd-muted">
-              <span>NWT Tokens</span>
-              <span className="text-white font-medium">
-                {amount.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex justify-between text-nerd-muted">
-              <span>USD Equivalent</span>
-              <span className="text-white">${usdEquivalent.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-nerd-muted">
-              <span>Transaction Fee (1%)</span>
-              <span className="text-white">${transactionFee.toFixed(2)}</span>
-            </div>
-            <div className="border-t border-[#292A2E] pt-2 mt-2">
-              <div className="flex justify-between text-white font-semibold">
-                <span>Total to Pay</span>
-                <span>${totalToPay.toFixed(2)}</span>
+    <Drawer open={isOpen} onOpenChange={onOpenChange}>
+      <DrawerContent className="bg-[#171719] text-white border-none flex flex-col h-[90vh]">
+        <ScrollArea className="flex-1 overflow-y-auto px-10 max-md:px-5">
+          <div className="space-y-4 py-4">
+            <DrawerHeader className="">
+              <DrawerTitle className="text-2xl text-white justify-center flex items-center gap-2">
+                Complete Payment
+                <Image src={Helio} width={20} height={20} alt="helio" />
+              </DrawerTitle>
+              <DrawerDescription className="text-nerd-muted">
+                Complete your NWT token purchase using Helio&apos;s secure
+                payment system
+              </DrawerDescription>
+            </DrawerHeader>
+            {/* Payment Summary */}
+            <div className="bg-[#1D1E21] rounded-lg p-4 space-y-3 border border-[#292A2E]">
+              <h3 className="text-lg font-semibold text-white mb-3">
+                Payment Summary
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-nerd-muted">
+                  <span>NWT Tokens</span>
+                  <span className="text-white font-medium">
+                    {amount.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between text-nerd-muted">
+                  <span>USD Equivalent</span>
+                  <span className="text-white">
+                    ${usdEquivalent.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-nerd-muted">
+                  <span>Transaction Fee (1%)</span>
+                  <span className="text-white">
+                    ${transactionFee.toFixed(2)}
+                  </span>
+                </div>
+                <div className="border-t border-[#292A2E] pt-2 mt-2">
+                  <div className="flex justify-between text-white font-semibold">
+                    <span>Total to Pay</span>
+                    <span>${totalToPay.toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Payment Status or Helio Checkout */}
-        <div className="min-h-[300px]">
-          {paymentStatus === "success" || paymentStatus === "failed" ? (
-            renderPaymentStatus()
-          ) : (
-            <div className="space-y-4 relative w-full helio-checkout-container">
-              {paylinkId ? (
-                <div className="bg-[#1D1E21] rounded-lg p-4 border border-[#292A2E]">
-                  <HelioCheckout
-                    config={{
-                      paylinkId: paylinkId,
-                      primaryColor: "#AE7A5B",
-                      neutralColor: "#5A6578",
-                      display: "inline",
-                      network: "test",
-                      theme: {
-                        themeMode: "dark",
-                      },
-                      onSuccess: handlePaymentSuccess,
-                      onError: handlePaymentError,
-                    }}
-                  />
-                </div>
+            {/* Payment Status or Helio Checkout */}
+            <div className="min-h-[300px]">
+              {paymentStatus === "success" || paymentStatus === "failed" ? (
+                renderPaymentStatus()
               ) : (
-                <div className="flex items-center justify-center py-8">
-                  <div className="text-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-white mx-auto mb-4" />
-                    <p className="text-nerd-muted">Setting up payment...</p>
-                  </div>
+                <div className="space-y-2 w-full helio-checkout-container">
+                  {paylinkId ? (
+                    <div className="bg-[#1D1E21] flex justify-center rounded-lg p-4 border border-[#292A2E]">
+                      <HelioCheckout
+                        config={{
+                          paylinkId: paylinkId,
+                          primaryColor: "#AE7A5B",
+                          neutralColor: "#5A6578",
+                          display: "inline",
+                          network: "test",
+                          theme: {
+                            themeMode: "dark",
+                          },
+                          onSuccess: handlePaymentSuccess,
+                          onError: handlePaymentError,
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="text-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-white mx-auto mb-4" />
+                        <p className="text-nerd-muted">Setting up payment...</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Security Notice */}
-        <div className="bg-[#1D1E21] rounded-lg p-3 border border-[#292A2E]">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-            </div>
-            <div>
-              <p className="text-sm text-white font-medium">Secure Payment</p>
-              <p className="text-xs text-nerd-muted">
-                Your payment is processed securely through Helio&apos;s
-                encrypted payment system. Your card details are never stored on
-                our servers.
-              </p>
+            {/* Security Notice */}
+            <div className="bg-[#1D1E21] rounded-lg p-3 border border-[#292A2E]">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-white font-medium">
+                    Secure Payment
+                  </p>
+                  <p className="text-xs text-nerd-muted">
+                    Your payment is processed securely through Helio&apos;s
+                    encrypted payment system. Your card details are never stored
+                    on our servers.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
+        </ScrollArea>
         {/* Footer */}
-        <div className="flex items-center justify-center pt-4 border-t border-[#292A2E]">
+        <div className="flex items-center justify-center py-2 border-t border-[#292A2E]">
           <p className="text-xs text-nerd-muted flex items-center gap-2">
             Powered by Helio
             <Image src={Helio} width={14} height={14} alt="helio" />
           </p>
         </div>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
