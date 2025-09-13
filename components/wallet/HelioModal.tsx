@@ -16,7 +16,6 @@ import {
   DrawerTitle,
 } from "../ui/drawer";
 import { ScrollArea } from "../ui/scroll-area";
-import { useRouter } from "next/navigation";
 
 const HelioCheckout = dynamic(
   () =>
@@ -59,7 +58,6 @@ const HelioModal: React.FC<HelioModalProps> = ({
   >("pending");
   const [isClient, setIsClient] = React.useState(false);
   const { refetch } = useUserSession();
-  const router = useRouter();
 
   React.useEffect(() => {
     setIsClient(true);

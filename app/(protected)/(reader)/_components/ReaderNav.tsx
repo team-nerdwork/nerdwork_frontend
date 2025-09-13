@@ -28,14 +28,14 @@ import {
   Book,
   BookOpen,
   CreditCard,
-  HelpCircle,
+  // HelpCircle,
+  // UserCog,
+  // ShoppingBag,
   LibraryBig,
   Menu,
   Plus,
   Search,
-  ShoppingBag,
   User2,
-  UserCog,
   Wallet2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
