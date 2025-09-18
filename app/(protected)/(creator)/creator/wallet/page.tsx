@@ -28,7 +28,7 @@ const WalletPage = () => {
   const { profile } = useUserSession();
   const creatorProfile = profile?.creatorProfile;
 
-  const usdPerNwt = 0.01;
+  const usdPerNwt = 0.1;
   const calculateUSD = (amount: number) => amount * usdPerNwt;
   const usdEquivalent = calculateUSD(creatorProfile?.walletBalance);
 
@@ -37,7 +37,7 @@ const WalletPage = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["transactions"],
+    queryKey: ["creator-transactions"],
     queryFn: getCreatorTransactionHistory,
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
@@ -98,7 +98,6 @@ const WalletPage = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            {/* <PurchaseTokenModal /> */}
             <WithdrawEarningsModal />
           </div>
         </div>
@@ -113,7 +112,7 @@ const WalletPage = () => {
               </p>
             </div>
             <p className="text-right font-bold text-[#598EE2] opacity-55 text-5xl">
-              ≈ ${usdEquivalent.toFixed(3) ?? 0.0}
+              ≈ ${usdEquivalent.toFixed(2) ?? 0.0}
             </p>
           </div>
 
@@ -151,11 +150,11 @@ const WalletPage = () => {
               </div>
               <div className="font-medium">
                 <p className="flex justify-between">
-                  1 NWT <span>$0.01</span>
+                  1 NWT <span>$0.1</span>
                 </p>
-                <p className="flex justify-between">
+                {/* <p className="flex justify-between">
                   1 SOL <span>$10.05</span>
-                </p>
+                </p> */}
               </div>
             </div>
             <hr className="!text-[#292A2E] h-0 border-t border-[#292A2E]" />

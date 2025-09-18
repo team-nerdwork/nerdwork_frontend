@@ -11,8 +11,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import ComicInfo from "@/app/(protected)/(reader)/_components/ComicInfo";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  addViewCountAction,
   getChapterPages,
   getReaderComicChapters,
 } from "@/actions/comic.actions";
@@ -20,6 +25,7 @@ import LoaderScreen from "@/components/loading-screen";
 import { Chapter } from "@/lib/types";
 import Link from "next/link";
 import ComicPaymentFlow from "@/app/(protected)/(reader)/_components/ComicPaymentFlow";
+import LikeChapter from "@/app/(protected)/(reader)/_components/LikeChapter";
 
 const ComicReader = ({
   params,
@@ -34,6 +40,7 @@ const ComicReader = ({
   const [lastScrollY, setLastScrollY] = useState(0);
   const pathname = usePathname();
   const isReadingRoute = /^\/r\/comics\/[^/]+\/chapter\/[^/]+$/.test(pathname);
+  const queryClient = useQueryClient();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Array<HTMLElement | null>>([]);
@@ -94,7 +101,7 @@ const ComicReader = ({
     queryKey: ["pages", chapterId],
     queryFn: () => getChapterPages(chapterId),
     placeholderData: keepPreviousData,
-    refetchInterval: 5 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
     refetchOnWindowFocus: true,
     enabled: !!chapterId,
   });
@@ -122,10 +129,33 @@ const ComicReader = ({
   const isNextChapterPaid = chapters[currentIndex + 1]?.chapterType == "paid";
   const hasUnlocked = chapters[currentIndex + 1]?.hasPaid;
 
-  if (isLoading) return <LoaderScreen />;
-
   const chapter: Chapter = pagesData?.data?.data ?? [];
   const chapterPages: string[] = chapter?.pages;
+
+  useEffect(() => {
+    const addView = async () => {
+      try {
+        const response = await addViewCountAction(chapter.id);
+
+        if (!(response.data.message == "Already viewed")) {
+          await queryClient.invalidateQueries({
+            queryKey: ["chapters"],
+          });
+          await queryClient.invalidateQueries({
+            queryKey: ["comic"],
+          });
+        }
+      } catch (error) {
+        console.error("Failed to add view count:", error);
+      }
+    };
+
+    if (chapter.id) {
+      addView();
+    }
+  }, [chapter.id]);
+
+  if (isLoading) return <LoaderScreen />;
 
   const totalPages = chapterPages?.length;
 
@@ -194,7 +224,7 @@ const ComicReader = ({
       } bg-[#151515] border-[#FFFFFF0D] md:max-h-[72px] fixed bottom-0 left-0 right-0 font-inter`}
     >
       <div className="max-w-[1200px] mx-auto flex gap-2 justify-between items-center px-10 py-5 text-sm">
-        {chapter && <ComicInfo slug={slug} chapter={chapter} />}
+        {chapter && <ComicInfo slug={slug} chapter={chapters[currentIndex]} />}
 
         {readingMode === "2-page" ? (
           <div className="max-md:hidden flex items-center gap-4">
@@ -343,7 +373,7 @@ const ComicReader = ({
     <>
       <main
         ref={containerRef}
-        className={`w-full font-inter min-h-screen px-5 pb-5 flex ${
+        className={`w-full relative font-inter min-h-screen px-5 pb-5 flex ${
           readingMode === "vertical"
             ? "flex-col justify-center pt-20"
             : "flex-row flex-nowrap items-center pt-0 overflow-x-auto"
@@ -380,18 +410,21 @@ const ComicReader = ({
           <>
             {nextChapterCode ? (
               <Link
-                className="text-center"
+                className="text-center mt-5"
                 href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
               >
                 <Button>Next Chapter</Button>
               </Link>
             ) : (
-              <Link className="text-center" href={`/r/comics/${slug}`}>
+              <Link className="text-center mt-5" href={`/r/comics/${slug}`}>
                 <Button variant="outline">Go back</Button>
               </Link>
             )}
           </>
         )}
+        <div className="fixed bottom-5 right-3 bg-[#151515] rounded-full border border-nerd-gray w-10 h-10 flex justify-center items-center">
+          <LikeChapter chapter={chapters[currentIndex]} />
+        </div>
       </main>
       {FooterPanel}
     </>

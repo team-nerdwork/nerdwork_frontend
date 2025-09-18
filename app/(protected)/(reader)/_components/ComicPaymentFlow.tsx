@@ -120,9 +120,11 @@ const ComicPaymentFlow = ({
       }
 
       refetch();
-      toast.success("Profile Updated Successfully!");
+      toast.success("Chapter Purchased Successfully!");
       setStep("success");
-      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["reader-transactions"],
+      });
     } catch (err) {
       toast.error("An unexpected error occurred.");
       setStep("enterPin");

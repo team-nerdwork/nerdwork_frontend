@@ -26,7 +26,7 @@ const ReaderWalletPage = () => {
   const { profile } = useUserSession();
   const readerProfile = profile?.readerProfile;
 
-  const usdPerNwt = 0.01;
+  const usdPerNwt = 0.1;
   const calculateUSD = (amount: number) => amount * usdPerNwt;
   const usdEquivalent = calculateUSD(readerProfile?.walletBalance);
 
@@ -35,7 +35,7 @@ const ReaderWalletPage = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["transactions"],
+    queryKey: ["reader-transactions"],
     queryFn: getReaderTransactionHistory,
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
@@ -91,7 +91,7 @@ const ReaderWalletPage = () => {
           <div className="flex flex-col gap-2">
             <h3 className="font-semibold text-[28px]">Wallet</h3>
             <p className="text-nerd-muted text-sm">
-              Manage your tokens, expenses, and gifting
+              Manage your tokens and expenses
             </p>
           </div>
           <div className="flex gap-2">
@@ -115,7 +115,7 @@ const ReaderWalletPage = () => {
               </p>
             </div>
             <p className="text-right font-bold text-[#598EE2] opacity-55 text-4xl md:text-5xl">
-              ≈ ${usdEquivalent.toFixed(3) ?? 0.0}
+              ≈ ${usdEquivalent.toFixed(2) ?? 0.0}
             </p>
           </div>
 
@@ -142,7 +142,7 @@ const ReaderWalletPage = () => {
               </div>
               <div className="font-medium">
                 <p className="flex justify-between">
-                  100 NWT <span>$1.00</span>
+                  10 NWT <span>$1.00</span>
                 </p>
                 {/* <p className="flex justify-between">
                   1 SOL <span>$10.05</span>

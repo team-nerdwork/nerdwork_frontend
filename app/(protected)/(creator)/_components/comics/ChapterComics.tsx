@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Chapter } from "@/lib/types";
-import { Calendar, Edit2, Eye, ImageIcon, Send } from "lucide-react";
+import { Calendar, Edit2, Eye, Heart, ImageIcon, Send } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import ChapterActions from "./ChapterActions";
@@ -54,10 +54,21 @@ const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
                     : "last edited"}{" "}
                   {new Date(chapter.updatedAt).toLocaleDateString()}
                 </span>
-                {chapter.views && (
+                {chapter?.viewsCount && (
                   <span className="flex items-center gap-1">
                     <Eye size={16} />
-                    {chapter.views}
+                    {chapter?.viewsCount}
+                  </span>
+                )}
+                {chapter?.likesCount && (
+                  <span className="flex items-center gap-1">
+                    <Heart size={16} />
+                    {chapter?.likesCount}
+                  </span>
+                )}
+                {chapter.chapterType == "paid" && (
+                  <span className="flex items-center gap-1">
+                    {chapter?.price} NWT
                   </span>
                 )}
               </div>

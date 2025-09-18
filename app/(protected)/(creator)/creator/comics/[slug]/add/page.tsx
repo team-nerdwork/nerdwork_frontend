@@ -78,7 +78,7 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
       chapterNumber: 1,
       summary: "",
       chapterPages: [],
-      price: 0,
+      price: 2,
     },
   });
 
@@ -223,16 +223,20 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
                         Price *{" "}
                         <span className="text-nerd-muted">(In NWT)</span>
                       </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                          value={field.value}
-                          className="bg-[#1D1E21] border-[#292A2E] text-white"
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                        value={field.value?.toString()}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full bg-[#1D1E21] border-[#292A2E] text-white">
+                            <Globe />
+                            <SelectValue placeholder="Choose Chapter Price" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-[#1D1E21] border-none text-white">
+                          <SelectItem value={"2"}>2 NWT</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

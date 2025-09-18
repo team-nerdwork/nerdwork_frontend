@@ -411,3 +411,93 @@ export const purchaseChapterComic = async (
     };
   }
 };
+
+export const addViewCountAction = async (chapterId: string) => {
+  try {
+    const response = await axiosPost("/chapters/view", { chapterId });
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Chapter view added successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Chapter view added failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to add chapter view. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to add chapter view comics. Please try again.",
+    };
+  }
+};
+
+export const likeChapterAction = async (chapterId: string) => {
+  try {
+    const response = await axiosPost(`/chapters/${chapterId}/like`, {});
+
+    return {
+      success: true,
+      data: response.data,
+      message: response.data.message,
+    };
+  } catch (error: unknown) {
+    console.error("Chapter like failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to like chapter. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to like chapter. Please try again.",
+    };
+  }
+};
+
+export const subscribeToComicAction = async (comicId: string) => {
+  try {
+    const response = await axiosPost(`/comics/subscribe/${comicId}`, {});
+
+    return {
+      success: true,
+      data: response.data,
+      message: response.data.message,
+    };
+  } catch (error: unknown) {
+    console.error("Chapter like failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to like chapter. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to like chapter. Please try again.",
+    };
+  }
+};

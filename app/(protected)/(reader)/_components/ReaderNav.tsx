@@ -202,57 +202,60 @@ const ReaderNav = () => {
                     <p className="text-nerd-muted">{user?.email}</p>
                   </div>
                   <MenubarSeparator />
-                  <MenubarItem>
+                  <MenubarItem asChild>
                     <Link
-                      className="flex items-center gap-3 w-full"
+                      className="cursor-pointer flex items-center gap-3 w-full"
                       href={"/r/comics"}
                     >
                       <Book className="text-white" />
                       Comics
                     </Link>
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem asChild>
                     <Link
-                      className="flex items-center gap-3 w-full"
+                      className="cursor-pointer flex items-center gap-3 w-full"
                       href={"/r/library"}
                     >
                       <BookOpen className="text-white" />
                       Library
                     </Link>
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem asChild>
                     <Link
-                      className="flex items-center gap-3 w-full"
+                      className="cursor-pointer flex items-center gap-3 w-full"
                       href={"/r/profile"}
                     >
                       <User2 className="text-white" />
                       Profile
                     </Link>
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem asChild>
                     <Link
-                      className="flex items-center gap-3 w-full"
+                      className="cursor-pointer flex items-center gap-3 w-full"
                       href={"/r/wallet"}
                     >
                       <Wallet2 className="text-white" /> Wallet
                     </Link>
                   </MenubarItem>
                   <MenubarSeparator />
-                  <MenubarItem>
+                  <MenubarItem asChild>
                     <Link
-                      className="flex items-center gap-3"
+                      className="cursor-pointer flex items-center gap-3"
                       href={"/onboarding"}
                     >
-                      <Plus className="text-white" /> Become a Creator
+                      {!user?.cProfile && <Plus className="text-white" />}
+                      {user?.cProfile
+                        ? "Switch to Creator Mode"
+                        : "Become a Creator"}
                     </Link>
                   </MenubarItem>
                   <MenubarSeparator />
-                  {/* <MenubarItem>
+                  {/* <MenubarItem asChild>
                     <Link className="flex items-center gap-3" href={""}>
                       <UserCog className="text-white" /> Account Settings
                     </Link>
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem asChild>
                     <Link className="flex items-center gap-3" href={""}>
                       <HelpCircle className="text-white" /> Help Centre
                     </Link>
@@ -319,61 +322,61 @@ const ReaderNav = () => {
                 <p className="text-nerd-muted">{user?.email}</p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
-                  className="flex items-center gap-3 w-full"
+                  className="cursor-pointer flex items-center gap-3 w-full"
                   href={"/r/comics"}
                 >
                   <LibraryBig className="text-white" /> Comics
                 </Link>
               </DropdownMenuItem>
-              {/* <DropdownMenuItem>
+              {/* <DropdownMenuItem asChild>
                 <Link
-                  className="flex items-center gap-3 w-full"
+                  className="cursor-pointer flex items-center gap-3 w-full"
                   href={"/r/marketplace"}
                 >
                   <ShoppingBag className="text-white" /> Marketplace
                 </Link>
               </DropdownMenuItem> */}
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
-                  className="flex items-center gap-3 w-full"
+                  className="cursor-pointer flex items-center gap-3 w-full"
                   href={"/r/library"}
                 >
                   <Book className="text-white" /> Library
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
-                  className="flex items-center gap-3 w-full"
+                  className="cursor-pointer flex items-center gap-3 w-full"
                   href={"/r/profile"}
                 >
                   <User2 className="text-white" /> Profile
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
-                  className="flex items-center gap-3 w-full"
+                  className="cursor-pointer flex items-center gap-3 w-full"
                   href={"/r/wallet"}
                 >
                   <Wallet2 className="text-white" /> Wallet
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {/* <DropdownMenuItem>
+              {/* <DropdownMenuItem asChild>
                 <Link className="flex items-center gap-3" href={""}>
                   <UserCog className="text-white" /> Account Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link className="flex items-center gap-3" href={""}>
                   <HelpCircle className="text-white" /> Help Centre
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator /> */}
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
-                  className="flex items-center gap-3 w-full"
+                  className="cursor-pointer flex items-center gap-3 w-full"
                   href={"/onboarding"}
                 >
                   <Plus className="text-white" /> Become a Creator

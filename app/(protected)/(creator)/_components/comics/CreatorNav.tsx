@@ -5,14 +5,14 @@ import Logo from "@/assets/nerdwork.png";
 import Link from "next/link";
 import {
   BookMarkedIcon,
-  HelpCircle,
   LibraryBig,
   Menu,
+  // HelpCircle,
+  // UserCog,
   // Plus,
   Search,
   ShoppingBag,
   User2,
-  UserCog,
   Wallet2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -100,35 +100,44 @@ export default function CreatorNav() {
                   <p className="text-nerd-muted">{user?.email}</p>
                 </div>
                 <MenubarSeparator />
-                <MenubarItem>
+                <MenubarItem asChild>
                   <Link
-                    className="flex items-center gap-3 w-full"
+                    className="cursor-pointer hover:bg-nerd-default flex items-center gap-3 w-full"
                     href={"/creator/profile"}
                   >
                     <User2 className="text-white" />
                     Profile
                   </Link>
                 </MenubarItem>
-                <MenubarItem>
+                <MenubarItem asChild>
                   <Link
-                    className="flex items-center gap-3 w-full"
+                    className="cursor-pointer flex items-center gap-3 w-full"
                     href={"/creator/wallet"}
                   >
                     <Wallet2 className="text-white" /> Wallet
                   </Link>
                 </MenubarItem>
                 <MenubarSeparator />
-                <MenubarItem>
-                  <Link className="flex items-center gap-3 w-full" href={""}>
-                    <UserCog className="text-white" /> Account Settings
-                  </Link>
-                </MenubarItem>
-                <MenubarItem>
-                  <Link className="flex items-center gap-3 w-full" href={""}>
-                    <HelpCircle className="text-white" /> Help Centre
+                <MenubarItem asChild>
+                  <Link
+                    className="cursor-pointer flex items-center gap-3 w-full"
+                    href={"/r/comics"}
+                  >
+                    Switch to Reader Mode
                   </Link>
                 </MenubarItem>
                 <MenubarSeparator />
+                {/* <MenubarItem asChild>
+                  <Link className="cursor-pointer flex items-center gap-3 w-full" href={""}>
+                    <UserCog className="text-white" /> Account Settings
+                  </Link>
+                </MenubarItem>
+                <MenubarItem asChild>
+                  <Link className="cursor-pointer flex items-center gap-3 w-full" href={""}>
+                    <HelpCircle className="text-white" /> Help Centre
+                  </Link>
+                </MenubarItem>
+                <MenubarSeparator /> */}
                 <MenubarItem
                   onClick={handleSignOut}
                   className="text-[#707073] cursor-pointer"
@@ -166,23 +175,29 @@ export default function CreatorNav() {
                 <p className="text-nerd-muted">{user?.email}</p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link className="flex items-center gap-3" href={"/r/comics"}>
+              <DropdownMenuItem asChild>
+                <Link
+                  className="cursor-pointer flex items-center gap-3"
+                  href={"/r/comics"}
+                >
                   <LibraryBig className="text-white" /> Comics
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link className="flex items-center gap-3" href={""}>
+              <DropdownMenuItem asChild>
+                <Link
+                  className="cursor-pointer flex items-center gap-3"
+                  href={""}
+                >
                   <ShoppingBag className="text-white" /> Marketplace
                 </Link>
               </DropdownMenuItem>
-              {/* <DropdownMenuItem>
-                <Link className="flex items-center gap-3" href={""}>
+              {/* <DropdownMenuItem asChild>
+                <Link className="cursor-pointer flex items-center gap-3" href={""}>
                   <Book className="text-white" /> Library
                 </Link>
               </DropdownMenuItem> */}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   className="flex items-center gap-3"
                   href={"/creator/comics"}
@@ -191,7 +206,7 @@ export default function CreatorNav() {
                   My Comics
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   className="flex items-center gap-3"
                   href={"/creator/profile"}
@@ -199,7 +214,7 @@ export default function CreatorNav() {
                   <User2 className="text-white" /> Profile
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   className="flex items-center gap-3 w-full"
                   href={"/creator/wallet"}
@@ -208,13 +223,13 @@ export default function CreatorNav() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {/* <DropdownMenuItem>
-                <Link className="flex items-center gap-3" href={""}>
+              {/* <DropdownMenuItem asChild>
+                <Link className="cursor-pointer flex items-center gap-3" href={""}>
                   <UserCog className="text-white" /> Account Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link className="flex items-center gap-3" href={""}>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer flex items-center gap-3" href={""}>
                   <HelpCircle className="text-white" /> Help Centre
                 </Link>
               </DropdownMenuItem>
