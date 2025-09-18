@@ -54,18 +54,18 @@ const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
                     : "last edited"}{" "}
                   {new Date(chapter.updatedAt).toLocaleDateString()}
                 </span>
-                {chapter?.viewsCount && (
-                  <span className="flex items-center gap-1">
-                    <Eye size={16} />
-                    {chapter?.viewsCount}
-                  </span>
-                )}
-                {chapter?.likesCount && (
-                  <span className="flex items-center gap-1">
-                    <Heart size={16} />
-                    {chapter?.likesCount}
-                  </span>
-                )}
+                {/* {chapter?.viewsCount && ( */}
+                <span className="flex items-center gap-1">
+                  <Eye size={16} />
+                  {chapter?.viewsCount ?? 0}
+                </span>
+                {/* )} */}
+                {/* {chapter?.likesCount && ( */}
+                <span className="flex items-center gap-1">
+                  <Heart size={16} />
+                  {chapter?.likesCount ?? 0}
+                </span>
+                {/* )} */}
                 {chapter.chapterType == "paid" && (
                   <span className="flex items-center gap-1">
                     {chapter?.price} NWT

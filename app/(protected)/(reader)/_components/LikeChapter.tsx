@@ -13,10 +13,8 @@ const LikeChapter = ({ chapter }: { chapter: Chapter }) => {
   const handleLike = async () => {
     try {
       setIsLiked((prev) => !prev);
-      console.log(chapter.id);
 
       const response = await likeChapterAction(chapter.id);
-      console.log(response);
 
       if (!response?.success) {
         setIsLiked((prev) => !prev);

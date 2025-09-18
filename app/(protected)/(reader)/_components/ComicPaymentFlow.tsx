@@ -159,7 +159,7 @@ const ComicPaymentFlow = ({
             <section className="space-y-6">
               <div className="flex items-center justify-between font-semibold p-4 border border-[#FFFFFF1A] rounded-[12px]">
                 <p>
-                  #{chapter?.serialNo} {chapter.title}
+                  {chapter?.comicTitle} #{chapter?.serialNo}: {chapter.title}
                 </p>
                 <p className="flex items-center gap-2">
                   {chapterPrice}{" "}
