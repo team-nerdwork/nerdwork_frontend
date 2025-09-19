@@ -26,7 +26,7 @@ const LikeChapter = ({ chapter }: { chapter: Chapter }) => {
       }
 
       await queryClient.invalidateQueries({
-        queryKey: ["chapters"],
+        queryKey: ["reader-chapters"],
       });
       await queryClient.invalidateQueries({
         queryKey: ["comic"],

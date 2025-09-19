@@ -41,6 +41,7 @@ export default function LoadingScreen({
             height={40}
             src={logoSrc}
             alt={logoAlt}
+            priority
             className="w-16 h-16 object-contain animate-p"
           />
         ) : (

@@ -99,6 +99,7 @@ const SubscribeModal = ({ comic }: { comic: Comic }) => {
                   onClick={handleSubscribe}
                   isLoading={isLoading}
                   disabled={isLoading}
+                  loadingText="Processing..."
                   type="button"
                   variant={"destructive"}
                 >
@@ -109,6 +110,7 @@ const SubscribeModal = ({ comic }: { comic: Comic }) => {
                   onClick={handleSubscribe}
                   isLoading={isLoading}
                   disabled={isLoading}
+                  loadingText="Processing..."
                   type="button"
                   variant={"primary"}
                 >

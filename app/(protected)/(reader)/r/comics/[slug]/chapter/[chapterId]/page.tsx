@@ -6,7 +6,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -26,6 +33,12 @@ import { Chapter } from "@/lib/types";
 import Link from "next/link";
 import ComicPaymentFlow from "@/app/(protected)/(reader)/_components/ComicPaymentFlow";
 import LikeChapter from "@/app/(protected)/(reader)/_components/LikeChapter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import LockedChapter from "@/app/(protected)/(reader)/_components/LockedChapter";
 
 const ComicReader = ({
   params,
@@ -107,7 +120,7 @@ const ComicReader = ({
   });
 
   const { data: chaptersData } = useQuery({
-    queryKey: ["chapters", slug],
+    queryKey: ["reader-chapters", slug],
     queryFn: () => getReaderComicChapters(slug),
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
@@ -125,9 +138,15 @@ const ComicReader = ({
     currentIndex !== -1 && currentIndex < chapters.length - 1
       ? chapters[currentIndex + 1].uniqueCode
       : null;
+  const previousChapterCode =
+    currentIndex > 0 ? chapters[currentIndex - 1].uniqueCode : null;
 
   const isNextChapterPaid = chapters[currentIndex + 1]?.chapterType == "paid";
   const hasUnlocked = chapters[currentIndex + 1]?.hasPaid;
+
+  const isPreviousChapterPaid =
+    chapters[currentIndex - 1]?.chapterType == "paid";
+  const previousUnlocked = chapters[currentIndex - 1]?.hasPaid;
 
   const chapter: Chapter = pagesData?.data?.data ?? [];
   const chapterPages: string[] = chapter?.pages;
@@ -139,7 +158,7 @@ const ComicReader = ({
 
         if (!(response.data.message == "Already viewed")) {
           await queryClient.invalidateQueries({
-            queryKey: ["chapters"],
+            queryKey: ["reader-chapters"],
           });
           await queryClient.invalidateQueries({
             queryKey: ["comic"],
@@ -156,6 +175,9 @@ const ComicReader = ({
   }, [chapter.id]);
 
   if (isLoading) return <LoaderScreen />;
+
+  if (!chapters[currentIndex]?.hasPaid)
+    return <LockedChapter slug={slug} chapter={chapters[currentIndex]} />;
 
   const totalPages = chapterPages?.length;
 
@@ -344,7 +366,7 @@ const ComicReader = ({
     const pagesToShow = chapterPages.slice(currentPage, currentPage + 2);
     return (
       <>
-        <div className="flex justify-center items-center w-full min-h-screen px-5">
+        <section className="flex flex-col justify-center items-center w-full min-h-screen px-5">
           <div className="flex justify-center max-w-[1200px] w-full gap-4">
             {pagesToShow.map((page, index) => (
               <figure
@@ -363,7 +385,59 @@ const ComicReader = ({
               </figure>
             ))}
           </div>
-        </div>
+          <section className="flex justify-center gap-5">
+            {isPreviousChapterPaid && !previousUnlocked ? (
+              <div className="mt-5">
+                <ComicPaymentFlow
+                  internal={true}
+                  chapter={chapters[currentIndex - 1]}
+                />
+              </div>
+            ) : (
+              <>
+                {previousChapterCode ? (
+                  <Link
+                    className="text-center mt-5"
+                    href={`/r/comics/${slug}/chapter/${previousChapterCode}`}
+                  >
+                    <Button variant={"outline"}>Previous Chapter</Button>
+                  </Link>
+                ) : (
+                  <Link className="text-center mt-5" href={`/r/comics/${slug}`}>
+                    <Button variant="outline">Go back Home</Button>
+                  </Link>
+                )}
+              </>
+            )}
+
+            {isNextChapterPaid && !hasUnlocked ? (
+              <div className="mt-5">
+                <ComicPaymentFlow
+                  internal={true}
+                  chapter={chapters[currentIndex + 1]}
+                />
+              </div>
+            ) : (
+              <>
+                {nextChapterCode ? (
+                  <Link
+                    className="text-center mt-5"
+                    href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
+                  >
+                    <Button>Next Chapter</Button>
+                  </Link>
+                ) : (
+                  <Link className="text-center mt-5" href={`/r/comics/${slug}`}>
+                    <Button variant="outline">Go back Home</Button>
+                  </Link>
+                )}
+              </>
+            )}
+          </section>
+          <div className="fixed bottom-20 right-3 bg-[#151515] rounded-full border border-nerd-gray w-10 h-10 flex justify-center items-center">
+            <LikeChapter chapter={chapters[currentIndex]} />
+          </div>
+        </section>
         {FooterPanel}
       </>
     );
@@ -399,29 +473,113 @@ const ComicReader = ({
           </figure>
         ))}
 
-        {isNextChapterPaid && hasUnlocked == false ? (
-          <div className="mt-5">
-            <ComicPaymentFlow
-              internal={true}
-              chapter={chapters[currentIndex + 1]}
-            />
-          </div>
-        ) : (
-          <>
-            {nextChapterCode ? (
-              <Link
-                className="text-center mt-5"
-                href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
-              >
-                <Button>Next Chapter</Button>
-              </Link>
-            ) : (
-              <Link className="text-center mt-5" href={`/r/comics/${slug}`}>
-                <Button variant="outline">Go back</Button>
-              </Link>
-            )}
-          </>
-        )}
+        {/* Next Button */}
+        <div
+          className={`${
+            showFooter ? "translate-x-0" : "-translate-x-full"
+          } fixed top-1/2 left-3 transition-transform duration-300`}
+        >
+          {isPreviousChapterPaid && !previousUnlocked ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ComicPaymentFlow
+                  internal={true}
+                  chapter={chapters[currentIndex - 1]}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Unlock Chapter</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              {previousChapterCode ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      className="text-center"
+                      href={`/r/comics/${slug}/chapter/${previousChapterCode}`}
+                    >
+                      <Button variant={"outline"}>
+                        <ArrowLeft />
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Go to previous chapter</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link className="text-center" href={`/r/comics/${slug}`}>
+                      <Button variant="outline">
+                        <Home />
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Go home</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Next Button */}
+        <div
+          className={`${
+            showFooter ? "translate-x-0" : "translate-x-full"
+          } fixed top-1/2 right-3 transition-transform duration-300`}
+        >
+          {isNextChapterPaid && !hasUnlocked ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ComicPaymentFlow
+                  internal={true}
+                  chapter={chapters[currentIndex + 1]}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Unlock Chapter</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              {nextChapterCode ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      className="text-center"
+                      href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
+                    >
+                      <Button>
+                        <ArrowRight />
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Go to next Chapter</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild></TooltipTrigger>
+                  <Link className="text-center" href={`/r/comics/${slug}`}>
+                    <Button variant="outline">
+                      <Home />
+                    </Button>
+                  </Link>
+                  <TooltipContent>
+                    <p>Go home</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </>
+          )}
+        </div>
+
         <div className="fixed bottom-5 right-3 bg-[#151515] rounded-full border border-nerd-gray w-10 h-10 flex justify-center items-center">
           <LikeChapter chapter={chapters[currentIndex]} />
         </div>

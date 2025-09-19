@@ -1,6 +1,11 @@
 "use server";
 
-import { axiosGet, axiosPost, axiosPostData } from "@/lib/api/apiClientAuth";
+import {
+  axiosDelete,
+  axiosGet,
+  axiosPost,
+  axiosPostData,
+} from "@/lib/api/apiClientAuth";
 import { ChapterFormData, ComicSeriesFormData } from "@/lib/schema";
 import axios from "axios";
 
@@ -498,6 +503,104 @@ export const subscribeToComicAction = async (comicId: string) => {
       success: false,
       status: 500,
       message: "Failed to like chapter. Please try again.",
+    };
+  }
+};
+
+export const deleteComicSeries = async (slug?: string) => {
+  try {
+    const response = await axiosDelete(`/comics/delete/${slug}`);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Comic series deleted successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Comic series deletion failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to delete comic series. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to delete comic series. Please try again.",
+    };
+  }
+};
+
+export const deleteChapterAction = async (code?: string) => {
+  try {
+    const response = await axiosDelete(`/chapters/delete/${code}`);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Chapter deleted successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Chapter deletion failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to delete comic series. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to delete comic series. Please try again.",
+    };
+  }
+};
+
+export const publishDraft = async (
+  draftUniqCode: string,
+  comicSlug: string
+) => {
+  try {
+    console.log(draftUniqCode, comicSlug);
+    const response = await axiosPost(`/chapters/draft/publish`, {
+      draftUniqCode,
+      comicSlug,
+    });
+    console.log(response.data);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Draft chapter published successfully",
+    };
+  } catch (error: unknown) {
+    console.error("Chapter publish failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to publish chapter. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to publish chapter. Please try again.",
     };
   }
 };

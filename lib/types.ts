@@ -5,13 +5,13 @@ export type Comic = {
   description: string;
   comicStatus: "upcoming" | "draft" | "scheduled" | "published";
   noOfChapters: number;
-  slug?: string;
+  slug: string;
   updatedAt: string;
   createdAt: string;
   creatorName?: string;
   genre?: string[];
   ageRating?: string;
-  viewsCount?: number;
+  viewsCount: number;
   likesCount?: number;
   isPaid?: boolean;
   isOngoing?: boolean;
@@ -31,8 +31,8 @@ export type Chapter = {
   date: string;
   read?: boolean;
   hasPaid?: boolean;
-  uniqueCode?: string;
-  slug?: string;
+  uniqueCode: string;
+  comicSlug: string;
   chapterPages: string[];
   chapterType?: "free" | "paid";
   price?: number;

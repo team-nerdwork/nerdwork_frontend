@@ -50,7 +50,7 @@ const ComicDetailsPage = ({
     isLoading: isChaptersLoading,
     error: chapterError,
   } = useQuery({
-    queryKey: ["chapters", slug],
+    queryKey: ["creator-chapters", slug],
     queryFn: () => getComicChaptersBySlug(slug),
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,

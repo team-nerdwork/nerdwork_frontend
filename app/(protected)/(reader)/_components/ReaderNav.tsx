@@ -168,8 +168,8 @@ const ReaderNav = () => {
               <CreditCard size={16} /> {readerProfile?.walletBalance ?? ""}
               <Image src={NWT} width={16} height={16} alt="nwt" />
             </Link>
-            <button
-              type="button"
+            <Link
+              href={"/r/profile"}
               className="bg-[#1D1E21] cursor-pointer px-3 py-1.5 rounded-md flex items-center gap-1"
             >
               <Avatar>
@@ -190,8 +190,8 @@ const ReaderNav = () => {
                   "..." +
                   readerProfile?.walletId.slice(-3)
                 : ""}
-            </button>
-            <Menubar className="bg-[#1D1E21] font-inter outline-none border-none ring-0 rounded-full">
+            </Link>
+            <Menubar className="bg-[#1D1E21] self-center font-inter outline-none border-none ring-0 rounded-full">
               <MenubarMenu>
                 <MenubarTrigger className="bg-[#1D1E21] data-[state=open]:bg-none h-8 w-8 flex justify-center items-center cursor-pointer rounded-full">
                   <Menu size={16} strokeWidth={2} absoluteStrokeWidth={true} />

@@ -38,7 +38,7 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
   });
 
   const { data: chaptersData, isLoading: isChaptersLoading } = useQuery({
-    queryKey: ["chapters", slug],
+    queryKey: ["reader-chapters", slug],
     queryFn: () => getReaderComicChapters(slug),
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,

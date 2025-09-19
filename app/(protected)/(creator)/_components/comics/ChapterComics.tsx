@@ -6,6 +6,7 @@ import Image from "next/image";
 import React from "react";
 import ChapterActions from "./ChapterActions";
 import Link from "next/link";
+import PublishDraft from "./PublishDraft";
 
 const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
   return (
@@ -41,7 +42,7 @@ const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
               <p>{chapter.summary}</p>
 
               <div className="flex gap-5 text-sm">
-                <span className="flex items-center gap-1">
+                <span className="flex text-nowrap items-center gap-1">
                   <ImageIcon size={16} />
                   {chapter.pages.length} pages
                 </span>
@@ -54,18 +55,14 @@ const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
                     : "last edited"}{" "}
                   {new Date(chapter.updatedAt).toLocaleDateString()}
                 </span>
-                {/* {chapter?.viewsCount && ( */}
                 <span className="flex items-center gap-1">
                   <Eye size={16} />
                   {chapter?.viewsCount ?? 0}
                 </span>
-                {/* )} */}
-                {/* {chapter?.likesCount && ( */}
                 <span className="flex items-center gap-1">
                   <Heart size={16} />
                   {chapter?.likesCount ?? 0}
                 </span>
-                {/* )} */}
                 {chapter.chapterType == "paid" && (
                   <span className="flex items-center gap-1">
                     {chapter?.price} NWT
@@ -81,11 +78,15 @@ const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
                 View
               </Button>
             </Link>
-            <Button className="bg-nerd-default">
-              {chapter.chapterStatus == "published" ? <Edit2 /> : <Send />}
+            {chapter.chapterStatus == "draft" ? (
+              <PublishDraft data={chapter} />
+            ) : (
+              <Button className="bg-nerd-default">
+                {chapter.chapterStatus == "published" ? <Edit2 /> : <Send />}
 
-              {chapter.chapterStatus == "published" ? "Edit" : "Publish"}
-            </Button>
+                {chapter.chapterStatus == "published" ? "Edit" : "Publish"}
+              </Button>
+            )}
             <ChapterActions chapter={chapter} />
           </div>
         </section>

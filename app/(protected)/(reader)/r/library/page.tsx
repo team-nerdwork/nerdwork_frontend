@@ -103,6 +103,9 @@ const LibraryPage = () => {
         if (sortFilter === "newest") {
           return b.createdAt.localeCompare(a.createdAt);
         }
+        if (sortFilter === "relevant") {
+          return b.viewsCount - a.viewsCount;
+        }
         return 0;
       });
     }

@@ -27,8 +27,8 @@ const ComicInfo = ({ chapter, slug }: { chapter: Chapter; slug: string }) => {
           <p className="font-semibold text-base">
             {chapter?.comicTitle} #{chapter?.serialNo} : {chapter?.title}
           </p>
-          <p className="ml-4">Views: {chapter.viewsCount}</p>
-          <p className="ml-4 mb-3">Likes: {chapter.likesCount}</p>
+          <p className="ml-4">Views: {chapter?.viewsCount}</p>
+          <p className="ml-4 mb-3">Likes: {chapter?.likesCount}</p>
           <Link href={`/${route}/comics/${slug}`}>
             <Button className="h-7">Go back</Button>
           </Link>

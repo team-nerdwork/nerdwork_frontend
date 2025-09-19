@@ -25,6 +25,12 @@ import { purchaseChapterComic } from "@/actions/comic.actions";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQueryClient } from "@tanstack/react-query";
+import { Lock } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ModalStep =
   | "form"
@@ -136,13 +142,29 @@ const ComicPaymentFlow = ({
     <>
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild className="flex justify-center">
-          <Button
-            variant={"outline"}
-            className="text-center cursor-pointer gap-3 mx-auto hover:bg-nerd-default hover:text-white"
-          >
-            Unlock {chapterPrice}
-            <Image src={NWT} width={18} height={18} alt="nwt" />
-          </Button>
+          {internal ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="text-center cursor-pointer gap-3 mx-auto hover:bg-nerd-default hover:text-white"
+                >
+                  <Lock />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Unlock Chapter</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Button
+              variant={"outline"}
+              className="text-center cursor-pointer gap-2 mx-auto hover:bg-nerd-default hover:text-white"
+            >
+              Unlock {chapterPrice}
+              <Image src={NWT} width={18} height={18} alt="nwt" />
+            </Button>
+          )}
         </DialogTrigger>
         <DialogContent className="bg-[#1E1E1E] min-w-[275px] text-white font-inter border-none space-y-3 text-sm">
           <DialogHeader className={`${step !== "form" ? "hidden" : ""}`}>
@@ -159,7 +181,7 @@ const ComicPaymentFlow = ({
             <section className="space-y-6">
               <div className="flex items-center justify-between font-semibold p-4 border border-[#FFFFFF1A] rounded-[12px]">
                 <p>
-                  {chapter?.comicTitle} #{chapter?.serialNo}: {chapter.title}
+                  {chapter?.comicTitle} #{chapter?.serialNo}: {chapter?.title}
                 </p>
                 <p className="flex items-center gap-2">
                   {chapterPrice}{" "}
