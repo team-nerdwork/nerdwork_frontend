@@ -5,9 +5,12 @@ import Logo from "@/assets/nerdwork.png";
 import { Button } from "@/components/ui/button";
 import { MenuIcon, X } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const { data: session } = useSession();
+  const user = session?.user;
 
   const handleMenu = () => {
     setIsOpen(!isOpen);
@@ -36,9 +39,15 @@ export default function Navbar() {
             {/* <Button asChild>
               <Link href={"/signin"}>Log In</Link>
             </Button> */}
-            <Button asChild variant={"primary"}>
-              <Link href={"/signin"}>Sign In</Link>
-            </Button>
+            {user ? (
+              <Button asChild variant={"dull"}>
+                <Link href={"/onboarding"}>Go to dashboard</Link>
+              </Button>
+            ) : (
+              <Button asChild variant={"primary"}>
+                <Link href={"/signin"}>Sign In</Link>
+              </Button>
+            )}
           </div>
         </section>
 
@@ -70,12 +79,6 @@ export default function Navbar() {
                 <Link href={"/nerdwork+"} className="hover:opacity-75">
                   Nerdwork+
                 </Link>
-                <Link href={"/events"} className="flex items-center gap-2">
-                  Comic Con 2025{" "}
-                  <span className="bg-[#1BDB6C] font-medium px-2 pb-0.5 text-black rounded-[6px]">
-                    Soon
-                  </span>
-                </Link>
                 <Link href={"/events"} className="hover:opacity-75">
                   Events
                 </Link>
@@ -85,9 +88,15 @@ export default function Navbar() {
                 {/* <Button asChild className="bg-[#343435] w-1/2">
                   <Link href={"/signin"}>Log In</Link>
                 </Button> */}
-                <Button asChild className="bg-[#3373D9] w-1/2">
-                  <Link href={"/signin"}>Sign In</Link>
-                </Button>
+                {user ? (
+                  <Button asChild variant={"outline"}>
+                    <Link href={"/onboarding"}>Go to dashboard</Link>
+                  </Button>
+                ) : (
+                  <Button asChild variant={"primary"}>
+                    <Link href={"/signin"}>Sign In</Link>
+                  </Button>
+                )}
               </div>
             </div>
           )}

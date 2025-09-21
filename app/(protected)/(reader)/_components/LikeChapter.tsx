@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
-const SPARKLE_COUNT = 18;
+const SPARKLE_COUNT = 25;
 
 interface CustomCSS extends React.CSSProperties {
   "--i"?: number;
@@ -64,7 +64,7 @@ const LikeChapter = ({ chapter }: { chapter: Chapter }) => {
           {Array.from({ length: SPARKLE_COUNT }).map((_, i) => (
             <span
               key={i}
-              className="absolute left-2 bottom-2 inset-0 w-full h-full flex items-center justify-center animate-sparkle"
+              className="absolute left-2 inset-0 w-full h-full flex items-center justify-center animate-sparkle"
               style={
                 {
                   "--i": i,
@@ -72,7 +72,7 @@ const LikeChapter = ({ chapter }: { chapter: Chapter }) => {
                   "--x": `${(Math.random() - 0.5) * 60}px`,
                   "--y": `${(Math.random() - 0.5) * 60}px`,
                 } as CustomCSS
-              } // Cast the style object to the new type
+              }
             />
           ))}
         </>
