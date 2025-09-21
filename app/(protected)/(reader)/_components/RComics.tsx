@@ -59,7 +59,7 @@ const RComics = ({ data }: { data: Comic[] }) => {
                 <p className="mb-2 font-semibold">{comic.title}</p>
               </Link>
               <p className="flex justify-between items-center text-sm text-nerd-muted gap-3">
-                <span>{comic.noOfChapters ?? 0} Chapters</span>
+                <span>{comic.noOfChapters + comic?.noOfDrafts} Chapters</span>
                 <span className="flex items-center gap-1">
                   <Eye size={16} /> {comic?.viewsCount}
                 </span>

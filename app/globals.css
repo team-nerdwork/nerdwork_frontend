@@ -262,3 +262,67 @@ wcm-modal {
   position: relative;
   z-index: 1000;
 }
+
+@keyframes like-heart {
+  0% {
+    transform: scale(0, 0);
+  }
+  30% {
+    transform: scale(0, 0);
+  }
+  65% {
+    transform: scale(1.4, 1.4);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes like-ring {
+  0% {
+    transform: scale(0.1);
+    opacity: 1;
+    border-width: 4px;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+    border-width: 0px;
+  }
+}
+@keyframes sparkle {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    /* Use the new random --x and --y values */
+    transform: translate(var(--x), var(--y)) scale(0);
+    opacity: 0;
+  }
+}
+
+.animate-like-heart {
+  animation: like-heart 0.5s ease-in-out;
+}
+
+.animate-like-ring {
+  animation: like-ring 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 4px solid red;
+}
+
+.animate-sparkle {
+  animation: sparkle 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards
+    var(--delay, 0s);
+  background: white; /* The color of the sparkles */
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}

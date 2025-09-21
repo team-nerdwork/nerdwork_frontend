@@ -5,6 +5,7 @@ export type Comic = {
   description: string;
   comicStatus: "upcoming" | "draft" | "scheduled" | "published";
   noOfChapters: number;
+  noOfDrafts: number;
   slug: string;
   updatedAt: string;
   createdAt: string;

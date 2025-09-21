@@ -24,7 +24,7 @@ import { subscribeToComicAction } from "@/actions/comic.actions";
 import { useQueryClient } from "@tanstack/react-query";
 
 const SubscribeModal = ({ comic }: { comic: Comic }) => {
-  const [isSubscribed, setIsSubscribed] = React.useState(comic.isSubscribed);
+  const [isSubscribed, setIsSubscribed] = React.useState(comic?.isSubscribed);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const queryClient = useQueryClient();
