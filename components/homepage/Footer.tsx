@@ -45,7 +45,7 @@ export default function Footer() {
           <li className="text-white text-nowrap">Support</li>
           <li>Contact Us</li>
           <li>Cookie Policy</li>
-          <li>Privacy Policy</li>
+          <Link href={"/privacy-policy"}>Privacy Policy</Link>
           <li>Terms of Service</li>
         </ul>
       </section>

@@ -32,7 +32,7 @@ const PurchaseTokenModal = () => {
 
   const usdPerNwt = 0.1;
   const transactionFeeRate = 0.01;
-  const suggestedAmounts = [50, 100, 200, 500];
+  const suggestedAmounts = [10, 30, 50, 100];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
@@ -71,20 +71,24 @@ const PurchaseTokenModal = () => {
 
       console.log(paymentResponse);
 
-      const webhook = await createPaymentWebhook({
-        paymentId: paymentResponse.paylinkId,
-      });
+      if (paymentResponse.success && paymentResponse.data) {
+        const webhook = await createPaymentWebhook({
+          paymentId: paymentResponse.data.paylinkId,
+        });
 
-      console.log(webhook);
+        console.log(webhook);
 
-      setPaymentData({
-        paymentLink: paymentResponse.payment.url,
-        paylinkId: paymentResponse.paylinkId,
-      });
+        setPaymentData({
+          paymentLink: paymentResponse.data.payment.url,
+          paylinkId: paymentResponse.data.paylinkId,
+        });
 
-      setIsOpen(false);
-      setHelioModalOpen(true);
-      toast.success("Payment form ready!");
+        setIsOpen(false);
+        setHelioModalOpen(true);
+        toast.success("Payment form ready!");
+      } else {
+        console.error("Error creating link:", paymentResponse.message);
+      }
     } catch (error: unknown) {
       console.error("Payment error:", error);
       const errorMessage =

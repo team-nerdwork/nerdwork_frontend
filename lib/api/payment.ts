@@ -52,12 +52,43 @@ export interface CreateWebhookResponse {
  */
 export const createPaymentLink = async (
   request: CreatePaymentLinkRequest
-): Promise<CreatePaymentLinkResponse> => {
-  const response = await axiosPost<CreatePaymentLinkResponse>(
-    "/payment/helio/link",
-    request
-  );
-  return response.data;
+): Promise<{
+  success: boolean;
+  data?: CreatePaymentLinkResponse;
+  message: string;
+  status?: number;
+}> => {
+  try {
+    const response = await axiosPost<CreatePaymentLinkResponse>(
+      "/payment/helio/link",
+      request
+    );
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Payment link created successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Failed to create payment link:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to create payment link. Please try again.",
+      };
+    }
+
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to create payment link. Please try again.",
+    };
+  }
 };
 
 /**
@@ -65,16 +96,46 @@ export const createPaymentLink = async (
  */
 export const createPaymentWebhook = async (
   request: CreateWebhookRequest
-): Promise<CreateWebhookResponse> => {
-  const response = await axiosPost<CreateWebhookResponse>(
-    "/payment/helio/webhook/create",
-    request
-  );
-  return response.data;
+): Promise<{
+  success: boolean;
+  data?: CreateWebhookResponse;
+  message: string;
+  status?: number;
+}> => {
+  try {
+    const response = await axiosPost<CreateWebhookResponse>(
+      "/payment/helio/webhook/create",
+      request
+    );
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Webhook created successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Failed to create webhook:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to create webhook. Please try again.",
+      };
+    }
+
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to create webhook. Please try again.",
+    };
+  }
 };
 
 // handlePayment
-
 export const handlePayment = async (request: handlePaymentRequest) => {
   try {
     const response = await axiosPost("/payment/helio/handle", request);

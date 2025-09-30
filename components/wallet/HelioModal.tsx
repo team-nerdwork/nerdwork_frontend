@@ -147,7 +147,7 @@ const HelioModal: React.FC<HelioModalProps> = ({
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-[#171719] text-white border-none flex flex-col h-[90vh]">
         <ScrollArea className="flex-1 overflow-y-auto px-10 max-md:px-5">
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 overflow-x-auto">
             <DrawerHeader className="">
               <DrawerTitle className="text-2xl text-white justify-center flex items-center gap-2">
                 Complete Payment
@@ -191,20 +191,20 @@ const HelioModal: React.FC<HelioModalProps> = ({
               </div>
             </div>
             {/* Payment Status or Helio Checkout */}
-            <div className="min-h-[300px]">
+            <div className="min-h-[300px] max-sm:w-[330px]">
               {paymentStatus === "success" || paymentStatus === "failed" ? (
                 renderPaymentStatus()
               ) : (
                 <div className="space-y-2 w-full helio-checkout-container">
                   {paylinkId ? (
-                    <div className="bg-[#1D1E21] flex justify-center rounded-lg p-4 border border-[#292A2E]">
+                    <div className="bg-[#1D1E21] overflow-hidden flex justify-center rounded-lg p-4 border border-[#292A2E]">
                       <HelioCheckout
                         config={{
                           paylinkId: paylinkId,
                           primaryColor: "#AE7A5B",
                           neutralColor: "#5A6578",
                           display: "inline",
-                          network: "test",
+                          network: "main",
                           theme: {
                             themeMode: "dark",
                           },

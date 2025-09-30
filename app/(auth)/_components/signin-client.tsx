@@ -62,7 +62,7 @@ const SignUpClient = () => {
         </Link>
         and
         <Link
-          href={""}
+          href={"/privacy-policy"}
           className="underline hover:no-underline px-1 transition duration-300 hover:ease-in-out"
         >
           Privacy Policy

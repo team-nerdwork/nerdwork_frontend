@@ -376,10 +376,13 @@ const ReaderNav = () => {
               <DropdownMenuSeparator /> */}
               <DropdownMenuItem asChild>
                 <Link
-                  className="cursor-pointer flex items-center gap-3 w-full"
+                  className="cursor-pointer flex items-center gap-3"
                   href={"/onboarding"}
                 >
-                  <Plus className="text-white" /> Become a Creator
+                  {!user?.cProfile && <Plus className="text-white" />}
+                  {user?.cProfile
+                    ? "Switch to Creator Mode"
+                    : "Become a Creator"}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
