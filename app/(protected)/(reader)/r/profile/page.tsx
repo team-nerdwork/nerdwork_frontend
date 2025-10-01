@@ -62,7 +62,7 @@ const ReaderProfilePage = () => {
               <p className="">
                 Genres:{"  "}
                 {readerProfile?.genres.map((gen: string, index: number) => (
-                  <Badge key={index} className="mr-1.5 bg-nerd-blue">
+                  <Badge key={index} className="mr-1.5 mb-1 bg-nerd-blue">
                     {gen}
                   </Badge>
                 ))}
