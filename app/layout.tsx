@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { SessionProvider } from "next-auth/react";
 import { headers } from "next/headers";
+import { auth } from "@/auth";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -84,15 +85,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang="en">
       <body className={`${inter.variable} ${obostar.variable} antialiased`}>
-        <SessionProvider>
+        <SessionProvider session={session}>
           <QueryProvider>
             <LoadingProvider logoSrc={"/nerdwork.svg"} logoAlt="Nerwork Logo">
               {children}

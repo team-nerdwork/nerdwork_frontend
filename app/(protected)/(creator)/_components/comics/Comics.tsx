@@ -7,9 +7,15 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getCreatorComics } from "@/actions/comic.actions";
 import { Comic } from "@/lib/types";
 import MyComicsEmptyState from "./MyComicsEmptyState";
+import { useUserSession } from "@/lib/api/queries";
 
 const Comics = () => {
   const [tab, setTab] = useState<string>("all");
+  const { refetch } = useUserSession();
+
+  React.useEffect(() => {
+    refetch();
+  }, []);
 
   const {
     data: comicData,

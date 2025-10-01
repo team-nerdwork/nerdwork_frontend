@@ -7,6 +7,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAllComicsForReader } from "@/actions/comic.actions";
 import { Comic } from "@/lib/types";
 import LoaderScreen from "@/components/loading-screen";
+import { useUserSession } from "@/lib/api/queries";
 
 const TABS = [
   "adventure",
@@ -21,6 +22,11 @@ const TABS = [
 
 const ReaderComics = () => {
   const [tab, setTab] = React.useState<string>("all");
+  const { refetch } = useUserSession();
+
+  React.useEffect(() => {
+    refetch();
+  }, []);
 
   const {
     data: comicData,

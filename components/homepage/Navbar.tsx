@@ -41,7 +41,7 @@ export default function Navbar() {
             </Button> */}
             {user ? (
               <Button asChild variant={"dull"}>
-                <Link href={"/onboarding"}>Go to dashboard</Link>
+                <Link href={"/signin"}>Go to dashboard</Link>
               </Button>
             ) : (
               <Button asChild variant={"primary"}>
@@ -92,7 +92,7 @@ export default function Navbar() {
                 </Button> */}
                 {user ? (
                   <Button asChild variant={"outline"}>
-                    <Link href={"/onboarding"}>Go to dashboard</Link>
+                    <Link href={"/signin"}>Go to dashboard</Link>
                   </Button>
                 ) : (
                   <Button asChild variant={"primary"}>
