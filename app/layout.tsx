@@ -7,7 +7,6 @@ import { Toaster } from "@/components/ui/sonner";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { SessionProvider } from "next-auth/react";
 import { headers } from "next/headers";
-import { auth } from "@/auth";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
