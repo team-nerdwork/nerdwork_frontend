@@ -152,6 +152,11 @@ const ComicReader = ({
   const chapterPages: string[] = chapter?.pages;
 
   useEffect(() => {
+    const isLocked = chapter?.chapterType === "paid" && !chapter?.hasPaid;
+    if (isLocked) {
+      return;
+    }
+
     const addView = async () => {
       try {
         const response = await addViewCountAction(chapter.id);
@@ -176,7 +181,10 @@ const ComicReader = ({
 
   if (isLoading) return <LoaderScreen />;
 
-  if (!chapters[currentIndex]?.hasPaid)
+  if (
+    chapters[currentIndex]?.chapterType == "paid" &&
+    !chapters[currentIndex]?.hasPaid
+  )
     return <LockedChapter slug={slug} chapter={chapters[currentIndex]} />;
 
   const totalPages = chapterPages?.length;
@@ -385,7 +393,7 @@ const ComicReader = ({
               </figure>
             ))}
           </div>
-          <section className="flex justify-center gap-5">
+          <section className="flex justify-center gap-5 mb-4">
             {isPreviousChapterPaid && !previousUnlocked ? (
               <div className="mt-5">
                 <ComicPaymentFlow
@@ -419,16 +427,12 @@ const ComicReader = ({
               </div>
             ) : (
               <>
-                {nextChapterCode ? (
+                {nextChapterCode && (
                   <Link
                     className="text-center mt-5"
                     href={`/r/comics/${slug}/chapter/${nextChapterCode}`}
                   >
                     <Button>Next Chapter</Button>
-                  </Link>
-                ) : (
-                  <Link className="text-center mt-5" href={`/r/comics/${slug}`}>
-                    <Button variant="outline">Go back Home</Button>
                   </Link>
                 )}
               </>
