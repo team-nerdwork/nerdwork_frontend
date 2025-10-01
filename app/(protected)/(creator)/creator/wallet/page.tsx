@@ -130,7 +130,12 @@ const WalletPage = () => {
                     {creatorProfile?.walletAddress.slice(-4)}
                   </p>
                 </div>
-                <Button className="bg-nerd-default w-fit">Edit Wallet</Button>
+                <Button
+                  onClick={() => toast.info("Feature is coming soon")}
+                  className="bg-nerd-default w-fit"
+                >
+                  Edit Wallet
+                </Button>
               </div>
             ) : (
               <ConnectWalletModal />

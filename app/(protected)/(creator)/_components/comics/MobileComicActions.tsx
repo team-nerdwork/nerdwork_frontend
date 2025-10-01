@@ -1,4 +1,4 @@
-import { ChartLine, Edit2Icon } from "lucide-react";
+import { ChartLine } from "lucide-react";
 import React from "react";
 import {
   SheetContent,
@@ -21,9 +21,9 @@ const MobileComicActions = ({ comic }: { comic: Comic }) => {
         <SheetDescription className="sr-only">
           These are the list of actions that can be taken on the comic
         </SheetDescription>
-        <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
+        {/* <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
           <Edit2Icon size={16} /> Edit Series
-        </button>
+        </button> */}
         <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
           <ChartLine size={16} /> View Stats
         </button>

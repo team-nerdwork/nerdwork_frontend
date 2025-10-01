@@ -477,7 +477,7 @@ const ComicReader = ({
           </figure>
         ))}
 
-        {/* Next Button */}
+        {/* Previous Button */}
         <div
           className={`${
             showFooter ? "translate-x-0" : "-translate-x-full"
@@ -504,7 +504,7 @@ const ComicReader = ({
                       className="text-center"
                       href={`/r/comics/${slug}/chapter/${previousChapterCode}`}
                     >
-                      <Button variant={"outline"}>
+                      <Button variant={"outline"} className="bg-[#1d1d1d]/75">
                         <ArrowLeft />
                       </Button>
                     </Link>
@@ -517,7 +517,7 @@ const ComicReader = ({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link className="text-center" href={`/r/comics/${slug}`}>
-                      <Button variant="outline">
+                      <Button variant="outline" className="bg-[#1d1d1d]/75">
                         <Home />
                       </Button>
                     </Link>
@@ -571,7 +571,7 @@ const ComicReader = ({
                 <Tooltip>
                   <TooltipTrigger asChild></TooltipTrigger>
                   <Link className="text-center" href={`/r/comics/${slug}`}>
-                    <Button variant="outline">
+                    <Button variant="outline" className="bg-[#1d1d1d]/75">
                       <Home />
                     </Button>
                   </Link>

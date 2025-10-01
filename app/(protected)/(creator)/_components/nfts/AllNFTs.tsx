@@ -11,7 +11,7 @@ import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { NFTCollectible } from "@/lib/types";
-import { ChartLine, Edit2Icon, Eye, Trash } from "lucide-react";
+import { ChartLine, Eye, Trash } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 const AllNFTs = ({ data }: { data: NFTCollectible[] }) => {
@@ -44,9 +44,9 @@ const AllNFTs = ({ data }: { data: NFTCollectible[] }) => {
                       <Eye />
                       View Details
                     </MenubarItem>
-                    <MenubarItem>
+                    {/* <MenubarItem>
                       <Edit2Icon /> Edit Details
-                    </MenubarItem>
+                    </MenubarItem> */}
                     <MenubarItem>
                       <ChartLine /> View Stats
                     </MenubarItem>

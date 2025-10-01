@@ -60,7 +60,7 @@ const PurchaseTokenModal = () => {
     try {
       toast.info("Creating payment link...");
       const paymentResponse = await createPaymentLink({
-        amount: nwtAmount * usdPerNwt,
+        amount: usdEquivalent,
         name: "NWT_Purchase",
         redirectUrl: "http://nerdwork.ng/helio/webhook/handle",
       });
