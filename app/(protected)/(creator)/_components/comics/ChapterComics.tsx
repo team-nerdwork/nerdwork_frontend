@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Chapter } from "@/lib/types";
-import { Calendar, Edit2, Eye, Heart, ImageIcon, Send } from "lucide-react";
+import { Calendar, Eye, Heart, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import ChapterActions from "./ChapterActions";
@@ -78,15 +78,18 @@ const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
                 View
               </Button>
             </Link>
-            {chapter.chapterStatus == "draft" ? (
-              <PublishDraft data={chapter} />
-            ) : (
-              <Button className="bg-nerd-default">
-                {chapter.chapterStatus == "published" ? <Edit2 /> : <Send />}
+            {
+              chapter.chapterStatus == "draft" && (
+                <PublishDraft data={chapter} />
+              )
+              // : (
+              //   <Button className="bg-nerd-default">
+              //     {chapter.chapterStatus == "published" ? <Edit2 /> : <Send />}
 
-                {chapter.chapterStatus == "published" ? "Edit" : "Publish"}
-              </Button>
-            )}
+              //     {chapter.chapterStatus == "published" ? "Edit" : "Publish"}
+              //   </Button>
+              // )
+            }
             <ChapterActions chapter={chapter} />
           </div>
         </section>

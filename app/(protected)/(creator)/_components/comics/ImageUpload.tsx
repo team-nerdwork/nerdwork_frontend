@@ -83,7 +83,7 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
           htmlFor="file-upload"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
-          className="mx-auto flex flex-col border-dashed items-center justify-center group max-md:w-[335px] max-md:h-[496] md:w-[352px] md:h-[521px] border rounded-lg cursor-pointer bg-transparent border-[#9D9D9F] hover:border-[#646464]"
+          className="mx-auto flex flex-col border-dashed items-center justify-center group max-md:max-w-[335px] max-md:h-[496] md:max-w-[352px] md:h-[521px] border rounded-lg cursor-pointer bg-transparent border-[#9D9D9F] hover:border-[#646464]"
         >
           {isPending ? (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -103,6 +103,7 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
           )}
           <input
             id="file-upload"
+            accept="image/*"
             ref={fileInputRef}
             type="file"
             className="hidden"
@@ -117,7 +118,7 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
             width={335}
             height={496}
             alt="Cover Preview"
-            className="rounded-md max-md:w-[335px] max-md:h-[496] md:w-[352px] md:h-[521px] object-contain"
+            className="rounded-md max-md:max-w-[335px] max-md:h-[496] md:max-w-[352px] md:h-[521px] object-contain"
           />
           <Button
             onClick={handleDelete}

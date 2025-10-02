@@ -3,7 +3,7 @@ import {
   MenubarItem,
   MenubarSeparator,
 } from "@/components/ui/menubar";
-import { ChartLine, Edit2Icon, Eye } from "lucide-react";
+import { ChartLine, Eye } from "lucide-react";
 import React from "react";
 import Link from "next/link";
 import { Comic } from "@/lib/types";
@@ -27,9 +27,9 @@ const ComicActions = ({
             </MenubarItem>
           </Link>
         )}
-        <MenubarItem>
+        {/* <MenubarItem>
           <Edit2Icon /> Edit Series
-        </MenubarItem>
+        </MenubarItem> */}
         <MenubarItem>
           <ChartLine /> View Stats
         </MenubarItem>

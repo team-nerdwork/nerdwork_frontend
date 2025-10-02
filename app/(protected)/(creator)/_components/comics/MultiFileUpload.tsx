@@ -33,7 +33,7 @@ type Page = {
   size: number;
 };
 
-const MAX_TOTAL_SIZE_MB = 15;
+const MAX_TOTAL_SIZE_MB = 50;
 
 const SortableFileItem = ({
   id,
@@ -316,6 +316,7 @@ export function MultiFileUpload({
         <Input
           ref={fileInputRef}
           type="file"
+          accept="image/*"
           multiple
           onChange={handleFileChange}
           className="hidden"
