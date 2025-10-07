@@ -7,18 +7,6 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 async function getToken(): Promise<string> {
   try {
-    if (typeof window !== "undefined") {
-      try {
-        const storedToken = localStorage.getItem("token");
-        if (storedToken) {
-          const token = JSON.parse(storedToken);
-          return token || "";
-        }
-      } catch (error) {
-        console.error("Error retrieving token from localStorage:", error);
-      }
-    }
-
     const getSession = await auth();
     return getSession?.token ?? "";
   } catch (error) {
@@ -28,17 +16,6 @@ async function getToken(): Promise<string> {
 }
 
 async function getAuthHeader(): Promise<Record<string, string>> {
-  if (typeof window !== "undefined") {
-    try {
-      const storedToken = localStorage.getItem("token");
-      if (!storedToken) return {};
-      const token = JSON.parse(storedToken);
-      return token ? { Authorization: `Bearer ${token}` } : {};
-    } catch (error) {
-      console.error("Error retrieving token from localStorage:", error);
-      return {};
-    }
-  }
   const token = await getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }

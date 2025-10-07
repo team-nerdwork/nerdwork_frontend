@@ -30,7 +30,7 @@ const ComicActions = ({
         {/* <MenubarItem>
           <Edit2Icon /> Edit Series
         </MenubarItem> */}
-        <MenubarItem>
+        <MenubarItem disabled>
           <ChartLine /> View Stats
         </MenubarItem>
         <MenubarSeparator />

@@ -24,7 +24,10 @@ const MobileComicActions = ({ comic }: { comic: Comic }) => {
         {/* <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
           <Edit2Icon size={16} /> Edit Series
         </button> */}
-        <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
+        <button
+          disabled
+          className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px] disabled:text-muted-foreground"
+        >
           <ChartLine size={16} /> View Stats
         </button>
         <DeleteResource resource="comic" data={comic} />
