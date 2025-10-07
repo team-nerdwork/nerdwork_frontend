@@ -10,7 +10,7 @@ import React from "react";
 const ReaderProfilePage = () => {
   const { data: session } = useSession();
   const user = session?.user;
-  const { profile } = useUserSession();
+  const { profile } = useUserSession(session?.user?.id);
   const readerProfile = profile?.readerProfile;
 
   return (

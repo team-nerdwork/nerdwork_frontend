@@ -40,7 +40,7 @@ import { useUserSession } from "@/lib/api/queries";
 export default function CreatorNav() {
   const { data: session } = useSession();
   const user = session?.user;
-  const { profile } = useUserSession();
+  const { profile } = useUserSession(session?.user?.id);
   const creatorProfile = profile?.creatorProfile;
 
   const handleSignOut = () => {
