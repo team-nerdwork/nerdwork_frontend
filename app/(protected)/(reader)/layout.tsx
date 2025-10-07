@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import ReaderNav from "./_components/ReaderNav";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.nerdworkng.com/"),
   title: "Home",
 };
 

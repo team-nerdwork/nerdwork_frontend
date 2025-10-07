@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -26,7 +25,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ArrowLeft,
   // CalendarIcon,
-  Eye,
   Save,
   Send,
 } from "lucide-react";
@@ -293,13 +291,7 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
 
           {/* Schedule and Publish */}
           <div className="flex flex-wrap justify-end gap-4 items-center mt-8">
-            <Button
-              variant="outline"
-              disabled={draftLoading || publishLoading || imageUploading}
-            >
-              <Eye />
-              Preview Chapter
-            </Button>
+           {/* <PreviewChapter pages={[""]} /> */}
             <LoadingButton
               isLoading={draftLoading}
               loadingText="Saving..."
