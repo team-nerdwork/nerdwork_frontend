@@ -18,7 +18,6 @@ const CreatorComics = ({ data }: { data: Comic[] }) => {
             key={comic.id}
             className="relative group h-[586px] bg-[#1D1E21] rounded-[8px] flex flex-col justify-between border border-transparent hover:border-[#9D9D9F] transition duration-300 hover:ease-in-out overflow-hidden"
           >
-            {/* <div className={` h-[468px] z-10`}></div> */}
             <Image
               src={comic.image}
               width={316}
@@ -64,13 +63,15 @@ const CreatorComics = ({ data }: { data: Comic[] }) => {
       <section className="flex flex-col gap-5 md:hidden">
         {data.map((comic) => (
           <div key={comic.id} className="relative flex gap-5">
-            <Image
-              src={comic.image}
-              width={100}
-              height={148}
-              alt={`${comic.title} cover`}
-              className="h-[148px] object-cover rounded-[8px]"
-            />
+            <Link href={`/creator/comics/${comic.slug}`}>
+              <Image
+                src={comic.image}
+                width={100}
+                height={148}
+                alt={`${comic.title} cover`}
+                className="h-[148px] object-cover rounded-[8px]"
+              />
+            </Link>
 
             <div className="">
               <Link

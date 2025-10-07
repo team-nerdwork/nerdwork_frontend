@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import ComicInfo from "@/app/(protected)/(reader)/_components/ComicInfo";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getChapterPages } from "@/actions/comic.actions";
+import { getCreatorChapterPages } from "@/actions/comic.actions";
 import LoaderScreen from "@/components/loading-screen";
 import { Chapter } from "@/lib/types";
 
@@ -89,12 +89,14 @@ const ComicReader = ({
 
   const { data: pagesData, isLoading } = useQuery({
     queryKey: ["pages", uniqueCode],
-    queryFn: () => getChapterPages(uniqueCode),
+    queryFn: () => getCreatorChapterPages(uniqueCode),
     placeholderData: keepPreviousData,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
     enabled: !!uniqueCode,
   });
+
+  console.log(pagesData);
 
   if (isLoading) return <LoaderScreen />;
 

@@ -377,6 +377,36 @@ export const getChapterPages = async (code: string) => {
   }
 };
 
+export const getCreatorChapterPages = async (code: string) => {
+  try {
+    const response = await axiosGet(`/chapters/creators/by-code/${code}`);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Comic chapters retrieved successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Comic chapters retrieval failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to retrieve creator comics. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to retrieve creator comics. Please try again.",
+    };
+  }
+};
+
 export const purchaseChapterComic = async (
   nwtAmount: number,
   pin: string,

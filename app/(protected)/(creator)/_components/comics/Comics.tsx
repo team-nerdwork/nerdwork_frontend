@@ -53,7 +53,7 @@ const Comics = () => {
         className="bg-transparent mt-10"
       >
         <div className="flex flex-col items-start w-full max-w-[1300px] mx-auto">
-          <ScrollArea className="max-md:w-[335px] max-md:mx-auto max-md:px-5">
+          <ScrollArea className="container mx-auto">
             <TabsList className="bg-transparent text-white flex lg:gap-10 px-5">
               <TabsTrigger
                 className="data-[state=active]:border-b !data-[state=active]:border-white pb-5 max-md:font-normal border-white !data-[state=active]:shadow-none text-white rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none !data-[state=active]:shadow-none"
