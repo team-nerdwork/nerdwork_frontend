@@ -2,9 +2,6 @@
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
-import ComicCon from "@/assets/events/comic-con.jpg";
-import TechSummit from "@/assets/events/tech-summit.jpg";
-import ArtsFair from "@/assets/events/arts-fair.jpg";
 import Navbar from "../homepage/Navbar";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -13,7 +10,7 @@ export default function EventsHero() {
   const slides = [
     {
       id: 1,
-      src: ComicCon,
+      src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857327/comic-con_qzxcug.jpg",
       alt: "Comic con",
       link: "",
       title: "Comic Con 2026",
@@ -22,7 +19,7 @@ export default function EventsHero() {
     },
     {
       id: 2,
-      src: TechSummit,
+      src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857380/tech-summit_hkj9mz.jpg",
       alt: "tech summit",
       link: "",
       title: "Tech Innovation Summit 2026",
@@ -31,7 +28,7 @@ export default function EventsHero() {
     },
     {
       id: 3,
-      src: ArtsFair,
+      src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
       alt: "arts fair",
       link: "",
       title: "Arts & Crafts Fair 2026",

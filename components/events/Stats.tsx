@@ -57,17 +57,17 @@ export default function EventStats() {
             <EventCard
               title="Game Conventions"
               description="Join fellow gamers for an exciting convention filled with tournaments, demos, and the latest gaming innovations!"
-              image="/events/games.jpg"
+              image="https://res.cloudinary.com/dk4gmufzn/image/upload/v1759858136/games_jsd0dr.jpg"
             />
             <EventCard
               title="Anime Con"
               description="Immerse yourself in anime culture with screenings, merchandise, meet-and-greets, and cosplay competitions!"
-              image="/events/anime-con.jpg"
+              image="https://res.cloudinary.com/dk4gmufzn/image/upload/v1759858133/anime-con_thz247.jpg"
             />
             <EventCard
               title="Cosplays"
               description="Experience a day of creativity and connection at our annual community event!"
-              image="/events/cosplay.jpg"
+              image="https://res.cloudinary.com/dk4gmufzn/image/upload/v1759858132/cosplay_osbpha.jpg"
             />
           </section>
         </section>

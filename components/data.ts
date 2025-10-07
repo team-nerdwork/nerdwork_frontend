@@ -3,7 +3,7 @@ import { NFTCollectible, Transaction } from "@/lib/types";
 export const eventsData = [
   {
     id: 1,
-    src: "/events/comic-con.jpg",
+    src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     alt: "Comic con",
     link: "",
     date: "September 6, 2025",
@@ -13,7 +13,7 @@ export const eventsData = [
   },
   {
     id: 2,
-    src: "/events/tech-summit.jpg",
+    src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857380/tech-summit_hkj9mz.jpg",
     alt: "tech summit",
     link: "",
     date: "May 21, 2025",
@@ -23,7 +23,7 @@ export const eventsData = [
   },
   {
     id: 3,
-    src: "/events/arts-fair.jpg",
+    src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     alt: "arts fair",
     link: "",
     date: "June 10, 2025",
