@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useEffect, useState } from "react";
 import { ControllerRenderProps } from "react-hook-form";
-import { Image as ImageIcon, Trash, GripVertical } from "lucide-react";
+import { Image as ImageIcon, Trash, GripVertical, Loader2 } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -27,7 +27,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { useUploadMultiImages } from "@/lib/api/mutations";
 
-type Page = {
+export type Page = {
   id: string;
   previewUrl: string;
   size: number;
@@ -97,11 +97,13 @@ const SortableFileItem = ({
 interface MultiFileUploadProps {
   field: ControllerRenderProps<z.infer<typeof chapterSchema>, "chapterPages">;
   setImageUploading: (value: boolean) => void;
+  onInitialLoad?: (pages: Page[]) => void;
 }
 
 export function MultiFileUpload({
   setImageUploading,
   field,
+  onInitialLoad,
 }: MultiFileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -181,6 +183,12 @@ export function MultiFileUpload({
     }
   }, [isSuccess, uploadResults, error, field, initialPages, reset]);
 
+  useEffect(() => {
+    if (onInitialLoad && pagesData.length > 0) {
+      onInitialLoad(pagesData);
+    }
+  }, [pagesData, onInitialLoad]);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -204,7 +212,6 @@ export function MultiFileUpload({
       );
       const combinedTotalSize = currentTotalSize + newFilesTotalSize;
 
-      // const MAX_TOTAL_SIZE_MB = 5;
       const MAX_TOTAL_SIZE_BYTES = MAX_TOTAL_SIZE_MB * 1024 * 1024;
 
       if (combinedTotalSize > MAX_TOTAL_SIZE_BYTES) {
@@ -243,7 +250,6 @@ export function MultiFileUpload({
       );
       const combinedTotalSize = currentTotalSize + newFilesTotalSize;
 
-      // const MAX_TOTAL_SIZE_MB = 5;
       const MAX_TOTAL_SIZE_BYTES = MAX_TOTAL_SIZE_MB * 1024 * 1024;
 
       if (combinedTotalSize > MAX_TOTAL_SIZE_BYTES) {
@@ -294,20 +300,22 @@ export function MultiFileUpload({
         }`}
       >
         {isPending ? (
-          <p className="text-sm font-semibold">Uploading pages...</p>
+          <p className="text-sm font-semibold flex items-center gap-1">
+            <Loader2 size={16} className="animate-spin" /> Uploading pages...
+          </p>
         ) : (
           <>
             <ImageIcon className="w-8 h-8 mb-2 text-gray-400" />
             <p className="text-sm font-semibold">
               {isDragOver ? "Drop files here" : "Add more pages"}
             </p>
-            <p className="text-xs text-nerd-muted">
+            <p className="text-xs text-nerd-muted text-center">
               Supports JPG, PNG, GIF. Multiple files allowed.
             </p>
             <p className="text-xs text-nerd-muted font-semibold py-0.5">
               {MAX_TOTAL_SIZE_MB}MB total upload limit.
             </p>
-            <p className="text-xs text-nerd-muted">
+            <p className="text-xs text-nerd-muted text-center">
               Pages will be sorted by order of upload, but you can reorder them
               below.
             </p>

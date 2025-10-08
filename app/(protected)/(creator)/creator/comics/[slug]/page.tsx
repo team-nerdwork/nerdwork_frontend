@@ -235,7 +235,7 @@ const ComicDetailsPage = ({
             <hr className="!text-[#292A2E] h-0 border-t border-[#292A2E]" />
             <div className=" max-w-[1300px] mx-auto w-full mt-8">
               <TabsContent value={tab}>
-                <ChapterComics slug={slug} data={filteredChapters} />
+                <ChapterComics data={filteredChapters} />
               </TabsContent>
             </div>
             <hr className="!text-[#292A2E] h-0 mb-10 border-t border-[#292A2E]" />

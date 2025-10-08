@@ -41,7 +41,10 @@ import { chapterSchema } from "@/lib/schema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { use, useState } from "react";
-import { MultiFileUpload } from "@/app/(protected)/(creator)/_components/comics/MultiFileUpload";
+import {
+  MultiFileUpload,
+  Page,
+} from "@/app/(protected)/(creator)/_components/comics/MultiFileUpload";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
@@ -50,6 +53,7 @@ import {
   getSingleComic,
 } from "@/actions/comic.actions";
 import { Comic } from "@/lib/types";
+import PreviewChapter from "@/app/(protected)/(creator)/_components/comics/PreviewChapter";
 
 const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
   const router = useRouter();
@@ -69,6 +73,7 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
   const [publishLoading, setPublishLoading] = useState(false);
   const [draftLoading, setDraftLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+  const [pagesPreview, setPagesPreview] = useState<Page[]>([]);
 
   const form = useForm<z.infer<typeof chapterSchema>>({
     resolver: zodResolver(chapterSchema),
@@ -80,6 +85,11 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
       price: 2,
     },
   });
+
+  const handleInitialDataLoad = (pages: Page[]) => {
+    console.log("Initial Pages Data Loaded:", pages);
+    setPagesPreview(pages);
+  };
 
   const handleDraftChapter = async () => {
     setDraftLoading(true);
@@ -280,6 +290,7 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
                   <FormControl>
                     <MultiFileUpload
                       setImageUploading={setImageUploading}
+                      onInitialLoad={handleInitialDataLoad}
                       field={field}
                     />
                   </FormControl>
@@ -291,7 +302,10 @@ const NewChapterPage = ({ params }: { params: Promise<{ slug: string }> }) => {
 
           {/* Schedule and Publish */}
           <div className="flex flex-wrap justify-end gap-4 items-center mt-8">
-           {/* <PreviewChapter pages={[""]} /> */}
+            <PreviewChapter
+              pages={pagesPreview}
+              loading={draftLoading || publishLoading || imageUploading}
+            />
             <LoadingButton
               isLoading={draftLoading}
               loadingText="Saving..."

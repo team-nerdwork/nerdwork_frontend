@@ -97,9 +97,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${obostar.variable} antialiased`}>
         <SessionProvider session={session}>
           <QueryProvider>
-            <LoadingProvider logoSrc={"/nerdwork.svg"} logoAlt="Nerwork Logo">
-              {children}
-            </LoadingProvider>
+            <LoadingProvider>{children}</LoadingProvider>
           </QueryProvider>
         </SessionProvider>
         <Toaster richColors />

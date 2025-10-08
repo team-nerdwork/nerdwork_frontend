@@ -13,45 +13,78 @@ import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Page } from "./MultiFileUpload";
 
-const PreviewChapter = ({ pages }: { pages: string[] }) => {
+const isPageArray = (data: Page[] | string[]): data is Page[] => {
+  return (
+    data.length > 0 &&
+    typeof data[0] === "object" &&
+    data[0] !== null &&
+    "previewUrl" in data[0]
+  );
+};
+
+const PreviewChapter = ({
+  pages,
+  loading,
+}: {
+  pages: Page[] | string[];
+  loading?: boolean;
+}) => {
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            //   disabled={draftLoading || publishLoading || imageUploading}
-          >
+          <Button variant="outline" disabled={loading}>
             <Eye />
             Preview Chapter
           </Button>
         </DialogTrigger>
-        <DialogContent className="flex flex-col items-center gap-7 font-inter border-nerd-default bg-[#151515] text-white">
-          <DialogHeader className="mt-5">
+        <DialogContent className="flex flex-col h-[calc(100%-4rem)] items-center font-inter border-nerd-default bg-[#151515] text-white">
+          <DialogHeader className="">
             <DialogTitle className="text-center leading-normal text-lg">
               Chapter Preview
             </DialogTitle>
             <DialogDescription className="sr-only text-nerd-muted text-center">
-              By deleting this you will no longer have access to it and will not
-              be gaining from it anymore. Please proceed with caution.
+              Preview of uploaded chapter pages.
             </DialogDescription>
           </DialogHeader>
-          {pages?.length == 0 ? (
-            <>
-              <p>
-                NO chapter pages. Please upload pages of the chapter to see
-                preview.
-              </p>
-            </>
+          {isPageArray(pages) ? (
+            pages?.length == 0 ? (
+              <>
+                <p className="text-center">
+                  No chapter pages. Please upload pages of the chapter to see
+                  preview.
+                </p>
+              </>
+            ) : (
+              <ScrollArea
+                className={`w-full max-h-[calc(100%-5.5rem)] relative font-inter md:px-2 flex flex-col justify-center gap-2`}
+              >
+                {pages?.map((page, index) => (
+                  <figure
+                    key={index}
+                    className={`flex justify-center mb-2 w-auto h-full`}
+                  >
+                    <Image
+                      src={page.previewUrl}
+                      width={573}
+                      height={880}
+                      alt={`page ${index + 1}`}
+                      className={"object-contain"}
+                    />
+                  </figure>
+                ))}
+              </ScrollArea>
+            )
           ) : (
             <ScrollArea
-              className={`w-full max-h-[80vh] h-full relative font-inter px-5 pb-5 flex flex-col justify-center gap-2`}
+              className={`w-full max-h-[calc(100%-5.5rem)] relative font-inter md:px-2 flex flex-col justify-center gap-2`}
             >
               {pages?.map((page, index) => (
                 <figure
                   key={index}
-                  className={`flex justify-center w-auto h-full`}
+                  className={`flex justify-center mb-2 w-auto h-full`}
                 >
                   <Image
                     src={page}
@@ -66,7 +99,7 @@ const PreviewChapter = ({ pages }: { pages: string[] }) => {
           )}
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Close</Button>
+              <Button variant="primary">Close</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
