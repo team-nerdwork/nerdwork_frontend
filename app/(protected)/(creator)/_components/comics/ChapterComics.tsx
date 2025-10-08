@@ -1,14 +1,13 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Chapter } from "@/lib/types";
 import { Calendar, Eye, Heart, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import ChapterActions from "./ChapterActions";
-import Link from "next/link";
 import PublishDraft from "./PublishDraft";
+import PreviewChapter from "./PreviewChapter";
 
-const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
+const ChapterComics = ({ data }: { data: Chapter[]; slug?: string }) => {
   return (
     <main className="flex flex-col gap-10 pb-10">
       {data.map((chapter) => (
@@ -72,12 +71,13 @@ const ChapterComics = ({ data, slug }: { data: Chapter[]; slug: string }) => {
             </div>
           </div>
           <div className="md:w-[20%] md:justify-end flex gap-2">
-            <Link href={`/creator/comics/${slug}/view/${chapter?.uniqueCode}`}>
+            {/* <Link href={`/creator/comics/${slug}/view/${chapter?.uniqueCode}`}>
               <Button className="bg-nerd-default">
                 <Eye />
                 View
               </Button>
-            </Link>
+            </Link> */}
+            <PreviewChapter pages={chapter.pages} />
             {
               chapter.chapterStatus == "draft" && (
                 <PublishDraft data={chapter} />

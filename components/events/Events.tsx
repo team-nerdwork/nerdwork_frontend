@@ -1,14 +1,11 @@
 import React from "react";
 import { Button } from "../ui/button";
-import ComicCon from "@/assets/events/comic-con.jpg";
-import TechSummit from "@/assets/events/tech-summit.jpg";
-import ArtsFair from "@/assets/events/arts-fair.jpg";
 import Image from "next/image";
 
 const events = [
   {
     id: 1,
-    src: ComicCon,
+    src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857327/comic-con_qzxcug.jpg",
     alt: "Comic con",
     link: "https://www.straqa.events/nerdworkcomiccon",
     date: "September 6, 2025",
@@ -18,7 +15,7 @@ const events = [
   },
   {
     id: 2,
-    src: TechSummit,
+    src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857380/tech-summit_hkj9mz.jpg",
     alt: "tech summit",
     link: "",
     date: "---",
@@ -28,7 +25,7 @@ const events = [
   },
   {
     id: 3,
-    src: ArtsFair,
+    src: "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     alt: "arts fair",
     link: "",
     date: "---",

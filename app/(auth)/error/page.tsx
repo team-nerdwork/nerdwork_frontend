@@ -9,7 +9,7 @@ const AuthErrorPage = () => {
   const router = useRouter();
   return (
     <section className="min-h-screen font-inter w-full bg-[#151515] text-white flex flex-col gap-6 justify-center items-center">
-      <div className="flex flex-col items-center gap-6 rounded-lg border border-nerd-muted p-8 text-center shadow">
+      <div className="flex flex-col items-center gap-6 rounded-lg border border-neutral-700 p-8 text-center shadow">
         <Image src={Logo} width={150} height={50} alt="Nerdwork logo" />
         <div className="text-center">
           <h2 className="text-2xl text-center font-semibold">

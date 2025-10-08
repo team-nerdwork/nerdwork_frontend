@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Chapter } from "@/lib/types";
-import { Calendar, EllipsisVertical, Send } from "lucide-react";
+import { EllipsisVertical, Send } from "lucide-react";
 import React from "react";
 import DeleteResource from "./DeleteResource";
 import PublishDraft from "./PublishDraft";
@@ -59,9 +59,9 @@ const ChapterActions = ({ chapter }: { chapter: Chapter }) => {
           </SheetDescription>
           {chapter.chapterStatus != "published" && (
             <div>
-              <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
+              {/* <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
                 <Calendar size={16} /> Schedule Chapter
-              </button>
+              </button> */}
               <button className="flex items-center gap-2 cursor-pointer hover:bg-[#25262A] p-4 rounded-[8px]">
                 <Send size={16} /> Publish Chapter
               </button>

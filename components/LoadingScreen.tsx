@@ -3,14 +3,12 @@ import { useEffect, useState } from "react";
 
 interface LoadingScreenProps {
   isLoading: boolean;
-  logo?: React.ReactNode;
   logoSrc?: string;
   logoAlt?: string;
 }
 
 export default function LoadingScreen({
   isLoading,
-  logo,
   logoSrc,
   logoAlt = "Logo",
 }: LoadingScreenProps) {
@@ -33,9 +31,7 @@ export default function LoadingScreen({
       }`}
     >
       <div className="flex items-center justify-center animate-bounce">
-        {logo ? (
-          logo
-        ) : logoSrc ? (
+        {logoSrc ? (
           <Image
             width={40}
             height={40}

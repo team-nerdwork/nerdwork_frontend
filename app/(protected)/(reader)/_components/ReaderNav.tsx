@@ -74,7 +74,7 @@ const ReaderNav = () => {
   const isReadingRoute = /^\/r\/comics\/[^/]+\/chapter\/[^/]+$/.test(pathname);
   const { data: session } = useSession();
   const user = session?.user;
-  const { profile } = useUserSession();
+  const { profile } = useUserSession(session?.user?.id);
 
   const readerProfile: Profile = profile?.readerProfile;
 

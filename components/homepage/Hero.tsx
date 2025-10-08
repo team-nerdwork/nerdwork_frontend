@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <header className="relative min-h-screen w-full">
-      <div className="absolute inset-0 bg-[url('/hero-bg.png')] bg-cover bg-center bg-no-repeat z-0" />
+      <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dk4gmufzn/image/upload/v1759854667/hero-bg_daurh6.jpg')] bg-cover bg-center bg-no-repeat z-0" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,13,13,0)_0%,#0D0D0D_61.75%)] z-10" />
       <div className="relative z-20 text-white h-screen max-w-[1440px] mx-auto">
         <section

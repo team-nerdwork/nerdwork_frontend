@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function ProductHero() {
   return (
     <header className="relative min-h-screen w-full">
-      <div className="absolute inset-0 bg-[url('/nerdwork+/plus-hero.png')] bg-cover bg-center bg-no-repeat z-0" />
+      <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dk4gmufzn/image/upload/v1759855759/plus-hero_tszrra.png')] bg-cover bg-center bg-no-repeat z-0" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#0D0D0D_0%,rgba(13,13,13,0)_30%,#0D0D0D_95%)] z-10" />
       <div className="relative z-20 text-white h-screen max-w-[1440px] mx-auto">
         <Navbar />

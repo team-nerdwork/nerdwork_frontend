@@ -1,8 +1,8 @@
 import { getCreatorProfile, getReaderProfile } from "@/actions/profile.actions";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { signOut, useSession } from "next-auth/react";
 
-export const useUserSession = () => {
+export const useUserSession = (id?: string) => {
   const { data: session } = useSession();
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -12,7 +12,6 @@ export const useUserSession = () => {
         return null;
       }
 
-      // let userData;
       let creatorProfile = null;
       let readerProfile = null;
 
@@ -40,8 +39,9 @@ export const useUserSession = () => {
       // Return an object containing both profiles.
       return { creatorProfile, readerProfile };
     },
-    enabled: !!session?.user?.id,
-    refetchInterval: 5 * 60 * 1000,
+    enabled: !!id || !!session?.user?.id,
+    placeholderData: keepPreviousData,
+    refetchInterval: 3 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 
