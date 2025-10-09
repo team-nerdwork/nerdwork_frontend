@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { toast } from "sonner";
-import { ChevronLeftIcon, MoveLeft } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
 
 const Onboarding = () => {
   const [selectedRole, setSelectedRole] = useState<"creator" | "reader" | null>(
