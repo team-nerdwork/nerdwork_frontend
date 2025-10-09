@@ -36,17 +36,31 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserSession } from "@/lib/api/queries";
+import { useRouter } from "next/navigation";
 
 export default function CreatorNav() {
   const { data: session } = useSession();
   const user = session?.user;
   const { profile } = useUserSession(session?.user?.id);
   const creatorProfile = profile?.creatorProfile;
+  const router = useRouter();
 
   const handleSignOut = () => {
     toast.success("Logging out...");
     signOut({ callbackUrl: "/signin" });
   };
+
+  const handleComicsClick = () => {
+    if (user?.rProfile) {
+      router.push("/r/comics");
+    } else {
+      toast.info("Redirecting to reader onboarding...");
+      setTimeout(() => {
+        router.push("/onboarding");
+      }, 2500);
+    }
+  };
+
   return (
     <>
       <nav className="max-md:hidden max-w-[1300px] mx-auto font-inter flex gap-2 justify-between items-center h-[76px] max-2xl:px-5">
@@ -55,8 +69,18 @@ export default function CreatorNav() {
             <Image src={Logo} width={146} height={40} alt="Nerdwork logo" />
           </Link>
           <ul className="flex gap-4 text-sm">
-            <Link href={"/r/comics"}>Comics</Link>
-            <Link href={""}>Marketplace</Link>
+            <li
+              className="cursor-pointer hover:opacity-75"
+              onClick={handleComicsClick}
+            >
+              Comics
+            </li>
+            <li
+              className="cursor-pointer hover:opacity-75"
+              onClick={() => toast.info("Feature coming soon!")}
+            >
+              Marketplace
+            </li>
           </ul>
         </div>
         <div className="flex items-center justify-between gap-4">
@@ -121,9 +145,11 @@ export default function CreatorNav() {
                 <MenubarItem asChild>
                   <Link
                     className="cursor-pointer flex items-center gap-3 w-full"
-                    href={"/r/comics"}
+                    href={user?.rProfile ? "/r/comics" : "/onboarding"}
                   >
-                    Switch to Reader Mode
+                    {user?.rProfile
+                      ? "Switch to Reader Mode"
+                      : "Become a Reader"}
                   </Link>
                 </MenubarItem>
                 <MenubarSeparator />
@@ -176,12 +202,12 @@ export default function CreatorNav() {
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link
+                <li
                   className="cursor-pointer flex items-center gap-3"
-                  href={"/r/comics"}
+                  onClick={handleComicsClick}
                 >
                   <LibraryBig className="text-white" /> Comics
-                </Link>
+                </li>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link

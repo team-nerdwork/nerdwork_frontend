@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { ImageIcon, Trash } from "lucide-react";
+import { ImageIcon, Loader2, Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ControllerRenderProps } from "react-hook-form";
 import { ComicSeriesFormData, NFTFormData } from "@/lib/schema";
@@ -87,7 +87,9 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
         >
           {isPending ? (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <p className="text-sm font-semibold text-center">Uploading...</p>
+              <p className="text-sm font-semibold flex text-center items-center gap-1">
+                <Loader2 size={16} className="animate-spin" /> Uploading...
+              </p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">

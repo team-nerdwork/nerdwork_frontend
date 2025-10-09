@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { toast } from "sonner";
+import { ChevronLeftIcon } from "lucide-react";
 
 const Onboarding = () => {
   const [selectedRole, setSelectedRole] = useState<"creator" | "reader" | null>(
@@ -20,9 +21,17 @@ const Onboarding = () => {
       toast.info("Please choose a role to continue.");
     }
   };
+
   return (
-    <main className="bg-[#171719] min-h-[75vh] w-full font-inter text-white flex flex-col items-center justify-center px-5">
-      <section className="w-full max-w-[400px] text-center">
+    <main className=" bg-[#171719] min-h-[75vh] w-full font-inter text-white flex flex-col items-center justify-center px-5">
+      <section className="relative w-full max-w-[400px] text-center">
+        <Button
+          onClick={() => router.back()}
+          className="absolute -top-5 left-0"
+          variant={"outline"}
+        >
+          <ChevronLeftIcon />
+        </Button>
         <h4 className="text-2xl font-semibold">
           Choose your Role:
           <br /> Reader or Creator
