@@ -2,12 +2,13 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ImageIcon, Loader2, Trash } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ControllerRenderProps } from "react-hook-form";
 import { ComicSeriesFormData, NFTFormData } from "@/lib/schema";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { useUploadImage } from "@/lib/api/mutations";
+import { UploadResultItem, useUploadImage } from "@/lib/api/mutations";
+import { Progress } from "@/components/ui/progress";
 
 interface ImageUploadProps {
   field:
@@ -19,6 +20,7 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const [previewURL, setPreviewURL] = useState("");
+  const [uploadPercentage, setUploadPercentage] = useState(0);
 
   const {
     mutate,
@@ -27,11 +29,25 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
     error,
     data: uploadedData,
     reset,
-  } = useUploadImage();
+  } = useUploadImage() as {
+    mutate: (variables: {
+      data: FormData;
+      onProgressUpdate: (p: number) => void;
+    }) => void;
+    isPending: boolean;
+    isSuccess: boolean;
+    error: unknown;
+    data: UploadResultItem;
+    reset: () => void;
+  };
+
+  const updateProgress = useCallback((percentage: number) => {
+    setUploadPercentage(percentage);
+  }, []);
 
   useEffect(() => {
     if (isSuccess && uploadedData) {
-      if (uploadedData.success) {
+      if (uploadedData.success && uploadedData.data) {
         toast.success("Image uploaded successfully!");
         setPreviewURL(uploadedData.data);
 
@@ -53,7 +69,9 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
-      mutate(formData);
+
+      setUploadPercentage(1); // Start the progress bar visually
+      mutate({ data: formData, onProgressUpdate: updateProgress });
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -66,7 +84,9 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
     if (droppedFile) {
       const formData = new FormData();
       formData.append("file", droppedFile);
-      mutate(formData);
+
+      setUploadPercentage(1); // Start the progress bar visually
+      mutate({ data: formData, onProgressUpdate: updateProgress });
     }
   };
 
@@ -86,10 +106,11 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
           className="mx-auto flex flex-col border-dashed items-center justify-center group max-md:max-w-[335px] max-md:h-[496] md:max-w-[352px] md:h-[521px] border rounded-lg cursor-pointer bg-transparent border-[#9D9D9F] hover:border-[#646464]"
         >
           {isPending ? (
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+            <div className="flex flex-col gap-2 items-center justify-center pt-5 pb-6">
               <p className="text-sm font-semibold flex text-center items-center gap-1">
-                <Loader2 size={16} className="animate-spin" /> Uploading...
+                <Loader2 size={16} className="animate-spin" /> Uploading
               </p>
+              <Progress value={uploadPercentage} className="w-full h-2" />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
