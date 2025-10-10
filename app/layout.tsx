@@ -64,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "Nerdwork is the home for fans: a creative entertainment studio & thriving community best known for its annual Comic-Con. We are the intersection of storytelling, tech, culture, and fandom.",
       images: [
         {
-          url: "/opengraph-image.png?v=2",
+          url: "/opengraph-image.png?v=1",
           width: 1200,
           height: 630,
           alt: "Nerdwork",
@@ -77,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         "Nerdwork is the home for fans: a creative entertainment studio & thriving community best known for its annual Comic-Con. We are the intersection of storytelling, tech, culture, and fandom.",
       creator: "Nerdwork",
-      images: "/twitter-image.png?v=2",
+      images: "/twitter-image.png?v=1",
     },
     icons: {
       icon: [{ url: "/favicon.ico" }],
