@@ -10,16 +10,6 @@ import { SessionProvider } from "next-auth/react";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -74,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "Nerdwork is the home for fans: a creative entertainment studio & thriving community best known for its annual Comic-Con. We are the intersection of storytelling, tech, culture, and fandom.",
       images: [
         {
-          url: "/opengraph-image.png",
+          url: "/opengraph-image.png?v=2",
           width: 1200,
           height: 630,
           alt: "Nerdwork",
@@ -87,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         "Nerdwork is the home for fans: a creative entertainment studio & thriving community best known for its annual Comic-Con. We are the intersection of storytelling, tech, culture, and fandom.",
       creator: "Nerdwork",
-      images: ["/twitter-image.png"],
+      images: "/twitter-image.png?v=2",
     },
     icons: {
       icon: [{ url: "/favicon.ico" }],
