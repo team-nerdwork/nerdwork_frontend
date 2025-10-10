@@ -1,7 +1,7 @@
 "use client";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { ControllerRenderProps } from "react-hook-form";
-import { Image as ImageIcon, Trash, GripVertical, Loader2 } from "lucide-react";
+import { Image as ImageIcon, Trash, GripVertical } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -26,6 +26,7 @@ import z from "zod";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useUploadMultiImages } from "@/lib/api/mutations";
+import { Progress } from "@/components/ui/progress";
 
 export type Page = {
   id: string;
@@ -113,8 +114,14 @@ export function MultiFileUpload({
   const [pagesData, setPagesData] = useState<Page[]>(
     initialPages.map((url) => ({ id: url, previewUrl: url, size: 0 }))
   );
+  const [uploadPercentage, setUploadPercentage] = useState(0);
 
   const filesRef = useRef<File[]>([]);
+  const totalFilesRef = useRef(0);
+
+  const updateProgress = useCallback((percentage: number) => {
+    setUploadPercentage(percentage);
+  }, []);
 
   const {
     mutate,
@@ -225,7 +232,13 @@ export function MultiFileUpload({
         return;
       }
 
-      mutate(filesArray);
+      totalFilesRef.current = filesArray.length;
+      setUploadPercentage(0);
+
+      mutate({
+        filesToUpload: filesArray,
+        onProgressUpdate: updateProgress,
+      });
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -260,7 +273,14 @@ export function MultiFileUpload({
         return;
       }
 
-      mutate(filesArray);
+      totalFilesRef.current = filesArray.length;
+
+      setUploadPercentage(0);
+
+      mutate({
+        filesToUpload: filesArray,
+        onProgressUpdate: updateProgress,
+      });
     }
   };
 
@@ -285,6 +305,14 @@ export function MultiFileUpload({
     }
   };
 
+  const totalFiles = totalFilesRef.current;
+  const completedFileCycles = Math.floor(uploadPercentage / (100 / totalFiles));
+
+  const currentFileNumber = Math.min(completedFileCycles + 1, totalFiles);
+
+  const fileCountText =
+    totalFiles > 0 ? `${currentFileNumber} of ${totalFiles}` : "";
+
   return (
     <div className="space-y-4">
       <div
@@ -300,9 +328,18 @@ export function MultiFileUpload({
         }`}
       >
         {isPending ? (
-          <p className="text-sm font-semibold flex items-center gap-1">
-            <Loader2 size={16} className="animate-spin" /> Uploading pages...
-          </p>
+          <div className="text-sm font-semibold flex flex-col items-center gap-1">
+            {/* <Loader2 size={16} className="animate-spin" /> Uploading pages... */}
+            <p className="text-sm font-semibold text-center">
+              Uploading page{" "}
+              <span className="font-semibold">({fileCountText})</span> ... (
+              {uploadPercentage}%)
+            </p>
+            <Progress
+              value={uploadPercentage}
+              className="w-[80%] mx-auto h-2"
+            />
+          </div>
         ) : (
           <>
             <ImageIcon className="w-8 h-8 mb-2 text-gray-400" />

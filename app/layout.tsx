@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
@@ -42,8 +43,19 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s | Nerdwork",
     },
     description:
-      "Nerdwork is a creative entertainment studio and thriving fan community, best known for its annual Nerdwork Comic-Con. Nerdwork is an intersection of storytelling, tech, culture and fandom. Nerdwork celebrates creativity in all forms. We are not just an event, we're the home for fans.",
-    // keywords: [],
+      "Nerdwork is the home for fans: a creative entertainment studio & thriving community best known for its annual Comic-Con. We are the intersection of storytelling, tech, culture, and fandom.",
+    keywords: [
+      "Nerdwork",
+      "Comic Convention",
+      "Pop Culture",
+      "Tech Culture",
+      "Creative Community",
+      "Storytelling",
+      "Creative Content",
+      "Digital Art",
+      "Comics",
+      "Graphic Novels",
+    ],
     authors: [{ name: "Nerdwork Team" }],
     creator: "Nerdwork",
     publisher: "Nerdwork",
@@ -59,10 +71,10 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "Nerdwork",
       title: "Nerdwork - Where Passion meets Community",
       description:
-        "Nerdwork is a creative entertainment studio and thriving fan community, best known for its annual Nerdwork Comic-Con. Nerdwork is an intersection of storytelling, tech, culture and fandom. Nerdwork celebrates creativity in all forms. We are not just an event, we're the home for fans.",
+        "Nerdwork is the home for fans: a creative entertainment studio & thriving community best known for its annual Comic-Con. We are the intersection of storytelling, tech, culture, and fandom.",
       images: [
         {
-          url: "/opengraph-image.jpg",
+          url: "/opengraph-image.png",
           width: 1200,
           height: 630,
           alt: "Nerdwork",
@@ -73,9 +85,9 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Nerdwork - Where Passion meets Community",
       description:
-        "Nerdwork is a creative entertainment studio and thriving fan community, best known for its annual Nerdwork Comic-Con. Nerdwork is an intersection of storytelling, tech, culture and fandom. Nerdwork celebrates creativity in all forms. We are not just an event, we're the home for fans.",
+        "Nerdwork is the home for fans: a creative entertainment studio & thriving community best known for its annual Comic-Con. We are the intersection of storytelling, tech, culture, and fandom.",
       creator: "Nerdwork",
-      images: ["/twitter-image.jpg"],
+      images: ["/twitter-image.png"],
     },
     icons: {
       icon: [{ url: "/favicon.ico" }],
@@ -97,7 +109,10 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${obostar.variable} antialiased`}>
         <SessionProvider session={session}>
           <QueryProvider>
-            <LoadingProvider>{children}</LoadingProvider>
+            <LoadingProvider>
+              {children}
+              <SpeedInsights />
+            </LoadingProvider>
           </QueryProvider>
         </SessionProvider>
         <Toaster richColors />
