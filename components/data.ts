@@ -152,7 +152,8 @@ export const nftData: NFTCollectible[] = [
     id: "1",
     name: "Elena's Awakening - Artwork Cover",
     description: "Elena's Awakening - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "active",
     total_copies: 36,
     sold_copies: 18,
@@ -163,7 +164,8 @@ export const nftData: NFTCollectible[] = [
     id: "2",
     name: "Mystic Realms - Artwork Cover",
     description: "Mystic Realms - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "scheduled",
     total_copies: 20,
     sold_copies: 0,
@@ -174,7 +176,8 @@ export const nftData: NFTCollectible[] = [
     id: "3",
     name: "Shadows of Tomorrow - Artwork Cover",
     description: "Shadows of Tomorrow - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "active",
     total_copies: 50,
     sold_copies: 30,
@@ -185,7 +188,8 @@ export const nftData: NFTCollectible[] = [
     id: "4",
     name: "Journey's End - Artwork Cover",
     description: "Journey's End - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "sold out",
     total_copies: 40,
     sold_copies: 40,
@@ -196,7 +200,8 @@ export const nftData: NFTCollectible[] = [
     id: "5",
     name: "Elena's Awakening - Artwork Cover",
     description: "Elena's Awakening - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "active",
     total_copies: 36,
     sold_copies: 18,
@@ -207,7 +212,8 @@ export const nftData: NFTCollectible[] = [
     id: "6",
     name: "Mystic Realms - Artwork Cover",
     description: "Mystic Realms - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "scheduled",
     total_copies: 20,
     sold_copies: 0,
@@ -218,7 +224,8 @@ export const nftData: NFTCollectible[] = [
     id: "7",
     name: "Shadows of Tomorrow - Artwork Cover",
     description: "Shadows of Tomorrow - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "active",
     total_copies: 50,
     sold_copies: 30,
@@ -229,7 +236,8 @@ export const nftData: NFTCollectible[] = [
     id: "8",
     name: "Journey's End - Artwork Cover",
     description: "Journey's End - Artwork Cover",
-    image: "/events/anime-con.jpg",
+    image:
+      "https://res.cloudinary.com/dk4gmufzn/image/upload/v1759857408/arts-fair_ira10b.jpg",
     status: "sold out",
     total_copies: 40,
     sold_copies: 40,
