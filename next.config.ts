@@ -30,6 +30,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "d3nlgmb7wyectx.cloudfront.net",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "res.cloudinary.com",
         port: "",
         pathname: "/**",
