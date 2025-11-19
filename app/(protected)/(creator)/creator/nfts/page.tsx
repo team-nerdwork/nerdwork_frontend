@@ -1,15 +1,15 @@
 "use client";
 import { useUserSession } from "@/lib/api/queries";
-// import NFTsEmptyState from "@/app/(protected)/(creator)/_components/nfts/NFTsEmptyState";
-// import { nftData } from "@/components/data";
-// import { Button } from "@/components/ui/button";
-// import { Plus } from "lucide-react";
-// import Link from "next/link";
+import NFTsEmptyState from "@/app/(protected)/(creator)/_components/nfts/NFTsEmptyState";
+import { nftData } from "@/components/data";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 import React from "react";
-// import NFTList from "../../_components/nfts/NFTList";
+import NFTList from "../../_components/nfts/NFTList";
 
 const NFTsPage = () => {
-  // const NFTs = nftData ?? [];
+  const NFTs = nftData ?? [];
   const { profile } = useUserSession();
   const creatorProfile = profile?.creatorProfile;
 
@@ -23,17 +23,13 @@ const NFTsPage = () => {
             series
           </p>
         </div>
-        {/* <Link href={"/creator/nfts/new"} className="max-md:w-full">
+        <Link href={"/creator/nfts/new"} className="max-md:w-full">
           <Button variant={"secondary"}>
             <Plus /> New Collectible
           </Button>
-        </Link> */}
-
-        <div className="flex justify-center items-center">
-          <h3 className="text-2xl">Feature coming soon ...</h3>
-        </div>
+        </Link>
       </section>
-      {/* {NFTs.length == 0 ? <NFTsEmptyState /> : <NFTList />} */}
+      {NFTs.length == 0 ? <NFTsEmptyState /> : <NFTList />}
     </main>
   );
 };
