@@ -30,7 +30,7 @@ import {
   CreditCard,
   // HelpCircle,
   // UserCog,
-  // ShoppingBag,
+  ShoppingBag,
   LibraryBig,
   Menu,
   Plus,
@@ -52,7 +52,7 @@ const ReaderNav = () => {
 
   const navItems = [
     { title: "Comics", path: "/r/comics" },
-    // { title: "Marketplace", path: "/r/marketplace" },
+    { title: "Marketplace", path: "/r/marketplace" },
     { title: "Library", path: "/r/library" },
     { title: "Create", path: "/onboarding" },
   ];
@@ -330,14 +330,14 @@ const ReaderNav = () => {
                   <LibraryBig className="text-white" /> Comics
                 </Link>
               </DropdownMenuItem>
-              {/* <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild>
                 <Link
                   className="cursor-pointer flex items-center gap-3 w-full"
                   href={"/r/marketplace"}
                 >
                   <ShoppingBag className="text-white" /> Marketplace
                 </Link>
-              </DropdownMenuItem> */}
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link
                   className="cursor-pointer flex items-center gap-3 w-full"
