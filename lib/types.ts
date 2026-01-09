@@ -105,3 +105,14 @@ export interface User {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface Comment {
+  commentId: string;
+  content: string;
+  readerId: string;
+  readerName: string;
+  username: string;
+  image?: string;
+  chapterId: string;
+  createdAt: string;
+}
