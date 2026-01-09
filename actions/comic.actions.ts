@@ -634,3 +634,68 @@ export const publishDraft = async (
     };
   }
 };
+
+export const addChapterComment = async (chapterId: string, content: string) => {
+  try {
+    console.log(chapterId, content);
+    const response = await axiosPost(`/chapters/comments`, {
+      chapterId,
+      content,
+    });
+    console.log(chapterId, content);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Comment sent successfully",
+    };
+  } catch (error: unknown) {
+    console.error("Commenting failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to add chapter comment. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to add chapter comment. Please try again.",
+    };
+  }
+};
+
+export const getChapterComments = async (chapterId: string) => {
+  try {
+    const response = await axiosGet(`/chapters/${chapterId}/comments`);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Comic comments retrieved successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Comic comments retrieval failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to retrieve chapter comments. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to retrieve chapter comments. Please try again.",
+    };
+  }
+};

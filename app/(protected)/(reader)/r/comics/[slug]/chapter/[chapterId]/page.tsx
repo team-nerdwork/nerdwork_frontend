@@ -39,6 +39,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import LockedChapter from "@/app/(protected)/(reader)/_components/LockedChapter";
+import ChapterComment from "@/app/(protected)/(reader)/_components/ChapterComment";
 
 const ComicReader = ({
   params,
@@ -586,6 +587,9 @@ const ComicReader = ({
 
         <div className="fixed bottom-5 right-3 bg-[#151515] rounded-full border border-nerd-gray w-10 h-10 flex justify-center items-center">
           <LikeChapter chapter={chapters[currentIndex]} />
+        </div>
+        <div className="fixed max-md:bottom-18 bottom-20 right-3 bg-[#151515] rounded-full border border-nerd-gray w-10 h-10 flex justify-center items-center">
+          <ChapterComment chapter={chapters[currentIndex]} />
         </div>
       </main>
       {FooterPanel}
