@@ -67,16 +67,16 @@ const CreatorChapterComments = ({ chapter }: { chapter: Chapter }) => {
                   <Avatar className="w-8 h-8">
                     {comment.image && <AvatarImage src={comment.image} />}
                     <AvatarFallback className="bg-nerd-blue">
-                      {comment.username?.charAt(0) ?? "U"}
+                      {comment.readerName?.charAt(0) ?? "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-sm">
-                        {comment.username ?? "Unknown"}
+                        {comment.readerName ?? "Unknown"}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(comment.createdAt).toDateString()}
+                        {new Date(comment.createdAt).toLocaleString()}
                       </span>
                     </div>
                     <p className="text-sm">{comment.content}</p>

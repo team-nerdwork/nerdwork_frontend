@@ -111,7 +111,7 @@ const ChapterComment = ({ chapter }: { chapter: Chapter }) => {
                         {comment.readerName ?? "Unknown"}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(comment.createdAt).toDateString()}
+                        {new Date(comment.createdAt).toLocaleString()}
                       </span>
                     </div>
                     <p className="text-sm">{comment.content}</p>
