@@ -6,6 +6,7 @@ import React from "react";
 import ChapterActions from "./ChapterActions";
 import PublishDraft from "./PublishDraft";
 import PreviewChapter from "./PreviewChapter";
+import CreatorChapterComments from "./CreatorChapterComments";
 
 const ChapterComics = ({ data }: { data: Chapter[]; slug?: string }) => {
   return (
@@ -78,6 +79,7 @@ const ChapterComics = ({ data }: { data: Chapter[]; slug?: string }) => {
               </Button>
             </Link> */}
             <PreviewChapter pages={chapter.pages} />
+            <CreatorChapterComments chapter={chapter} />
             {
               chapter.chapterStatus == "draft" && (
                 <PublishDraft data={chapter} />

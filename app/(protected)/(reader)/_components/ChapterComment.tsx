@@ -102,13 +102,13 @@ const ChapterComment = ({ chapter }: { chapter: Chapter }) => {
                   <Avatar className="w-8 h-8">
                     {comment.image && <AvatarImage src={comment.image} />}
                     <AvatarFallback className="bg-nerd-blue">
-                      {comment.username?.charAt(0) ?? "U"}
+                      {comment.readerName?.charAt(0) ?? "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">
-                        {comment.username ?? "Unknown"}
+                      <span className="font-semibold text-sm truncate max-w-[150px]">
+                        {comment.readerName ?? "Unknown"}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {new Date(comment.createdAt).toDateString()}
