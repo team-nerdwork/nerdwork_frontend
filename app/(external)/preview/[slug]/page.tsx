@@ -7,13 +7,13 @@ import {
 import { notFound } from "next/navigation";
 import PreviewComicClient from "./PreviewComicClient";
 
-interface PreviewComicProps {
+export default async function PreviewComic({
+  params,
+}: {
   params: {
     slug: string;
   };
-}
-
-export default async function PreviewComic({ params }: PreviewComicProps) {
+}) {
   const { slug } = params;
   const queryClient = new QueryClient();
 
