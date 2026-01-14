@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
@@ -56,6 +55,7 @@ export default function ShareButton({
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         toast.error("Failed to copy link");
+        console.error("Failed to copy: ", err);
       }
     }
   };

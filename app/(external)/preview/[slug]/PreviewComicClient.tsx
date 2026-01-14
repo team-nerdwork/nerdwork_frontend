@@ -13,6 +13,7 @@ import Navbar from "@/components/homepage/Navbar";
 import { useRouter } from "next/navigation";
 
 export default function PreviewComicClient({ slug }: { slug: string }) {
+  const router = useRouter();
   const { data: response, isLoading } = useQuery({
     queryKey: ["preview-comic", slug],
     queryFn: async () => await getSharedComicPreview(slug),
@@ -31,7 +32,6 @@ export default function PreviewComicClient({ slug }: { slug: string }) {
   const comicData = response?.data?.data || response?.data;
 
   if (!response?.success || !comicData) {
-    const router = useRouter();
     return (
       <>
         <Navbar />
