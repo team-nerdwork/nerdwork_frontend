@@ -10,11 +10,11 @@ import PreviewComicClient from "./PreviewComicClient";
 export default async function PreviewComic({
   params,
 }: {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   const queryClient = new QueryClient();
 
   const response = await getSharedComicPreview(slug);
