@@ -20,17 +20,41 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CreatorTransaction } from "@/lib/types";
 import LoaderScreen from "@/components/loading-screen";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { addBankAccount, setCreatorAddress } from "@/actions/profile.actions";
+import { Landmark } from "lucide-react";
 
 const WalletPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sort, setSort] = useState("");
-  const { profile } = useUserSession();
+  const { profile, refetch } = useUserSession();
   const creatorProfile = profile?.creatorProfile;
 
   const usdPerNwt = 0.1;
   const calculateUSD = (amount: number) => amount * usdPerNwt;
   const usdEquivalent = calculateUSD(creatorProfile?.walletBalance);
+
+  const paymentMethod = useMemo(() => {
+    const address = creatorProfile?.walletAddress;
+    if (!address) return null;
+    try {
+      if (address.startsWith("{")) {
+        const details = JSON.parse(address);
+        return { type: "bank", details };
+      }
+      return { type: "wallet", address };
+    } catch {
+      return { type: "wallet", address };
+    }
+  }, [creatorProfile?.walletAddress]);
 
   const {
     data: transactions,
@@ -121,24 +145,60 @@ const WalletPage = () => {
               <p>Wallet Information</p>
               <p className="text-nerd-muted">Manage your payout destination</p>
             </div>
-            {creatorProfile?.walletAddress ? (
+            {paymentMethod ? (
               <div className="flex flex-col gap-5">
                 <div>
-                  <p>Solflare (Solana Wallet)</p>
-                  <p className="text-nerd-muted">
-                    {creatorProfile?.walletAddress.slice(0, 4)}...
-                    {creatorProfile?.walletAddress.slice(-4)}
+                  <p className="flex items-center gap-2">
+                    {paymentMethod.type === "bank" ? (
+                      <>
+                        <Landmark size={16} /> Bank Account
+                      </>
+                    ) : (
+                      "Solflare (Solana Wallet)"
+                    )}
+                  </p>
+                  <p className="text-nerd-muted truncate">
+                    {paymentMethod.type === "bank"
+                      ? `${paymentMethod.details.bankName} - ${paymentMethod.details.accountNumber}`
+                      : `${paymentMethod.address.slice(
+                          0,
+                          4
+                        )}...${paymentMethod.address.slice(-4)}`}
                   </p>
                 </div>
-                <Button
-                  onClick={() => toast.info("Feature is coming soon")}
-                  className="bg-nerd-default w-fit"
-                >
-                  Edit Wallet
-                </Button>
+                {paymentMethod.type === "bank" ? (
+                  <BankDetailsDialog
+                    onSuccess={refetch}
+                    trigger={
+                      <Button className="bg-nerd-default w-fit">
+                        Edit Bank Details
+                      </Button>
+                    }
+                  />
+                ) : (
+                  <Button
+                    onClick={() => toast.info("Feature is coming soon")}
+                    className="bg-nerd-default w-fit"
+                  >
+                    Edit Wallet
+                  </Button>
+                )}
               </div>
             ) : (
-              <ConnectWalletModal />
+              <div className="flex flex-col gap-3">
+                <ConnectWalletModal />
+                <div className="flex items-center gap-2 text-xs text-nerd-muted justify-center">
+                  <span>OR</span>
+                </div>
+                <BankDetailsDialog
+                  onSuccess={refetch}
+                  trigger={
+                    <Button variant="outline" className="w-full">
+                      Add Bank Details
+                    </Button>
+                  }
+                />
+              </div>
             )}
             <p className="text-nerd-muted text-xs">
               Payouts are completed every 3 working days
@@ -228,6 +288,97 @@ const WalletPage = () => {
         </div>
       </section>
     </main>
+  );
+};
+
+const BankDetailsDialog = ({
+  trigger,
+  onSuccess,
+}: {
+  trigger: React.ReactNode;
+  onSuccess: () => void;
+}) => {
+  const [bankDetails, setBankDetails] = useState({
+    accountName: "",
+    accountNumber: "",
+    bankName: "",
+  });
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (
+      !bankDetails.accountName ||
+      !bankDetails.accountNumber ||
+      !bankDetails.bankName
+    ) {
+      toast.error("Please fill in all bank details");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await addBankAccount(bankDetails);
+
+      if (!response?.success) {
+        toast.error(
+          response?.message ?? "An error occurred while submitting the form."
+        );
+        return;
+      }
+
+      await onSuccess();
+      toast.success("Bank details set successfully!");
+      setIsOpen(false);
+    } catch (err) {
+      toast.error("An unexpected error occurred.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="bg-[#1D1E21] border-[#292A2E] text-white">
+        <DialogHeader>
+          <DialogTitle>Bank Details</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 mt-4">
+          <Input
+            placeholder="Account Name"
+            value={bankDetails.accountName}
+            onChange={(e) =>
+              setBankDetails({ ...bankDetails, accountName: e.target.value })
+            }
+            className="bg-[#25262A] border-none text-white"
+          />
+          <Input
+            placeholder="Account Number"
+            value={bankDetails.accountNumber}
+            onChange={(e) =>
+              setBankDetails({ ...bankDetails, accountNumber: e.target.value })
+            }
+            className="bg-[#25262A] border-none text-white"
+          />
+          <Input
+            placeholder="Bank Name"
+            value={bankDetails.bankName}
+            onChange={(e) =>
+              setBankDetails({ ...bankDetails, bankName: e.target.value })
+            }
+            className="bg-[#25262A] border-none text-white"
+          />
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
+          >
+            {isLoading ? "Saving..." : "Save Details"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

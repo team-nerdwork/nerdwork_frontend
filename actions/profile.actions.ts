@@ -53,6 +53,42 @@ export const createReaderProfile = async (data: createReaderProfileData) => {
   }
 };
 
+export const addBankAccount = async (data: {
+  accountName: string;
+  accountNumber: string;
+  bankName: string;
+}) => {
+  try {
+    const response = await axiosPost("/profile/creator/bank-details", data);
+    console.log("Bank details response:", response);
+    console.log("Bank details data:", data);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Bank details set successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Setting bank details failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to set bank details. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to set bank details. Please try again.",
+    };
+  }
+};
+
 export const createCreatorProfile = async (data: createCreatorProfileData) => {
   const getSession = await auth();
   try {
