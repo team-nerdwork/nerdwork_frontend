@@ -29,7 +29,6 @@ export default function ShareButton({
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
   url = baseUrl + url;
-  console.log("ShareButton URL:", url);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
