@@ -116,3 +116,24 @@ export interface Comment {
   chapterId: string;
   createdAt: string;
 }
+
+export type PreviewComic = {
+  id: string;
+  image: string;
+  title: string;
+  description: string;
+  comicStatus: "upcoming" | "draft" | "scheduled" | "published";
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  owner?: string;
+  genre?: string[];
+  ageRating?: string;
+  noOfChapters: number;
+  noOfViews: number;
+  noOfLikes?: number;
+  isPaid?: boolean;
+  isOngoing?: boolean;
+  isSubscribed?: boolean;
+  subscribeCount?: number;
+};

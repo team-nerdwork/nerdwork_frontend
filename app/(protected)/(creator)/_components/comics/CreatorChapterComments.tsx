@@ -1,10 +1,9 @@
 "use client";
-import { addChapterComment, getChapterComments } from "@/actions/comic.actions";
-import { Chapter, Comment } from "@/lib/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, MessageSquareMore, Send } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+
+import { getChapterComments } from "@/actions/comic.actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -12,14 +11,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Chapter, Comment } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2, MessageSquare } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
-const ChapterComment = ({ chapter }: { chapter: Chapter }) => {
-  const queryClient = useQueryClient();
-  const [content, setContent] = useState("");
+const CreatorChapterComments = ({ chapter }: { chapter: Chapter }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -38,44 +35,12 @@ const ChapterComment = ({ chapter }: { chapter: Chapter }) => {
     },
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async () => {
-      console.log("Submitting comment:", content);
-      return await addChapterComment(chapter.id, content);
-    },
-    onSuccess: async (response) => {
-      if (!response?.success) {
-        toast.error(
-          response?.message ??
-            "An error occurred while processing your request."
-        );
-        return;
-      }
-
-      setContent("");
-      await queryClient.invalidateQueries({
-        queryKey: ["chapter-comments", chapter.id],
-      });
-      toast.success("Comment added successfully");
-    },
-    onError: (err) => {
-      toast.error("An unexpected error occurred.");
-      console.error(err);
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) return;
-    mutate();
-  };
-
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className={`cursor-pointer group relative`}>
-          <MessageSquareMore size={20} />
-        </button>
+        <Button variant="ghost" size="icon">
+          <MessageSquare size={20} />
+        </Button>
       </SheetTrigger>
       <SheetContent
         side={isMobile ? "bottom" : "right"}
@@ -94,7 +59,7 @@ const ChapterComment = ({ chapter }: { chapter: Chapter }) => {
               </div>
             ) : comments?.length === 0 ? (
               <p className="text-center text-muted-foreground py-4">
-                No comments yet. Be the first to share your thoughts!
+                No comments yet.
               </p>
             ) : (
               comments?.map((comment) => (
@@ -107,7 +72,7 @@ const ChapterComment = ({ chapter }: { chapter: Chapter }) => {
                   </Avatar>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm truncate max-w-[150px]">
+                      <span className="font-semibold text-sm">
                         {comment.readerName ?? "Unknown"}
                       </span>
                       <span className="text-xs text-muted-foreground">
@@ -121,29 +86,9 @@ const ChapterComment = ({ chapter }: { chapter: Chapter }) => {
             )}
           </div>
         </ScrollArea>
-        <form onSubmit={handleSubmit} className="mt-4 flex gap-2 items-end">
-          <Textarea
-            placeholder="Add a comment..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            disabled={isPending}
-            className="min-h-[80px] resize-none border-nerd-muted"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={isPending || !content.trim()}
-          >
-            {isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
-          </Button>
-        </form>
       </SheetContent>
     </Sheet>
   );
 };
 
-export default ChapterComment;
+export default CreatorChapterComments;

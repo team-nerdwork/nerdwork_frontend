@@ -20,6 +20,7 @@ import LoaderScreen from "@/components/loading-screen";
 import { Chapter, Comic } from "@/lib/types";
 import { toast } from "sonner";
 import { useUserSession } from "@/lib/api/queries";
+import ShareButton from "@/components/share-button";
 
 const ComicDetailsPage = ({
   params,
@@ -105,8 +106,8 @@ const ComicDetailsPage = ({
               {comic?.title}
             </h3>
           </div>
-          <div className="flex gap-2 my-8 max-md:w-full max-md:justify-between">
-            <Button asChild variant={"secondary"} className="max-md:w-4/5">
+          <div className="flex items-center gap-2 my-8 max-md:w-full max-md:justify-between">
+            <Button asChild variant={"secondary"} className="max-md:flex-1">
               <Link href={`/creator/comics/${slug}/add`}>
                 <Plus /> Add Chapter
               </Link>
@@ -116,6 +117,11 @@ const ComicDetailsPage = ({
                 <Plus /> Bulk Upload
               </Button>
             }
+            <ShareButton
+              url={`/preview/${slug}`}
+              title={comic?.title}
+              text={`Read ${comic?.title} on Nerdwork`}
+            />
             {comic && (
               <Menubar className="bg-[#1D1E21] max-md:hidden font-inter outline-none border-none ring-0 transition duration-300 hover:ease-in-out">
                 <MenubarMenu>

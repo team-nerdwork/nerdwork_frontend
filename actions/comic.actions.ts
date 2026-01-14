@@ -699,3 +699,33 @@ export const getChapterComments = async (chapterId: string) => {
     };
   }
 };
+
+export const getSharedComicPreview = async (slug: string) => {
+  try {
+    const response = await axiosGet(`/comics/shared/${slug}`);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Comic retrieved successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Comic retrieval failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to retrieve creator comics. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to retrieve creator comics. Please try again.",
+    };
+  }
+};

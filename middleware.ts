@@ -4,7 +4,14 @@ import { auth } from "./auth";
 const PROTECTED_PAGES = ["/r", "/creator"];
 const ONBOARDING_PREFIX = "/onboarding";
 
-const PUBLIC_PAGES = ["/", "/communities", "/nerdwork+", "/events"];
+const PUBLIC_PAGES = [
+  "/",
+  "/communities",
+  "/nerdwork+",
+  "/events",
+  "/preview",
+  "/privacy-policy",
+];
 
 export default auth((req) => {
   const { pathname, origin, search } = req.nextUrl;

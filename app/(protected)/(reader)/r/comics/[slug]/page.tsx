@@ -18,6 +18,7 @@ import { LoadingButton } from "@/components/ui/LoadingButton";
 import { toast } from "sonner";
 import { addToLibrary, removeFromLibrary } from "@/actions/library.actions";
 import SubscribeModal from "../../../_components/SubscribeModal";
+import ShareButton from "@/components/share-button";
 
 const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
@@ -182,6 +183,11 @@ const ComicInterface = ({ params }: { params: Promise<{ slug: string }> }) => {
                   </LoadingButton>
                 )}
                 <SubscribeModal comic={comic} />
+                <ShareButton
+                  url={`/preview/${slug}`}
+                  title={comic?.title}
+                  text={`Read ${comic?.title} on Nerdwork`}
+                />
               </div>
             </section>
             {comic?.image && (
