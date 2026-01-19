@@ -13,6 +13,7 @@ import { useUserSession } from "@/lib/api/queries";
 import { addBankAccount, setCreatorAddress } from "@/actions/profile.actions";
 import { Input } from "@/components/ui/input";
 import { Landmark } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 const wallet = new Solflare();
 
@@ -20,6 +21,7 @@ export function PaymentDetailsForm() {
   const [selectedWallet, setSelectedWallet] = useState<string>("");
   const router = useRouter();
   const { refetch } = useUserSession();
+  const { update } = useSession();
   const [bankDetails, setBankDetails] = useState({
     accountName: "",
     accountNumber: "",
@@ -46,12 +48,16 @@ export function PaymentDetailsForm() {
 
         if (!response?.success) {
           toast.error(
-            response?.message ?? "An error occurred while submitting the form."
+            response?.message ?? "An error occurred while submitting the form.",
           );
           return;
         }
 
         await refetch();
+        await update({
+          cProfile: true,
+          ...(response.data?.token && { token: response.data.token }),
+        });
         toast.success("Bank details set successfully!");
         router.push("/creator/comics");
       } catch (err) {
@@ -74,18 +80,22 @@ export function PaymentDetailsForm() {
     try {
       const response = await setCreatorAddress(
         wallet!.publicKey!.toString(),
-        selectedWallet
+        selectedWallet,
       );
       console.log(response);
 
       if (!response?.success) {
         toast.error(
-          response?.message ?? "An error occurred while submitting the form."
+          response?.message ?? "An error occurred while submitting the form.",
         );
         return;
       }
 
       await refetch();
+      await update({
+        cProfile: true,
+        ...(response.data?.token && { token: response.data.token }),
+      });
       toast.success("Wallet address set successfully!");
       router.push("/creator/comics");
     } catch (err) {

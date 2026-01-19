@@ -17,6 +17,7 @@ const NewStories = () => {
   });
 
   const comics: PreviewComic[] = comicData?.data?.data || [];
+  const [activeComicId, setActiveComicId] = React.useState<string | null>(null);
 
   return (
     <>
@@ -57,7 +58,14 @@ const NewStories = () => {
                     key={comic.id}
                     className="h-[412px] w-[240px] min-w-[240px] flex-shrink-0 flex flex-col justify-between rounded-[15px] overflow-hidden bg-[#212121] snap-start"
                   >
-                    <figure className="relative group h-[308px] w-full overflow-hidden">
+                    <figure
+                      className="relative group h-[308px] w-full overflow-hidden cursor-pointer"
+                      onClick={() =>
+                        setActiveComicId(
+                          activeComicId === comic.id ? null : comic.id,
+                        )
+                      }
+                    >
                       <Image
                         src={comic.image}
                         width={240}
@@ -65,7 +73,13 @@ const NewStories = () => {
                         alt={`${comic.title} cover`}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-black/90 opacity-0 group-hover:opacity-100 group-hover:border group-hover:border-nerd-muted transition-opacity duration-300 p-4 flex flex-col gap-3 text-white">
+                      <div
+                        className={`absolute inset-0 bg-black/90 transition-opacity duration-300 p-4 flex flex-col gap-3 text-white ${
+                          activeComicId === comic.id
+                            ? "opacity-100 border border-nerd-muted"
+                            : "opacity-0 group-hover:opacity-100 group-hover:border group-hover:border-nerd-muted"
+                        }`}
+                      >
                         <p className="font-semibold text-xl">{comic.title}</p>
                         <div className="mt-auto grid grid-cols-2 gap-2 text-am text-gray-400 font-medium">
                           <span className="flex items-center gap-1.5">

@@ -28,7 +28,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { addBankAccount, setCreatorAddress } from "@/actions/profile.actions";
+import { addBankAccount } from "@/actions/profile.actions";
 import { Landmark } from "lucide-react";
 
 const WalletPage = () => {
