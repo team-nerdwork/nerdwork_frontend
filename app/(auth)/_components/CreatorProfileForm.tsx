@@ -57,12 +57,15 @@ export function CreatorProfileForm({ onNext }: { onNext: () => void }) {
 
       if (!response?.success) {
         toast.error(
-          response?.message ?? "An error occurred while submitting the form."
+          response?.message ?? "An error occurred while submitting the form.",
         );
         return;
       }
 
-      await update({ cProfile: true });
+      await update({
+        cProfile: true,
+        ...(response.data?.token && { token: response.data.token }),
+      });
 
       toast.success("Profile Updated Successfully!");
       onNext();

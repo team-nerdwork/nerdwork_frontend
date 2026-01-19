@@ -20,18 +20,30 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CreatorTransaction } from "@/lib/types";
 import LoaderScreen from "@/components/loading-screen";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { addBankAccount } from "@/actions/profile.actions";
+import { Landmark } from "lucide-react";
 
 const WalletPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sort, setSort] = useState("");
-  const { profile } = useUserSession();
+  const { profile, refetch } = useUserSession();
   const creatorProfile = profile?.creatorProfile;
 
   const usdPerNwt = 0.1;
   const calculateUSD = (amount: number) => amount * usdPerNwt;
   const usdEquivalent = calculateUSD(creatorProfile?.walletBalance);
 
+  const bankDetails = creatorProfile?.bankDetails;
+  const walletAddress = creatorProfile?.walletAddress;
   const {
     data: transactions,
     isLoading,
@@ -55,12 +67,12 @@ const WalletPage = () => {
 
     if (typeFilter !== "all" && typeFilter !== "") {
       filteredData = filteredData.filter(
-        (item) => item.transactionType === typeFilter
+        (item) => item.transactionType === typeFilter,
       );
     }
     if (statusFilter !== "all" && statusFilter !== "") {
       filteredData = filteredData.filter(
-        (item) => item.status === statusFilter
+        (item) => item.status === statusFilter,
       );
     }
 
@@ -102,8 +114,8 @@ const WalletPage = () => {
           </div>
         </div>
 
-        <section className="flex max-md:flex-col gap-3">
-          <div className="md:w-2/4 md:h-[279px] rounded-[12px] border-[0.5px] border-[#292A2E] bg-[#1D1E21] flex flex-col justify-between p-6">
+        <section className="flex max-md:flex-col items-stretch gap-3">
+          <div className="md:w-2/4 md:min-h-[279px] rounded-[12px] border-[0.5px] border-[#292A2E] bg-[#1D1E21] flex flex-col justify-between p-6">
             <div>
               <p className="text-sm">Available Balance</p>
               <p className="text-[64px] text-[#09FFFF] flex items-center gap-3 font-bold">
@@ -116,36 +128,73 @@ const WalletPage = () => {
             </p>
           </div>
 
-          <div className="md:w-1/4 h-[279px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm p-6 flex flex-col justify-between">
+          <div className="md:w-1/4 min-h-[279px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm p-6 flex flex-col gap-4">
             <div>
               <p>Wallet Information</p>
               <p className="text-nerd-muted">Manage your payout destination</p>
             </div>
-            {creatorProfile?.walletAddress ? (
-              <div className="flex flex-col gap-5">
-                <div>
-                  <p>Solflare (Solana Wallet)</p>
-                  <p className="text-nerd-muted">
-                    {creatorProfile?.walletAddress.slice(0, 4)}...
-                    {creatorProfile?.walletAddress.slice(-4)}
-                  </p>
-                </div>
-                <Button
-                  onClick={() => toast.info("Feature is coming soon")}
-                  className="bg-nerd-default w-fit"
-                >
-                  Edit Wallet
-                </Button>
+            <div className="flex flex-col gap-4 flex-1">
+              <div className="flex flex-col gap-2">
+                {walletAddress ? (
+                  <>
+                    <p className="flex items-center gap-2">
+                      Solflare (Solana Wallet)
+                    </p>
+                    <p className="text-nerd-muted truncate">
+                      {`${walletAddress.slice(0, 4)}...${walletAddress.slice(
+                        -4,
+                      )}`}
+                    </p>
+                    <Button
+                      onClick={() => toast.info("Feature is coming soon")}
+                      className="bg-nerd-default w-fit h-8 text-xs"
+                    >
+                      Edit Wallet
+                    </Button>
+                  </>
+                ) : (
+                  <div className="w-full">
+                    <ConnectWalletModal />
+                  </div>
+                )}
               </div>
-            ) : (
-              <ConnectWalletModal />
-            )}
-            <p className="text-nerd-muted text-xs">
+
+              <div className="flex flex-col gap-2">
+                {bankDetails ? (
+                  <>
+                    <p className="flex items-center gap-2">
+                      <Landmark size={16} /> Bank Account
+                    </p>
+                    <p className="text-nerd-muted truncate">
+                      {`${bankDetails.bankName} - ${bankDetails.accountNumber}`}
+                    </p>
+                    <BankDetailsDialog
+                      onSuccess={refetch}
+                      trigger={
+                        <Button className="bg-nerd-default w-fit h-8 text-xs">
+                          Edit Bank Details
+                        </Button>
+                      }
+                    />
+                  </>
+                ) : (
+                  <BankDetailsDialog
+                    onSuccess={refetch}
+                    trigger={
+                      <Button variant="outline" className="w-full">
+                        Add Bank Details
+                      </Button>
+                    }
+                  />
+                )}
+              </div>
+            </div>
+            <p className="text-nerd-muted text-xs mt-auto pt-4">
               Payouts are completed every 3 working days
             </p>
           </div>
 
-          <div className="md:w-1/4 h-[279px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm flex flex-col">
+          <div className="md:w-1/4 min-h-[279px] rounded-[12px] border-[0.5px] border-[#292A2E] text-sm flex flex-col">
             <div className="p-6 h-[60%] flex flex-col justify-between">
               <div>
                 <p>Exchange Rates</p>
@@ -228,6 +277,97 @@ const WalletPage = () => {
         </div>
       </section>
     </main>
+  );
+};
+
+const BankDetailsDialog = ({
+  trigger,
+  onSuccess,
+}: {
+  trigger: React.ReactNode;
+  onSuccess: () => void;
+}) => {
+  const [bankDetails, setBankDetails] = useState({
+    accountName: "",
+    accountNumber: "",
+    bankName: "",
+  });
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (
+      !bankDetails.accountName ||
+      !bankDetails.accountNumber ||
+      !bankDetails.bankName
+    ) {
+      toast.error("Please fill in all bank details");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await addBankAccount(bankDetails);
+
+      if (!response?.success) {
+        toast.error(
+          response?.message ?? "An error occurred while submitting the form.",
+        );
+        return;
+      }
+
+      await onSuccess();
+      toast.success("Bank details set successfully!");
+      setIsOpen(false);
+    } catch (err) {
+      toast.error("An unexpected error occurred.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="bg-[#1D1E21] border-[#292A2E] text-white">
+        <DialogHeader>
+          <DialogTitle>Bank Details</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 mt-4">
+          <Input
+            placeholder="Account Name"
+            value={bankDetails.accountName}
+            onChange={(e) =>
+              setBankDetails({ ...bankDetails, accountName: e.target.value })
+            }
+            className="bg-[#25262A] border-none text-white"
+          />
+          <Input
+            placeholder="Account Number"
+            value={bankDetails.accountNumber}
+            onChange={(e) =>
+              setBankDetails({ ...bankDetails, accountNumber: e.target.value })
+            }
+            className="bg-[#25262A] border-none text-white"
+          />
+          <Input
+            placeholder="Bank Name"
+            value={bankDetails.bankName}
+            onChange={(e) =>
+              setBankDetails({ ...bankDetails, bankName: e.target.value })
+            }
+            className="bg-[#25262A] border-none text-white"
+          />
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
+          >
+            {isLoading ? "Saving..." : "Save Details"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
