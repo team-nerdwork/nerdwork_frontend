@@ -719,13 +719,43 @@ export const getSharedComicPreview = async (slug: string) => {
         message:
           error?.response?.data?.detail ||
           error?.response?.data?.message ||
-          "Failed to retrieve creator comics. Please try again.",
+          "Failed to retrieve comics. Please try again.",
       };
     }
     return {
       success: false,
       status: 500,
-      message: "Failed to retrieve creator comics. Please try again.",
+      message: "Failed to retrieve comics. Please try again.",
+    };
+  }
+};
+
+export const getPublicComics = async () => {
+  try {
+    const response = await axiosGet(`/comics/public`);
+
+    return {
+      success: true,
+      data: response.data,
+      message: "Comics retrieved successfully.",
+    };
+  } catch (error: unknown) {
+    console.error("Comic retrieval failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error?.status,
+        message:
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          "Failed to retrieve comics. Please try again.",
+      };
+    }
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to retrieve comics. Please try again.",
     };
   }
 };

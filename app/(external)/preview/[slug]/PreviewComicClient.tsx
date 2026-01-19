@@ -13,6 +13,7 @@ import Navbar from "@/components/homepage/Navbar";
 import { useRouter } from "next/navigation";
 
 export default function PreviewComicClient({ slug }: { slug: string }) {
+  const router = useRouter();
   const { data: response, isLoading } = useQuery({
     queryKey: ["preview-comic", slug],
     queryFn: async () => await getSharedComicPreview(slug),
@@ -31,7 +32,6 @@ export default function PreviewComicClient({ slug }: { slug: string }) {
   const comicData = response?.data?.data || response?.data;
 
   if (!response?.success || !comicData) {
-    const router = useRouter();
     return (
       <>
         <Navbar />
@@ -69,7 +69,7 @@ export default function PreviewComicClient({ slug }: { slug: string }) {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#121212] flex items-center justify-center p-4 font-inter">
+      <div className="min-h-screen bg-[#121212] flex items-center justify-center p-4 font-inter pt-16">
         <div className="max-w-md w-full bg-[#1D1E21] rounded-2xl overflow-hidden shadow-2xl border border-[#2A2B2E]">
           <div className="relative h-96 w-full">
             <Image

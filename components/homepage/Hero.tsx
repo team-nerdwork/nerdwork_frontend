@@ -11,7 +11,7 @@ export default function Hero() {
           data-testid="hero"
           className="flex flex-col font-inter text-center -mb-px max-md:gap-6 md:gap-8 items-center justify-end h-screen pb-10 md:pb-32 px-7"
         >
-          <h1 className="font-obostar text-[52px] max-md:text-[32px]">
+          <h1 className="font-firespace text-[52px] max-md:text-[32px]">
             Where passion
             <br />
             meets community

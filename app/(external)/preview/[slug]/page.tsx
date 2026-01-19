@@ -7,14 +7,14 @@ import {
 import { notFound } from "next/navigation";
 import PreviewComicClient from "./PreviewComicClient";
 
-interface PreviewComicProps {
-  params: {
+export default async function PreviewComic({
+  params,
+}: {
+  params: Promise<{
     slug: string;
-  };
-}
-
-export default async function PreviewComic({ params }: PreviewComicProps) {
-  const { slug } = params;
+  }>;
+}) {
+  const { slug } = await params;
   const queryClient = new QueryClient();
 
   const response = await getSharedComicPreview(slug);

@@ -17,9 +17,9 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-[#0D0D0D1A] z-30 text-white fixed right-0 left-0 w-full border-b border-[#FFFFFF1A] backdrop-blur-[2px]">
+    <nav className="bg-[#0D0D0D1A] z-30 text-white fixed right-0 left-0 w-full backdrop-blur-[2px]">
       <section className="max-w-[1600px] mx-auto">
-        <section className="lg:flex hidden gap-4 font-inter font-semibold justify-between h-[93px] items-center px-6">
+        <section className="lg:flex hidden gap-4 font-montserrat font-semibold justify-between h-[93px] items-center px-6">
           <Link href={"/"}>
             <Image src={Logo} width={146} height={40} alt="nerdwork logo" />
           </Link>
@@ -40,11 +40,14 @@ export default function Navbar() {
               <Link href={"/signin"}>Log In</Link>
             </Button> */}
             {user ? (
-              <Button asChild variant={"dull"}>
+              <Button
+                asChild
+                className="bg-[#08FA37CC] rounded-full font-montserrat text-lg hover:bg-[#08FA37]"
+              >
                 <Link href={"/signin"}>Go to dashboard</Link>
               </Button>
             ) : (
-              <Button asChild variant={"primary"}>
+              <Button asChild className="bg-[#009BCB] font-montserrat">
                 <Link className="w-[120px]" href={"/signin"}>
                   Sign In
                 </Link>
@@ -87,15 +90,15 @@ export default function Navbar() {
                 <li>Company</li>
               </ul>
               <div className="flex justify-between gap-4 w-full">
-                {/* <Button asChild className="bg-[#343435] w-1/2">
-                  <Link href={"/signin"}>Log In</Link>
-                </Button> */}
                 {user ? (
-                  <Button asChild variant={"outline"}>
+                  <Button
+                    asChild
+                    className="bg-[#08FA37CC] rounded-full font-montserrat text-lg hover:bg-[#08FA37]"
+                  >
                     <Link href={"/signin"}>Go to dashboard</Link>
                   </Button>
                 ) : (
-                  <Button asChild variant={"primary"}>
+                  <Button asChild className="bg-[#009BCB] font-montserrat">
                     <Link href={"/signin"} className="w-[120px]">
                       Sign In
                     </Link>
