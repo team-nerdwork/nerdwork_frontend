@@ -15,8 +15,8 @@ const Nerdworker = () => {
         alt="comic gallery"
         className="w-full max-md:hidden"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(240deg,rgba(13,13,13,0)_0%,#0D0D0D_48%)]" />
-      <div className="absolute inset-0 max-w-[1130px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4 items-start justify-center z-10">
+      <div className="absolute inset-0 md:bg-[linear-gradient(240deg,rgba(13,13,13,0)_0%,#0D0D0D_48%)]" />
+      <div className="absolute inset-0 max-w-[1130px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4 items-start md:justify-center z-10">
         <h2 className="uppercase font-archivo text-5xl max-md:text-xl">
           Become a Nerdworker
         </h2>
@@ -31,6 +31,15 @@ const Nerdworker = () => {
           <Link href={"/signin"}>Get Started</Link>
         </Button>
       </div>
+      <Image
+        src={
+          "https://res.cloudinary.com/dk4gmufzn/image/upload/v1768793182/nerdworker_-mobile_ealm5z.png"
+        }
+        width={382}
+        height={271}
+        alt=""
+        className="mt-20 md:hidden"
+      />
     </section>
   );
 };

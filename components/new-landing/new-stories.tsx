@@ -6,7 +6,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getPublicComics } from "@/actions/comic.actions";
 import { PreviewComic } from "@/lib/types";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { BookOpen, Eye, Heart, Loader2 } from "lucide-react";
 
 const NewStories = () => {
   const { data: comicData, isLoading } = useQuery({
@@ -57,14 +57,44 @@ const NewStories = () => {
                     key={comic.id}
                     className="h-[412px] w-[240px] min-w-[240px] flex-shrink-0 flex flex-col justify-between rounded-[15px] overflow-hidden bg-[#212121] snap-start"
                   >
-                    <figure>
+                    <figure className="relative group h-[308px] w-full overflow-hidden">
                       <Image
                         src={comic.image}
                         width={240}
                         height={314}
                         alt={`${comic.title} cover`}
-                        className="h-[308px] w-[240px] object-cover"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
+                      <div className="absolute inset-0 bg-black/90 opacity-0 group-hover:opacity-100 group-hover:border group-hover:border-nerd-muted transition-opacity duration-300 p-4 flex flex-col gap-3 text-white">
+                        <p className="font-semibold text-xl">{comic.title}</p>
+                        <div className="mt-auto grid grid-cols-2 gap-2 text-am text-gray-400 font-medium">
+                          <span className="flex items-center gap-1.5">
+                            <BookOpen size={14} className="text-[#08FA37]" />
+                            {comic.noOfChapters} Chap(s)
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <Eye size={14} className="text-[#08FA37]" />
+                            {comic.noOfViews?.toLocaleString()}
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <Heart size={14} className="text-[#08FA37]" />
+                            {comic.noOfLikes?.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="line-clamp-6 text-sm text-gray-200">
+                          {comic.description}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {comic.genre?.slice(0, 3).map((g) => (
+                            <span
+                              key={g}
+                              className="text-[10px] bg-white/10 border border-white/20 px-2 py-0.5 rounded-full capitalize"
+                            >
+                              {g}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </figure>
                     <div>
                       <div className="py-2 px-4">
@@ -98,7 +128,7 @@ const NewStories = () => {
       </section>
       <style jsx>{`
         .nw-scroll::-webkit-scrollbar {
-          height: 8px;
+          height: 5px;
         }
         .nw-scroll::-webkit-scrollbar-track {
           background: rgba(255, 255, 255, 0.03);

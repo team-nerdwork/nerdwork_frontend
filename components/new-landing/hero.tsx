@@ -136,7 +136,7 @@ export default function Hero() {
                   variant={"primary"}
                   className="w-full max-w-[222px] font-bold bg-[#009BCB] rounded-[12px] font-montserrat"
                 >
-                  <Link href={"/signup"}>Sign Up</Link>
+                  <Link href={"/signin"}>Sign Up</Link>
                 </Button>
               </div>
             </div>
@@ -175,8 +175,8 @@ export default function Hero() {
                     index === currentSlide
                       ? `${progress}%`
                       : index < currentSlide
-                      ? "100%"
-                      : "0%",
+                        ? "100%"
+                        : "0%",
                 }}
               />
               {/* Hover effect */}
