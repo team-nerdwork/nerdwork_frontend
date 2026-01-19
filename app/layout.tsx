@@ -1,6 +1,6 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Archivo_Black, Inter, Montserrat } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import LoadingProvider from "@/components/LoadingProvider";
@@ -15,9 +15,25 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const firespace = localFont({
+  src: "../public/FireSpaceDemoRegular.ttf",
+  variable: "--font-firespace",
+});
+
 const obostar = localFont({
   src: "../public/obostartest-regular.otf",
   variable: "--font-obostar",
+});
+
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+});
+
+const archivo = Archivo_Black({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-archivo",
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -96,7 +112,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${obostar.variable} antialiased`}>
+      <body
+        className={`${inter.variable} ${obostar.variable} ${firespace.variable} ${montserrat.variable} ${archivo.variable} antialiased`}
+      >
         <SessionProvider session={session}>
           <QueryProvider>
             <LoadingProvider>
