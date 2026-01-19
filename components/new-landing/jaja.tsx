@@ -17,7 +17,7 @@ const JajaGame = () => {
         className="absolute top-1/5 left-1/10 z-50 max-md:hidden"
       />
       <section className="absolute inset-0 max-w-[1130px] text-center mx-auto px-4 sm:px-6 lg:px-8 max-md:pt-10 flex flex-col gap-4 items-center justify-end z-10 h-full">
-        <h2 className="uppercase font-archivo text-5xl max-md:text-xl text-white">
+        <h2 className="uppercase font-archivo text-5xl max-md:text-2xl text-white">
           Jaja Lost Souls
         </h2>
         <p className="max-w-[400px] max-md:text-sm text-white">

@@ -55,6 +55,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (session?.rProfile !== undefined) {
           token.rProfile = session.rProfile;
         }
+        if (session?.token) {
+          token.token = session.token;
+        }
       }
 
       return token;
@@ -79,7 +82,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.rProfile = customToken.rProfile;
       } else {
         console.warn(
-          "Session token is missing user data or API token. Session will be incomplete."
+          "Session token is missing user data or API token. Session will be incomplete.",
         );
       }
       return session;
@@ -108,5 +111,15 @@ declare module "next-auth" {
     token?: string;
     cProfile?: boolean;
     rProfile?: boolean;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    cProfile?: boolean;
+    rProfile?: boolean;
+    user?: User;
+    token?: string;
+    picture?: string;
   }
 }
