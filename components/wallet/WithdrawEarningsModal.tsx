@@ -9,7 +9,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Send } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Landmark, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -19,6 +26,9 @@ import { useUserSession } from "@/lib/api/queries";
 
 const WithdrawEarningsModal = () => {
   const [withdrawAmount, setWithdrawAmount] = React.useState(0);
+  const [withdrawalMethod, setWithdrawalMethod] = React.useState<
+    "bank" | "wallet"
+  >("bank");
   const { profile } = useUserSession();
   const creatorProfile = profile?.creatorProfile;
 
@@ -29,8 +39,17 @@ const WithdrawEarningsModal = () => {
 
   const transactionFee = 0.01; // 1%
 
+  const hasBank = !!creatorProfile?.bankDetails;
+  const hasWallet = !!creatorProfile?.walletAddress;
+
+  React.useEffect(() => {
+    if (hasBank && !hasWallet) setWithdrawalMethod("bank");
+    if (!hasBank && hasWallet) setWithdrawalMethod("wallet");
+    // If both are present, we keep the user's selection (defaults to "bank")
+  }, [hasBank, hasWallet]);
+
   const handleWithdrawAmountChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = parseFloat(e.target.value);
     setWithdrawAmount(isNaN(value) ? 0 : value);
@@ -84,17 +103,50 @@ const WithdrawEarningsModal = () => {
               </div>
 
               <div
-                className={`py-3 px-3 border border-[#292A2E] rounded-md flex items-center justify-between`}
+                className={`py-3 px-3 border border-[#292A2E] rounded-md flex flex-col justify-between gap-2`}
               >
+                {hasBank && hasWallet && (
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-nerd-muted">Withdraw to</span>
+                    <Select
+                      value={withdrawalMethod}
+                      onValueChange={(v) =>
+                        setWithdrawalMethod(v as "bank" | "wallet")
+                      }
+                    >
+                      <SelectTrigger className="w-[180px] h-8 text-xs bg-[#1D1E21] border-[#292A2E]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#1D1E21] border-[#292A2E] text-white">
+                        <SelectItem value="bank">Bank Account</SelectItem>
+                        <SelectItem value="wallet">Solana Wallet</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div>
-                  <p>Solflare (Solana Wallet)</p>
-                  <p className="text-nerd-muted">
-                    {creatorProfile?.walletAddress?.slice(0, 4)}...
-                    {creatorProfile?.walletAddress?.slice(-4)}
-                  </p>
-                  {!creatorProfile?.walletAddress && (
+                  {withdrawalMethod === "bank" && hasBank ? (
+                    <>
+                      <p className="flex items-center gap-2">
+                        <Landmark size={16} /> Bank Account
+                      </p>
+                      <p className="text-nerd-muted">
+                        {creatorProfile?.bankDetails?.bankName} -{" "}
+                        {creatorProfile?.bankDetails?.accountNumber}
+                      </p>
+                    </>
+                  ) : withdrawalMethod === "wallet" && hasWallet ? (
+                    <>
+                      <p>Solflare (Solana Wallet)</p>
+                      <p className="text-nerd-muted">
+                        {creatorProfile?.walletAddress?.slice(0, 4)}...
+                        {creatorProfile?.walletAddress?.slice(-4)}
+                      </p>
+                    </>
+                  ) : (
                     <span className="text-xs text-red-400">
-                      Please connect a wallet to enable withdrawal
+                      Please connect a wallet or add bank details to enable
+                      withdrawal
                     </span>
                   )}
                 </div>
@@ -145,7 +197,9 @@ const WithdrawEarningsModal = () => {
                 onClick={handleSubmit}
                 variant={"primary"}
                 className="w-full mt-3"
-                disabled={!creatorProfile?.walletAddress}
+                disabled={
+                  !creatorProfile?.walletAddress && !creatorProfile?.bankDetails
+                }
               >
                 Continue to Payment
               </Button>
