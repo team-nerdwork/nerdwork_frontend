@@ -15,6 +15,13 @@ const PUBLIC_PAGES = [
 
 export default auth((req) => {
   const { pathname, origin, search } = req.nextUrl;
+
+  // Allow server actions to pass through without redirects
+  const isServerAction = req.headers.get("next-action") !== null;
+  if (isServerAction) {
+    return NextResponse.next();
+  }
+
   const isAuthenticated = !!req.auth;
   const isCreator = req.auth?.user?.cProfile;
   const isReader = req.auth?.user?.rProfile;
@@ -96,6 +103,6 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon\\.ico|assets|images|fonts|css|public|logo\\.svg).*)",
+    "/((?!api|_next/static|_next/image|favicon\\.ico|assets|images|fonts|css|public|logo\\.svg|_next/data).*)",
   ],
 };

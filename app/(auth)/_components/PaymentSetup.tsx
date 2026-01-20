@@ -28,11 +28,6 @@ export function PaymentDetailsForm() {
     bankName: "",
   });
 
-  // const walletDetected = (walletName: string) => {
-  //   console.log(walletName);
-  //   return wallet.isConnected;
-  // };
-
   const handleContinue = async () => {
     if (selectedWallet === "bank") {
       if (
@@ -45,6 +40,7 @@ export function PaymentDetailsForm() {
       }
       try {
         const response = await addBankAccount(bankDetails);
+        console.log(response);
 
         if (!response?.success) {
           toast.error(
@@ -56,7 +52,6 @@ export function PaymentDetailsForm() {
         await refetch();
         await update({
           cProfile: true,
-          ...(response.data?.token && { token: response.data.token }),
         });
         toast.success("Bank details set successfully!");
         router.push("/creator/comics");

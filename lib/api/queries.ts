@@ -6,7 +6,7 @@ export const useUserSession = (id?: string) => {
   const { data: session } = useSession();
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["user", session?.user?.id],
+    queryKey: ["user-session", session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) {
         return null;
@@ -31,12 +31,13 @@ export const useUserSession = (id?: string) => {
         }
       }
 
-      if (!creatorProfile && !readerProfile) {
+      const hasNoProfiles =
+        session?.cProfile === false && session?.rProfile === false;
+      if (hasNoProfiles && !creatorProfile && !readerProfile) {
         signOut({ callbackUrl: "/signin" });
         return null;
       }
 
-      // Return an object containing both profiles.
       return { creatorProfile, readerProfile };
     },
     enabled: !!id || !!session?.user?.id,
