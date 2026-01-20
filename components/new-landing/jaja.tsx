@@ -6,7 +6,7 @@ import ComingSoon from "@/assets/new/coming-soon.svg";
 
 const JajaGame = () => {
   return (
-    <section className="relative font-montserrat text-white my-20">
+    <section className="relative max-w-[1440px] mx-auto font-montserrat text-white my-20">
       <div className="bg-[url(https://res.cloudinary.com/dk4gmufzn/image/upload/v1768558682/jaja_ylcxtx.png)] bg-no-repeat bg-center min-h-[80vh] w-full" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,13,13,0)_0%,#0D0D0D_78%)]" />
       <Image

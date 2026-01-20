@@ -1,12 +1,12 @@
-import Sponsors from "@/assets/new/sponsors";
-import EventLists from "@/components/events/Events";
-import Footer from "@/components/homepage/Footer";
 import Navbar from "@/components/homepage/Navbar";
-import Create from "@/components/new-landing/create";
 import Hero from "@/components/new-landing/hero";
-import JajaGame from "@/components/new-landing/jaja";
-import Nerdworker from "@/components/new-landing/nerdworker";
 import NewStories from "@/components/new-landing/new-stories";
+import Create from "@/components/new-landing/create";
+import EventsMini from "@/components/new-landing/events";
+import Nerdworker from "@/components/new-landing/nerdworker";
+import JajaGame from "@/components/new-landing/jaja";
+import Sponsors from "@/assets/new/sponsors";
+import Footer from "@/components/homepage/Footer";
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
       <Hero />
       <NewStories />
       <Create />
-      <EventLists />
+      <EventsMini />
       <Nerdworker />
       <JajaGame />
       <Sponsors />
