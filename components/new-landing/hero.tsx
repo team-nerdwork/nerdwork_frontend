@@ -117,8 +117,8 @@ export default function Hero() {
         </div>
         {/* Content Overlay */}
         <>
-          <div className="relative z-10 flex h-full font-montserrat max-w-[1130px] mx-auto">
-            <div className="container mx-auto flex flex-col md:justify-center max-md:justify-end text-white px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 flex h-full font-montserrat max-w-[1440px] mx-auto  px-4 sm:px-6 lg:px-8">
+            <div className="container mx-auto flex flex-col md:justify-center max-md:justify-end text-white">
               <div className="max-w-xl flex flex-col gap-4 max-md:items-start">
                 <p className="text-white max-md:text-[13px] flex font-bold items-center gap-1">
                   <div className="w-[10px] h-[10px] rounded-full bg-[#1FF448] p-[2px] border border-[#1FF448s]" />

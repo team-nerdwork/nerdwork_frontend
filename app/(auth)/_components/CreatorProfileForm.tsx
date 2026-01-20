@@ -24,14 +24,20 @@ import { toast } from "sonner";
 const creatorProfileSchema = z.object({
   fullName: z
     .string()
-    .min(2, { message: "Full name must be at least 2 characters." }),
+    .min(2, { message: "Full name must be at least 2 characters." })
+    .max(100, { message: "Full name must be at most 100 characters." }),
   creatorName: z
     .string()
-    .min(2, { message: "Creator name must be at least 2 characters." }),
+    .min(2, { message: "Creator name must be at least 2 characters." })
+    .max(50, { message: "Creator name must be at most 50 characters." }),
   phoneNumber: z
     .string()
-    .min(10, { message: "Please enter a valid phone number." }),
-  bio: z.string().min(10, { message: "Bio must be at least 10 characters." }),
+    .min(10, { message: "Please enter a valid phone number." })
+    .max(15, { message: "Phone number must be at most 15 characters." }),
+  bio: z
+    .string()
+    .min(10, { message: "Bio must be at least 10 characters." })
+    .max(500, { message: "Bio must be at most 500 characters." }),
 });
 
 export function CreatorProfileForm({ onNext }: { onNext: () => void }) {
@@ -62,10 +68,7 @@ export function CreatorProfileForm({ onNext }: { onNext: () => void }) {
         return;
       }
 
-      await update({
-        cProfile: true,
-        ...(response.data?.token && { token: response.data.token }),
-      });
+      await update({ cProfile: true });
 
       toast.success("Profile Updated Successfully!");
       onNext();

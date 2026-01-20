@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const Nerdworker = () => {
   return (
-    <section className="relative text-white font-montserrat max-w-[1130px] mx-auto max-md:py-10">
+    <section className="relative text-white font-montserrat max-w-[1440px] mx-auto max-md:py-10">
       <Image
         src={
           "https://res.cloudinary.com/dk4gmufzn/image/upload/v1768557375/nerdworker_jdjt63.png"
@@ -16,7 +16,7 @@ const Nerdworker = () => {
         className="w-full max-md:hidden"
       />
       <div className="absolute inset-0 md:bg-[linear-gradient(240deg,rgba(13,13,13,0)_0%,#0D0D0D_48%)]" />
-      <div className="absolute inset-0 max-w-[1130px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4 items-start md:justify-center z-10">
+      <div className="absolute inset-0 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4 items-start md:justify-center z-10">
         <h2 className="uppercase font-archivo text-5xl max-md:text-xl">
           Become a Nerdworker
         </h2>
