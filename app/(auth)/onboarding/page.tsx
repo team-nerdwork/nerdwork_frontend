@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { toast } from "sonner";
@@ -12,11 +12,15 @@ const Onboarding = () => {
     null
   );
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
 
   const handleContinue = () => {
     if (selectedRole) {
-      // Handle the role selection logic here, e.g., storing it in a cookie, context, or database
-      router.push(`/onboarding/${selectedRole}`);
+      const redirectParam = redirect
+        ? `?redirect=${encodeURIComponent(redirect)}`
+        : "";
+      router.push(`/onboarding/${selectedRole}${redirectParam}`);
     } else {
       toast.info("Please choose a role to continue.");
     }
