@@ -6,6 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -15,7 +22,6 @@ import {
 } from "@/components/ui/table";
 import {
   Search,
-  Filter,
   MoreVertical,
   UserCheck,
   UserX,
@@ -29,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   getAdminUsers,
   updateAdminUserStatus,
@@ -37,7 +44,10 @@ import {
 export function UsersManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
   const [actionUserId, setActionUserId] = useState<string | null>(null);
+  const pageSize = 20;
 
   useEffect(() => {
     const handle = setTimeout(() => {
@@ -46,14 +56,27 @@ export function UsersManagement() {
     return () => clearTimeout(handle);
   }, [searchTerm]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [query, statusFilter]);
+
+  const normalizedStatus = statusFilter === "all" ? undefined : statusFilter;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["admin-users", query],
-    queryFn: async () => await getAdminUsers({ query }),
+    queryKey: ["admin-users", query, statusFilter, page],
+    queryFn: async () =>
+      await getAdminUsers({
+        query,
+        status: normalizedStatus,
+        page,
+        pageSize,
+      }),
   });
 
   const isFailed = data?.success === false;
   const users = data?.data?.data ?? [];
   const totalUsers = data?.data?.pagination?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalUsers / pageSize));
 
   const getStatus = (user: any) => {
     const lockedUntil = user.lockedUntil ? new Date(user.lockedUntil) : null;
@@ -83,8 +106,13 @@ export function UsersManagement() {
     status: "active" | "suspended" | "inactive",
   ) => {
     setActionUserId(userId);
-    await updateAdminUserStatus(userId, { status });
-    await refetch();
+    const result = await updateAdminUserStatus(userId, { status });
+    if (result?.success === false) {
+      toast.error(result?.message || "Failed to update user status.");
+    } else {
+      toast.success("User status updated.");
+      await refetch();
+    }
     setActionUserId(null);
   };
 
@@ -166,13 +194,20 @@ export function UsersManagement() {
                 className="pl-10 bg-[#1A1A24] border-[rgba(139,92,246,0.15)] text-white"
               />
             </div>
-            <Button
-              variant="outline"
-              className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB] hover:bg-[#1A1A24]"
+            <Select
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value)}
             >
-              <Filter size={20} className="mr-2" />
-              Filters
-            </Button>
+              <SelectTrigger className="w-[180px] bg-[#1A1A24] border-[rgba(139,92,246,0.15)] text-white">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="suspended">Suspended</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -297,6 +332,29 @@ export function UsersManagement() {
               })}
             </TableBody>
           </Table>
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-[#9CA3AF]">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page <= 1}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page >= totalPages}
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
