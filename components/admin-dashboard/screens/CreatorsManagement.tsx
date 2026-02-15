@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CheckCircle, XCircle, Clock, TrendingUp } from "lucide-react";
+import { CheckCircle, Clock } from "lucide-react";
 
 const creators = [
   {

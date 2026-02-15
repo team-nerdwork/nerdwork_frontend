@@ -6,8 +6,6 @@ import {
   Area,
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -57,7 +55,7 @@ export function AdminOverview() {
       <div>
         <h1 className="text-3xl text-white mb-2">Admin Dashboard</h1>
         <p className="text-[#9CA3AF]">
-          Welcome back! Here's what's happening with Nerdwork+ today.
+          Welcome back! Here is what is happening with Nerdwork+ today.
         </p>
       </div>
 
