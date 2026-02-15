@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { AdminOverview } from "./screens/AdminOverview";
 import { UsersManagement } from "./screens/UsersManagement";
 import { CreatorsManagement } from "./screens/CreatorsManagement";
@@ -32,6 +33,9 @@ type AdminScreen =
 export function AdminDashboard() {
   const [currentScreen, setCurrentScreen] = useState<AdminScreen>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { data: session } = useSession();
+  const adminName = session?.admin?.name || "Admin User";
+  const adminEmail = session?.admin?.email || session?.user?.email || "";
 
   const menuItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -97,8 +101,8 @@ export function AdminDashboard() {
                 AD
               </div>
               <div>
-                <p className="text-sm text-white">Admin User</p>
-                <p className="text-xs text-[#9CA3AF]">admin@nerdwork.io</p>
+                <p className="text-sm text-white">{adminName}</p>
+                <p className="text-xs text-[#9CA3AF]">{adminEmail}</p>
               </div>
             </div>
           </div>

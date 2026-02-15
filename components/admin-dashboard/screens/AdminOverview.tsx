@@ -1,6 +1,8 @@
 ﻿"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { getAdminOverview } from "@/actions/admin.actions";
 import {
   AreaChart,
   Area,
@@ -21,34 +23,42 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-const revenueData = [
-  { month: "Jan", revenue: 45000, users: 1200 },
-  { month: "Feb", revenue: 52000, users: 1450 },
-  { month: "Mar", revenue: 48000, users: 1600 },
-  { month: "Apr", revenue: 61000, users: 1850 },
-  { month: "May", revenue: 75000, users: 2100 },
-  { month: "Jun", revenue: 88000, users: 2450 },
-];
-
-const nftSalesData = [
-  { day: "Mon", sales: 45 },
-  { day: "Tue", sales: 62 },
-  { day: "Wed", sales: 58 },
-  { day: "Thu", sales: 71 },
-  { day: "Fri", sales: 89 },
-  { day: "Sat", sales: 102 },
-  { day: "Sun", sales: 95 },
-];
-
-const topCreators = [
-  { name: "CryptoArtist", revenue: 45000, nfts: 234 },
-  { name: "DigitalDreamer", revenue: 38000, nfts: 189 },
-  { name: "PixelMaster", revenue: 32000, nfts: 156 },
-  { name: "NeonNinja", revenue: 28000, nfts: 142 },
-  { name: "CosmicCreator", revenue: 24000, nfts: 128 },
-];
-
 export function AdminOverview() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["admin-overview"],
+    queryFn: async () => await getAdminOverview(),
+  });
+
+  const isFailed = data?.success === false;
+  const overview = data?.data;
+  const summary = overview?.summary ?? {
+    totalUsers: 0,
+    totalCreators: 0,
+    monthlyRevenue: 0,
+    nftSales7d: 0,
+  };
+  const revenueData = overview?.charts?.revenueAndUsers ?? [];
+  const nftSalesData = overview?.charts?.nftSales ?? [];
+  const topCreators = overview?.topCreators ?? [];
+  const systemStatus = overview?.systemStatus ?? [];
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError || isFailed) {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl text-white mb-2">Admin Dashboard</h1>
+        <p className="text-red-500">Failed to load admin overview.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 space-y-6">
       {/* Header */}
@@ -66,7 +76,9 @@ export function AdminOverview() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[#9CA3AF] text-sm mb-1">Total Users</p>
-                <p className="text-3xl text-white">24,563</p>
+                <p className="text-3xl text-white">
+                  {summary.totalUsers.toLocaleString()}
+                </p>
                 <div className="flex items-center gap-1 mt-2">
                   <TrendingUp size={14} className="text-[#10B981]" />
                   <span className="text-xs text-[#10B981]">+12.5%</span>
@@ -85,7 +97,9 @@ export function AdminOverview() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[#9CA3AF] text-sm mb-1">Total Creators</p>
-                <p className="text-3xl text-white">1,284</p>
+                <p className="text-3xl text-white">
+                  {summary.totalCreators.toLocaleString()}
+                </p>
                 <div className="flex items-center gap-1 mt-2">
                   <TrendingUp size={14} className="text-[#10B981]" />
                   <span className="text-xs text-[#10B981]">+8.3%</span>
@@ -104,7 +118,9 @@ export function AdminOverview() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[#9CA3AF] text-sm mb-1">Monthly Revenue</p>
-                <p className="text-3xl text-white">$88,420</p>
+                <p className="text-3xl text-white">
+                  ${summary.monthlyRevenue.toLocaleString()}
+                </p>
                 <div className="flex items-center gap-1 mt-2">
                   <TrendingUp size={14} className="text-[#10B981]" />
                   <span className="text-xs text-[#10B981]">+17.2%</span>
@@ -123,7 +139,9 @@ export function AdminOverview() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[#9CA3AF] text-sm mb-1">NFT Sales (7d)</p>
-                <p className="text-3xl text-white">522</p>
+                <p className="text-3xl text-white">
+                  {summary.nftSales7d.toLocaleString()}
+                </p>
                 <div className="flex items-center gap-1 mt-2">
                   <TrendingUp size={14} className="text-[#10B981]" />
                   <span className="text-xs text-[#10B981]">+23.1%</span>
@@ -244,41 +262,32 @@ export function AdminOverview() {
             <p className="text-sm text-[#9CA3AF]">Platform health</p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={20} className="text-[#10B981]" />
-                <span className="text-[#D1D5DB]">API Services</span>
-              </div>
-              <span className="text-xs text-[#10B981]">Operational</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={20} className="text-[#10B981]" />
-                <span className="text-[#D1D5DB]">Database</span>
-              </div>
-              <span className="text-xs text-[#10B981]">Operational</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={20} className="text-[#10B981]" />
-                <span className="text-[#D1D5DB]">Blockchain</span>
-              </div>
-              <span className="text-xs text-[#10B981]">Operational</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle size={20} className="text-[#F59E0B]" />
-                <span className="text-[#D1D5DB]">IPFS Storage</span>
-              </div>
-              <span className="text-xs text-[#F59E0B]">Degraded</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={20} className="text-[#10B981]" />
-                <span className="text-[#D1D5DB]">CDN</span>
-              </div>
-              <span className="text-xs text-[#10B981]">Operational</span>
-            </div>
+            {systemStatus.map((service: any) => {
+              const status = String(service.status || "").toLowerCase();
+              const isOperational = status === "operational";
+              const isDegraded = status === "degraded";
+              const Icon = isOperational ? CheckCircle : AlertCircle;
+              const color = isOperational
+                ? "text-[#10B981]"
+                : isDegraded
+                ? "text-[#F59E0B]"
+                : "text-[#EF4444]";
+              const label =
+                status.charAt(0).toUpperCase() + status.slice(1) || "Unknown";
+
+              return (
+                <div
+                  key={service.name}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <Icon size={20} className={color} />
+                    <span className="text-[#D1D5DB]">{service.name}</span>
+                  </div>
+                  <span className={`text-xs ${color}`}>{label}</span>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       </div>

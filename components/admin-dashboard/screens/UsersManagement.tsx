@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,57 +28,82 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-const users = [
-  {
-    id: "U001",
-    name: "Alex Rivera",
-    email: "alex@example.com",
-    status: "active",
-    joined: "2024-01-15",
-    nftsOwned: 12,
-    spent: 4500,
-  },
-  {
-    id: "U002",
-    name: "Jordan Chen",
-    email: "jordan@example.com",
-    status: "active",
-    joined: "2024-02-20",
-    nftsOwned: 8,
-    spent: 2300,
-  },
-  {
-    id: "U003",
-    name: "Sam Williams",
-    email: "sam@example.com",
-    status: "suspended",
-    joined: "2023-11-05",
-    nftsOwned: 5,
-    spent: 1200,
-  },
-  {
-    id: "U004",
-    name: "Taylor Kim",
-    email: "taylor@example.com",
-    status: "active",
-    joined: "2024-03-10",
-    nftsOwned: 15,
-    spent: 6800,
-  },
-  {
-    id: "U005",
-    name: "Morgan Davis",
-    email: "morgan@example.com",
-    status: "inactive",
-    joined: "2023-09-22",
-    nftsOwned: 3,
-    spent: 890,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import {
+  getAdminUsers,
+  updateAdminUserStatus,
+} from "@/actions/admin.actions";
 
 export function UsersManagement() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [query, setQuery] = useState("");
+  const [actionUserId, setActionUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setQuery(searchTerm.trim());
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["admin-users", query],
+    queryFn: async () => await getAdminUsers({ query }),
+  });
+
+  const isFailed = data?.success === false;
+  const users = data?.data?.data ?? [];
+  const totalUsers = data?.data?.pagination?.total ?? 0;
+
+  const getStatus = (user: any) => {
+    const lockedUntil = user.lockedUntil ? new Date(user.lockedUntil) : null;
+    const isLocked = lockedUntil && lockedUntil > new Date();
+    if (isLocked) return "suspended";
+    return user.isActive ? "active" : "inactive";
+  };
+
+  const getDisplayName = (user: any) => {
+    if (user.displayName) return user.displayName;
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ");
+    if (fullName) return fullName;
+    return user.username || user.email || "Unknown";
+  };
+
+  const activeCount = users.filter((user: any) => getStatus(user) === "active")
+    .length;
+  const suspendedCount = users.filter(
+    (user: any) => getStatus(user) === "suspended",
+  ).length;
+  const inactiveCount = users.filter(
+    (user: any) => getStatus(user) === "inactive",
+  ).length;
+
+  const handleStatusUpdate = async (
+    userId: string,
+    status: "active" | "suspended" | "inactive",
+  ) => {
+    setActionUserId(userId);
+    await updateAdminUserStatus(userId, { status });
+    await refetch();
+    setActionUserId(null);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError || isFailed) {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl text-white mb-2">User Management</h1>
+        <p className="text-red-500">Failed to load users.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 space-y-6">
@@ -98,25 +123,29 @@ export function UsersManagement() {
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Total Users</p>
-            <p className="text-2xl text-white">24,563</p>
+            <p className="text-2xl text-white">{totalUsers.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Active Users</p>
-            <p className="text-2xl text-white">18,492</p>
+            <p className="text-2xl text-white">{activeCount.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Suspended</p>
-            <p className="text-2xl text-white">142</p>
+            <p className="text-2xl text-white">
+              {suspendedCount.toLocaleString()}
+            </p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
-            <p className="text-[#9CA3AF] text-sm mb-1">New (30d)</p>
-            <p className="text-2xl text-white">1,847</p>
+            <p className="text-[#9CA3AF] text-sm mb-1">Inactive</p>
+            <p className="text-2xl text-white">
+              {inactiveCount.toLocaleString()}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -168,65 +197,104 @@ export function UsersManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
-                <TableRow
-                  key={user.id}
-                  className="border-[rgba(139,92,246,0.15)] hover:bg-[#1A1A24]"
-                >
-                  <TableCell className="text-[#D1D5DB]">{user.id}</TableCell>
-                  <TableCell className="text-white">{user.name}</TableCell>
-                  <TableCell className="text-[#D1D5DB]">{user.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        user.status === "active"
-                          ? "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20"
-                          : user.status === "suspended"
-                          ? "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20"
-                          : "bg-[#9CA3AF]/10 text-[#9CA3AF] border-[#9CA3AF]/20"
-                      }
-                    >
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-[#D1D5DB]">{user.joined}</TableCell>
-                  <TableCell className="text-[#D1D5DB]">{user.nftsOwned}</TableCell>
-                  <TableCell className="text-[#D1D5DB]">
-                    ${user.spent.toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-[#D1D5DB] hover:bg-[#1A1A24]"
-                        >
-                          <MoreVertical size={16} />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
-                        <DropdownMenuItem className="text-[#D1D5DB] focus:bg-[#1A1A24] focus:text-white">
-                          <UserCheck size={16} className="mr-2" />
-                          View Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-[#D1D5DB] focus:bg-[#1A1A24] focus:text-white">
-                          <Mail size={16} className="mr-2" />
-                          Send Email
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-[#D1D5DB] focus:bg-[#1A1A24] focus:text-white">
-                          <UserX size={16} className="mr-2" />
-                          Suspend User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-[#EF4444] focus:bg-[#EF4444]/10 focus:text-[#EF4444]">
-                          <Ban size={16} className="mr-2" />
-                          Ban User
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {users.map((user: any) => {
+                const status = getStatus(user);
+                const joined = user.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString()
+                  : "-";
+                const nftsOwned = user.nftsOwned ?? 0;
+                const spent = user.spent ?? 0;
+
+                return (
+                  <TableRow
+                    key={user.id}
+                    className="border-[rgba(139,92,246,0.15)] hover:bg-[#1A1A24]"
+                  >
+                    <TableCell className="text-[#D1D5DB]">{user.id}</TableCell>
+                    <TableCell className="text-white">
+                      {getDisplayName(user)}
+                    </TableCell>
+                    <TableCell className="text-[#D1D5DB]">{user.email}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          status === "active"
+                            ? "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20"
+                            : status === "suspended"
+                            ? "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20"
+                            : "bg-[#9CA3AF]/10 text-[#9CA3AF] border-[#9CA3AF]/20"
+                        }
+                      >
+                        {status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-[#D1D5DB]">{joined}</TableCell>
+                    <TableCell className="text-[#D1D5DB]">{nftsOwned}</TableCell>
+                    <TableCell className="text-[#D1D5DB]">
+                      ${Number(spent).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-[#D1D5DB] hover:bg-[#1A1A24]"
+                          >
+                            <MoreVertical size={16} />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
+                          <DropdownMenuItem className="text-[#D1D5DB] focus:bg-[#1A1A24] focus:text-white">
+                            <UserCheck size={16} className="mr-2" />
+                            View Profile
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-[#D1D5DB] focus:bg-[#1A1A24] focus:text-white">
+                            <Mail size={16} className="mr-2" />
+                            Send Email
+                          </DropdownMenuItem>
+                          {status !== "suspended" && (
+                            <DropdownMenuItem
+                              className="text-[#D1D5DB] focus:bg-[#1A1A24] focus:text-white"
+                              disabled={actionUserId === user.id}
+                              onClick={() =>
+                                handleStatusUpdate(user.id, "suspended")
+                              }
+                            >
+                              <UserX size={16} className="mr-2" />
+                              Suspend User
+                            </DropdownMenuItem>
+                          )}
+                          {status !== "inactive" && (
+                            <DropdownMenuItem
+                              className="text-[#EF4444] focus:bg-[#EF4444]/10 focus:text-[#EF4444]"
+                              disabled={actionUserId === user.id}
+                              onClick={() =>
+                                handleStatusUpdate(user.id, "inactive")
+                              }
+                            >
+                              <Ban size={16} className="mr-2" />
+                              Ban User
+                            </DropdownMenuItem>
+                          )}
+                          {status !== "active" && (
+                            <DropdownMenuItem
+                              className="text-[#10B981] focus:bg-[#10B981]/10 focus:text-[#10B981]"
+                              disabled={actionUserId === user.id}
+                              onClick={() =>
+                                handleStatusUpdate(user.id, "active")
+                              }
+                            >
+                              <UserCheck size={16} className="mr-2" />
+                              Activate User
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

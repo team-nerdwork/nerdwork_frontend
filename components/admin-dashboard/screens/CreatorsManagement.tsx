@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,38 +13,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CheckCircle, Clock } from "lucide-react";
-
-const creators = [
-  {
-    id: "C001",
-    name: "CryptoArtist",
-    email: "crypto@example.com",
-    status: "verified",
-    works: 45,
-    revenue: 45000,
-    rating: 4.8,
-  },
-  {
-    id: "C002",
-    name: "DigitalDreamer",
-    email: "dreamer@example.com",
-    status: "pending",
-    works: 12,
-    revenue: 8500,
-    rating: 4.5,
-  },
-  {
-    id: "C003",
-    name: "PixelMaster",
-    email: "pixel@example.com",
-    status: "verified",
-    works: 38,
-    revenue: 32000,
-    rating: 4.9,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getAdminCreators, updateAdminCreatorVerification } from "@/actions/admin.actions";
 
 export function CreatorsManagement() {
+  const [actionCreatorId, setActionCreatorId] = useState<string | null>(null);
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["admin-creators"],
+    queryFn: async () => await getAdminCreators({}),
+  });
+
+  const isFailed = data?.success === false;
+  const creators = data?.data?.data ?? [];
+  const totalCreators = data?.data?.pagination?.total ?? 0;
+  const verifiedCount = creators.filter((creator: any) => creator.status === "verified").length;
+  const pendingCount = creators.filter((creator: any) => creator.status === "pending").length;
+  const totalRevenue = creators.reduce(
+    (sum: number, creator: any) => sum + (creator.revenue ?? 0),
+    0,
+  );
+
+  const handleVerification = async (creatorId: string, status: "verified" | "rejected") => {
+    setActionCreatorId(creatorId);
+    await updateAdminCreatorVerification(creatorId, { status });
+    await refetch();
+    setActionCreatorId(null);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError || isFailed) {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl text-white mb-2">Creator Management</h1>
+        <p className="text-red-500">Failed to load creators.</p>
+      </div>
+    );
+  }
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -60,25 +73,25 @@ export function CreatorsManagement() {
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Total Creators</p>
-            <p className="text-2xl text-white">1,284</p>
+            <p className="text-2xl text-white">{totalCreators.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Verified</p>
-            <p className="text-2xl text-white">892</p>
+            <p className="text-2xl text-white">{verifiedCount.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Pending Review</p>
-            <p className="text-2xl text-white">45</p>
+            <p className="text-2xl text-white">{pendingCount.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Total Revenue</p>
-            <p className="text-2xl text-white">$2.4M</p>
+            <p className="text-2xl text-white">${totalRevenue.toLocaleString()}</p>
           </CardContent>
         </Card>
       </div>
@@ -101,59 +114,72 @@ export function CreatorsManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {creators.map((creator) => (
-                <TableRow
-                  key={creator.id}
-                  className="border-[rgba(139,92,246,0.15)] hover:bg-[#1A1A24]"
-                >
-                  <TableCell className="text-[#D1D5DB]">{creator.id}</TableCell>
-                  <TableCell className="text-white">{creator.name}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        creator.status === "verified"
-                          ? "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20"
-                          : "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20"
-                      }
-                    >
-                      <span className="flex items-center gap-1">
-                        {creator.status === "verified" ? (
-                          <CheckCircle size={12} />
-                        ) : (
-                          <Clock size={12} />
-                        )}
-                        {creator.status}
-                      </span>
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-[#D1D5DB]">{creator.works}</TableCell>
-                  <TableCell className="text-[#D1D5DB]">
-                    ${creator.revenue.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-[#D1D5DB]">
-                    Rating {creator.rating}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white"
-                      >
-                        View
-                      </Button>
-                      {creator.status === "pending" && (
+              {creators.map((creator: any) => {
+                const status = creator.status || "pending";
+                const isVerified = status === "verified";
+                const isRejected = status === "rejected";
+                const statusClasses = isVerified
+                  ? "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20"
+                  : isRejected
+                  ? "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20"
+                  : "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20";
+
+                return (
+                  <TableRow
+                    key={creator.id}
+                    className="border-[rgba(139,92,246,0.15)] hover:bg-[#1A1A24]"
+                  >
+                    <TableCell className="text-[#D1D5DB]">
+                      {creator.id}
+                    </TableCell>
+                    <TableCell className="text-white">{creator.name}</TableCell>
+                    <TableCell>
+                      <Badge className={statusClasses}>
+                        <span className="flex items-center gap-1">
+                          {isVerified ? (
+                            <CheckCircle size={12} />
+                          ) : (
+                            <Clock size={12} />
+                          )}
+                          {status}
+                        </span>
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-[#D1D5DB]">
+                      {creator.works ?? 0}
+                    </TableCell>
+                    <TableCell className="text-[#D1D5DB]">
+                      ${Number(creator.revenue ?? 0).toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-[#D1D5DB]">
+                      {creator.rating ? `Rating ${creator.rating}` : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
                         <Button
                           size="sm"
-                          variant="outline"
-                          className="border-[#10B981] text-[#10B981] hover:bg-[#10B981]/10"
+                          className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white"
                         >
-                          Approve
+                          View
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        {status === "pending" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-[#10B981] text-[#10B981] hover:bg-[#10B981]/10"
+                            disabled={actionCreatorId === creator.id}
+                            onClick={() =>
+                              handleVerification(creator.id, "verified")
+                            }
+                          >
+                            Approve
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
