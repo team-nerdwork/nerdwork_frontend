@@ -2,8 +2,23 @@
 
 import { axiosGet, axiosPatch, axiosPost } from "@/lib/api/adminClientAuth";
 import axios from "axios";
+import type {
+  AdminAuditLog,
+  AdminComic,
+  AdminCreator,
+  AdminOverviewResponse,
+  AdminPayout,
+  AdminUser,
+  ApiResult,
+  FinanceSummary,
+  MarketplaceSummary,
+  Paginated,
+} from "@/lib/types/admin";
 
-const handleAdminError = (error: unknown, fallbackMessage: string) => {
+const handleAdminError = <T>(
+  error: unknown,
+  fallbackMessage: string,
+): ApiResult<T> => {
   if (axios.isAxiosError(error)) {
     return {
       success: false,
@@ -21,7 +36,9 @@ const handleAdminError = (error: unknown, fallbackMessage: string) => {
   };
 };
 
-export const getAdminOverview = async () => {
+export const getAdminOverview = async (): Promise<
+  ApiResult<AdminOverviewResponse>
+> => {
   try {
     const response = await axiosGet("/admin/overview");
     return {
@@ -30,7 +47,10 @@ export const getAdminOverview = async () => {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load admin overview.");
+    return handleAdminError<AdminOverviewResponse>(
+      error,
+      "Failed to load admin overview.",
+    );
   }
 };
 
@@ -39,7 +59,7 @@ export const getAdminUsers = async (params: {
   status?: string;
   page?: number;
   pageSize?: number;
-} = {}) => {
+} = {}): Promise<ApiResult<Paginated<AdminUser>>> => {
   try {
     const response = await axiosGet("/admin/users", params);
     return {
@@ -48,14 +68,17 @@ export const getAdminUsers = async (params: {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load users.");
+    return handleAdminError<Paginated<AdminUser>>(
+      error,
+      "Failed to load users.",
+    );
   }
 };
 
 export const updateAdminUserStatus = async (
   authUserId: string,
   payload: { status: string; durationDays?: number; reason?: string },
-) => {
+): Promise<ApiResult<{ user?: AdminUser }>> => {
   try {
     const response = await axiosPatch(
       `/admin/users/${authUserId}/status`,
@@ -67,7 +90,10 @@ export const updateAdminUserStatus = async (
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to update user status.");
+    return handleAdminError<{ user?: AdminUser }>(
+      error,
+      "Failed to update user status.",
+    );
   }
 };
 
@@ -76,7 +102,7 @@ export const getAdminCreators = async (params: {
   status?: string;
   page?: number;
   pageSize?: number;
-} = {}) => {
+} = {}): Promise<ApiResult<Paginated<AdminCreator>>> => {
   try {
     const response = await axiosGet("/admin/creators", params);
     return {
@@ -85,14 +111,17 @@ export const getAdminCreators = async (params: {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load creators.");
+    return handleAdminError<Paginated<AdminCreator>>(
+      error,
+      "Failed to load creators.",
+    );
   }
 };
 
 export const updateAdminCreatorVerification = async (
   creatorId: string,
   payload: { status: string; note?: string },
-) => {
+): Promise<ApiResult<{ creator?: AdminCreator }>> => {
   try {
     const response = await axiosPatch(
       `/admin/creators/${creatorId}/verify`,
@@ -104,7 +133,10 @@ export const updateAdminCreatorVerification = async (
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to update creator status.");
+    return handleAdminError<{ creator?: AdminCreator }>(
+      error,
+      "Failed to update creator status.",
+    );
   }
 };
 
@@ -113,7 +145,7 @@ export const getAdminComics = async (params: {
   status?: string;
   page?: number;
   pageSize?: number;
-} = {}) => {
+} = {}): Promise<ApiResult<Paginated<AdminComic>>> => {
   try {
     const response = await axiosGet("/admin/comics", params);
     return {
@@ -122,14 +154,17 @@ export const getAdminComics = async (params: {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load comics.");
+    return handleAdminError<Paginated<AdminComic>>(
+      error,
+      "Failed to load comics.",
+    );
   }
 };
 
 export const updateAdminComicStatus = async (
   comicId: string,
   payload: { status: string; note?: string },
-) => {
+): Promise<ApiResult<{ comic?: AdminComic }>> => {
   try {
     const response = await axiosPatch(
       `/admin/comics/${comicId}/moderate`,
@@ -141,11 +176,16 @@ export const updateAdminComicStatus = async (
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to update comic status.");
+    return handleAdminError<{ comic?: AdminComic }>(
+      error,
+      "Failed to update comic status.",
+    );
   }
 };
 
-export const getMarketplaceSummary = async () => {
+export const getMarketplaceSummary = async (): Promise<
+  ApiResult<MarketplaceSummary>
+> => {
   try {
     const response = await axiosGet("/admin/marketplace/summary");
     return {
@@ -154,11 +194,14 @@ export const getMarketplaceSummary = async () => {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load marketplace summary.");
+    return handleAdminError<MarketplaceSummary>(
+      error,
+      "Failed to load marketplace summary.",
+    );
   }
 };
 
-export const getFinanceSummary = async () => {
+export const getFinanceSummary = async (): Promise<ApiResult<FinanceSummary>> => {
   try {
     const response = await axiosGet("/admin/finance/summary");
     return {
@@ -167,7 +210,10 @@ export const getFinanceSummary = async () => {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load finance summary.");
+    return handleAdminError<FinanceSummary>(
+      error,
+      "Failed to load finance summary.",
+    );
   }
 };
 
@@ -175,7 +221,7 @@ export const getAdminPayouts = async (params: {
   status?: string;
   page?: number;
   pageSize?: number;
-} = {}) => {
+} = {}): Promise<ApiResult<Paginated<AdminPayout>>> => {
   try {
     const response = await axiosGet("/admin/finance/payouts", params);
     return {
@@ -184,14 +230,17 @@ export const getAdminPayouts = async (params: {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load payouts.");
+    return handleAdminError<Paginated<AdminPayout>>(
+      error,
+      "Failed to load payouts.",
+    );
   }
 };
 
 export const processAdminPayout = async (
   payoutId: string,
   payload: { status?: string } = {},
-) => {
+): Promise<ApiResult<{ payout?: AdminPayout }>> => {
   try {
     const response = await axiosPost(
       `/admin/finance/payouts/${payoutId}/process`,
@@ -203,14 +252,17 @@ export const processAdminPayout = async (
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to process payout.");
+    return handleAdminError<{ payout?: AdminPayout }>(
+      error,
+      "Failed to process payout.",
+    );
   }
 };
 
 export const getAuditLogs = async (params: {
   page?: number;
   pageSize?: number;
-} = {}) => {
+} = {}): Promise<ApiResult<Paginated<AdminAuditLog>>> => {
   try {
     const response = await axiosGet("/admin/audit-logs", params);
     return {
@@ -219,6 +271,9 @@ export const getAuditLogs = async (params: {
       status: response?.status ?? 200,
     };
   } catch (error: unknown) {
-    return handleAdminError(error, "Failed to load audit logs.");
+    return handleAdminError<Paginated<AdminAuditLog>>(
+      error,
+      "Failed to load audit logs.",
+    );
   }
 };
