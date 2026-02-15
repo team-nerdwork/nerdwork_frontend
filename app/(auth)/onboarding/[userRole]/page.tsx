@@ -2,15 +2,16 @@ import React from "react";
 import ReaderOnboarding from "../../_components/ReaderOnboarding";
 import CreatorOnboarding from "../../_components/CreatorOnboarding";
 
-const UserOnboarding = ({
+const UserOnboarding = async ({
   params,
   searchParams,
 }: {
-  params: { userRole: string };
-  searchParams?: { redirect?: string };
+  params: Promise<{ userRole: string }>;
+  searchParams?: Promise<{ redirect?: string }>;
 }) => {
-  const { userRole } = params;
-  const redirectUrl = searchParams?.redirect;
+  const { userRole } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const redirectUrl = resolvedSearchParams?.redirect;
   return (
     <>
       {userRole == "reader" ? (
