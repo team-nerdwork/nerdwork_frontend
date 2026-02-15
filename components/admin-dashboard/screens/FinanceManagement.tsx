@@ -1,22 +1,38 @@
 ﻿"use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminPayouts, getFinanceSummary, processAdminPayout } from "@/actions/admin.actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DollarSign, CreditCard, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 export function FinanceManagement() {
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
+
   const { data: summaryData, isLoading, isError } = useQuery({
     queryKey: ["admin-finance-summary"],
     queryFn: async () => await getFinanceSummary(),
   });
 
   const { data: payoutsData, refetch: refetchPayouts } = useQuery({
-    queryKey: ["admin-payouts"],
-    queryFn: async () => await getAdminPayouts({ page: 1, pageSize: 20 }),
+    queryKey: ["admin-payouts", statusFilter, page],
+    queryFn: async () =>
+      await getAdminPayouts({
+        status: statusFilter === "all" ? undefined : statusFilter,
+        page,
+        pageSize,
+      }),
   });
 
   const isFailed = summaryData?.success === false;
@@ -27,10 +43,17 @@ export function FinanceManagement() {
     platformFeePercent: 0,
   };
   const payouts = payoutsData?.data?.data ?? [];
+  const totalPayouts = payoutsData?.data?.pagination?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalPayouts / pageSize));
 
   const handleProcess = async (payoutId: string) => {
-    await processAdminPayout(payoutId, { status: "completed" });
-    await refetchPayouts();
+    const result = await processAdminPayout(payoutId, { status: "completed" });
+    if (result?.success === false) {
+      toast.error(result?.message || "Failed to process payout.");
+    } else {
+      toast.success("Payout processed.");
+      await refetchPayouts();
+    }
   };
 
   if (isLoading) {
@@ -101,6 +124,27 @@ export function FinanceManagement() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-4">
+            <Select
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value)}
+            >
+              <SelectTrigger className="w-[200px] bg-[#1A1A24] border-[rgba(139,92,246,0.15)] text-white">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
         <CardHeader>
@@ -175,6 +219,29 @@ export function FinanceManagement() {
               })}
             </TableBody>
           </Table>
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-[#9CA3AF]">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page <= 1}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page >= totalPages}
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

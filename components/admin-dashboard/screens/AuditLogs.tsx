@@ -1,20 +1,27 @@
 ﻿"use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { getAuditLogs } from "@/actions/admin.actions";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileText } from "lucide-react";
 
 export function AuditLogs() {
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["admin-audit-logs"],
-    queryFn: async () => await getAuditLogs({ page: 1, pageSize: 20 }),
+    queryKey: ["admin-audit-logs", page],
+    queryFn: async () => await getAuditLogs({ page, pageSize }),
   });
 
   const isFailed = data?.success === false;
   const auditLogs = data?.data?.data ?? [];
+  const totalLogs = data?.data?.pagination?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalLogs / pageSize));
 
   if (isLoading) {
     return (
@@ -89,6 +96,29 @@ export function AuditLogs() {
               })}
             </TableBody>
           </Table>
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-[#9CA3AF]">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page <= 1}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page >= totalPages}
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

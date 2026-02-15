@@ -1,9 +1,17 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -12,21 +20,47 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CheckCircle, Clock } from "lucide-react";
+import { CheckCircle, Clock, Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminCreators, updateAdminCreatorVerification } from "@/actions/admin.actions";
+import { toast } from "sonner";
 
 export function CreatorsManagement() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
   const [actionCreatorId, setActionCreatorId] = useState<string | null>(null);
+  const pageSize = 20;
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setQuery(searchTerm.trim());
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, statusFilter]);
+
+  const normalizedStatus = statusFilter === "all" ? undefined : statusFilter;
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["admin-creators"],
-    queryFn: async () => await getAdminCreators({}),
+    queryKey: ["admin-creators", query, statusFilter, page],
+    queryFn: async () =>
+      await getAdminCreators({
+        query,
+        status: normalizedStatus,
+        page,
+        pageSize,
+      }),
   });
 
   const isFailed = data?.success === false;
   const creators = data?.data?.data ?? [];
   const totalCreators = data?.data?.pagination?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCreators / pageSize));
   const verifiedCount = creators.filter((creator: any) => creator.status === "verified").length;
   const pendingCount = creators.filter((creator: any) => creator.status === "pending").length;
   const totalRevenue = creators.reduce(
@@ -36,8 +70,13 @@ export function CreatorsManagement() {
 
   const handleVerification = async (creatorId: string, status: "verified" | "rejected") => {
     setActionCreatorId(creatorId);
-    await updateAdminCreatorVerification(creatorId, { status });
-    await refetch();
+    const result = await updateAdminCreatorVerification(creatorId, { status });
+    if (result?.success === false) {
+      toast.error(result?.message || "Failed to update creator status.");
+    } else {
+      toast.success("Creator status updated.");
+      await refetch();
+    }
     setActionCreatorId(null);
   };
 
@@ -95,6 +134,39 @@ export function CreatorsManagement() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
+        <CardContent className="p-6">
+          <div className="flex gap-4">
+            <div className="flex-1 relative">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+                size={20}
+              />
+              <Input
+                placeholder="Search creators by name or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-[#1A1A24] border-[rgba(139,92,246,0.15)] text-white"
+              />
+            </div>
+            <Select
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value)}
+            >
+              <SelectTrigger className="w-[180px] bg-[#1A1A24] border-[rgba(139,92,246,0.15)] text-white">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="verified">Verified</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
         <CardHeader>
@@ -182,6 +254,29 @@ export function CreatorsManagement() {
               })}
             </TableBody>
           </Table>
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-[#9CA3AF]">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page <= 1}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                disabled={page >= totalPages}
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -1,29 +1,38 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, Flag, Check, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminComics, updateAdminComicStatus } from "@/actions/admin.actions";
+import { toast } from "sonner";
 
 export function ComicsManagement() {
   const [activeTab, setActiveTab] = useState("pending");
+  const [page, setPage] = useState(1);
   const [actionComicId, setActionComicId] = useState<string | null>(null);
+  const pageSize = 20;
+
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab]);
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["admin-comics", activeTab],
+    queryKey: ["admin-comics", activeTab, page],
     queryFn: async () =>
       await getAdminComics({
         status: activeTab,
-        page: 1,
-        pageSize: 20,
+        page,
+        pageSize,
       }),
   });
 
   const isFailed = data?.success === false;
   const comics = data?.data?.data ?? [];
+  const totalComicsForTab = data?.data?.pagination?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalComicsForTab / pageSize));
 
   const { data: totalData } = useQuery({
     queryKey: ["admin-comics-total"],
@@ -52,8 +61,13 @@ export function ComicsManagement() {
 
   const handleModeration = async (comicId: string, status: string) => {
     setActionComicId(comicId);
-    await updateAdminComicStatus(comicId, { status });
-    await refetch();
+    const result = await updateAdminComicStatus(comicId, { status });
+    if (result?.success === false) {
+      toast.error(result?.message || "Failed to update comic status.");
+    } else {
+      toast.success("Comic status updated.");
+      await refetch();
+    }
     setActionComicId(null);
   };
 
@@ -188,6 +202,31 @@ export function ComicsManagement() {
                   })
                 )}
               </div>
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-[#9CA3AF]">
+                  Page {page} of {totalPages}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                    disabled={page <= 1}
+                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                    disabled={page >= totalPages}
+                    onClick={() =>
+                      setPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -233,6 +272,31 @@ export function ComicsManagement() {
                     </div>
                   ))
                 )}
+              </div>
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-[#9CA3AF]">
+                  Page {page} of {totalPages}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                    disabled={page <= 1}
+                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                    disabled={page >= totalPages}
+                    onClick={() =>
+                      setPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                  >
+                    Next
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -291,6 +355,31 @@ export function ComicsManagement() {
                   ))}
                 </div>
               )}
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-[#9CA3AF]">
+                  Page {page} of {totalPages}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                    disabled={page <= 1}
+                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                    disabled={page >= totalPages}
+                    onClick={() =>
+                      setPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
