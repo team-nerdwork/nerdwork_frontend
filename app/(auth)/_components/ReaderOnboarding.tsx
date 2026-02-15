@@ -8,7 +8,11 @@ import { useRouter } from "next/navigation";
 import { createReaderProfile } from "@/actions/profile.actions";
 import { useSession } from "next-auth/react";
 
-export default function ReaderOnboardingFlow() {
+export default function ReaderOnboardingFlow({
+  redirectUrl,
+}: {
+  redirectUrl?: string;
+}) {
   const { update } = useSession();
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -47,6 +51,10 @@ export default function ReaderOnboardingFlow() {
       await update({ rProfile: true });
 
       toast.success("Profile Updated Successfully!");
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+        return;
+      }
       router.push("/r/comics");
     } catch (err) {
       toast.error("An unexpected error occurred.");
