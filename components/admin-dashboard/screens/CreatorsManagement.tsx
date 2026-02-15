@@ -23,6 +23,7 @@ import {
 import { CheckCircle, Clock, Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminCreators, updateAdminCreatorVerification } from "@/actions/admin.actions";
+import { ApiResult, AdminCreator, Paginated } from "@/lib/types/admin";
 import { toast } from "sonner";
 
 export function CreatorsManagement() {
@@ -46,7 +47,9 @@ export function CreatorsManagement() {
 
   const normalizedStatus = statusFilter === "all" ? undefined : statusFilter;
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery<
+    ApiResult<Paginated<AdminCreator>>
+  >({
     queryKey: ["admin-creators", query, statusFilter, page],
     queryFn: async () =>
       await getAdminCreators({
@@ -61,10 +64,12 @@ export function CreatorsManagement() {
   const creators = data?.data?.data ?? [];
   const totalCreators = data?.data?.pagination?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCreators / pageSize));
-  const verifiedCount = creators.filter((creator: any) => creator.status === "verified").length;
-  const pendingCount = creators.filter((creator: any) => creator.status === "pending").length;
+  const verifiedCount = creators.filter((creator) => creator.status === "verified")
+    .length;
+  const pendingCount = creators.filter((creator) => creator.status === "pending")
+    .length;
   const totalRevenue = creators.reduce(
-    (sum: number, creator: any) => sum + (creator.revenue ?? 0),
+    (sum, creator) => sum + (creator.revenue ?? 0),
     0,
   );
 
@@ -186,7 +191,7 @@ export function CreatorsManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {creators.map((creator: any) => {
+              {creators.map((creator) => {
                 const status = creator.status || "pending";
                 const isVerified = status === "verified";
                 const isRejected = status === "rejected";

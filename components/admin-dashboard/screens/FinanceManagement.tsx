@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminPayouts, getFinanceSummary, processAdminPayout } from "@/actions/admin.actions";
+import { ApiResult, AdminPayout, FinanceSummary, Paginated } from "@/lib/types/admin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,12 +21,14 @@ export function FinanceManagement() {
     setPage(1);
   }, [statusFilter]);
 
-  const { data: summaryData, isLoading, isError } = useQuery({
+  const { data: summaryData, isLoading, isError } = useQuery<ApiResult<FinanceSummary>>({
     queryKey: ["admin-finance-summary"],
     queryFn: async () => await getFinanceSummary(),
   });
 
-  const { data: payoutsData, refetch: refetchPayouts } = useQuery({
+  const { data: payoutsData, refetch: refetchPayouts } = useQuery<
+    ApiResult<Paginated<AdminPayout>>
+  >({
     queryKey: ["admin-payouts", statusFilter, page],
     queryFn: async () =>
       await getAdminPayouts({
@@ -163,7 +166,7 @@ export function FinanceManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {payouts.map((payout: any) => {
+              {payouts.map((payout) => {
                 const status = payout.status || "pending";
                 const date = payout.date
                   ? new Date(payout.date).toLocaleDateString()

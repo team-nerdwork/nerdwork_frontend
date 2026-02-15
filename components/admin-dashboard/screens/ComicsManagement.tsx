@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Eye, Flag, Check, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminComics, updateAdminComicStatus } from "@/actions/admin.actions";
+import { ApiResult, AdminComic, Paginated } from "@/lib/types/admin";
 import { toast } from "sonner";
 
 export function ComicsManagement() {
@@ -20,7 +21,9 @@ export function ComicsManagement() {
     setPage(1);
   }, [activeTab]);
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery<
+    ApiResult<Paginated<AdminComic>>
+  >({
     queryKey: ["admin-comics", activeTab, page],
     queryFn: async () =>
       await getAdminComics({
@@ -35,18 +38,18 @@ export function ComicsManagement() {
   const totalComicsForTab = data?.data?.pagination?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalComicsForTab / pageSize));
 
-  const { data: totalData } = useQuery({
+  const { data: totalData } = useQuery<ApiResult<Paginated<AdminComic>>>({
     queryKey: ["admin-comics-total"],
     queryFn: async () => await getAdminComics({ page: 1, pageSize: 1 }),
   });
 
-  const { data: pendingData } = useQuery({
+  const { data: pendingData } = useQuery<ApiResult<Paginated<AdminComic>>>({
     queryKey: ["admin-comics-pending"],
     queryFn: async () =>
       await getAdminComics({ status: "pending", page: 1, pageSize: 1 }),
   });
 
-  const { data: flaggedData } = useQuery({
+  const { data: flaggedData } = useQuery<ApiResult<Paginated<AdminComic>>>({
     queryKey: ["admin-comics-flagged"],
     queryFn: async () =>
       await getAdminComics({ status: "flagged", page: 1, pageSize: 1 }),
@@ -56,7 +59,7 @@ export function ComicsManagement() {
   const pendingCount = pendingData?.data?.pagination?.total ?? 0;
   const flaggedCount = flaggedData?.data?.pagination?.total ?? 0;
   const totalViews = comics.reduce(
-    (sum: number, comic: any) => sum + (comic.views ?? 0),
+    (sum, comic) => sum + (comic.views ?? 0),
     0,
   );
 
@@ -147,7 +150,7 @@ export function ComicsManagement() {
                     No pending comics to review.
                   </div>
                 ) : (
-                  comics.map((comic: any) => {
+                  comics.map((comic) => {
                     const submitted = comic.submitted
                       ? new Date(comic.submitted).toLocaleDateString()
                       : "-";
@@ -260,7 +263,7 @@ export function ComicsManagement() {
                     No published comics found.
                   </div>
                 ) : (
-                  comics.map((comic: any) => (
+                  comics.map((comic) => (
                     (() => {
                       const previewUrl = comic.slug
                         ? `/preview/${comic.slug}`
@@ -361,7 +364,7 @@ export function ComicsManagement() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {comics.map((comic: any) => (
+                  {comics.map((comic) => (
                     (() => {
                       const previewUrl = comic.slug
                         ? `/preview/${comic.slug}`
