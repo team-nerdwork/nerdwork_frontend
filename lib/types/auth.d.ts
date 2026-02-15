@@ -17,6 +17,8 @@ export interface CustomJWT extends JWT {
   cProfile?: boolean;
   rProfile?: boolean;
   token?: string;
+  adminToken?: string;
+  admin?: { id: string; email: string; name?: string };
 }
 
 export interface CustomSession extends Session {
@@ -34,4 +36,6 @@ export interface CustomSession extends Session {
   rProfile?: boolean;
   expires: DefaultSession["expires"];
   token?: string;
+  adminToken?: string;
+  admin?: { id: string; email: string; name?: string };
 }

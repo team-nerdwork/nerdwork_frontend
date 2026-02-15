@@ -4,7 +4,7 @@ import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
 import { CustomJWT } from "./lib/types/auth";
 import { User } from "./lib/types";
-import { googleAuth } from "./actions/auth.actions";
+import { adminAuth, googleAuth } from "./actions/auth.actions";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -38,12 +38,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { token: backendToken, user, cProfile, rProfile } = response.data;
 
+        let adminToken: string | undefined;
+        let adminUser: { id: string; email: string; name?: string } | undefined;
+        const adminResponse = await adminAuth(account.id_token);
+        if (adminResponse?.success && adminResponse.data?.token) {
+          adminToken = adminResponse.data.token;
+          adminUser = adminResponse.data.admin;
+        }
+
         return {
           ...token,
           token: backendToken,
           user,
           cProfile,
           rProfile,
+          adminToken,
+          admin: adminUser,
         };
       }
 
@@ -80,6 +90,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.token = customToken.token;
         session.cProfile = customToken.cProfile;
         session.rProfile = customToken.rProfile;
+        session.adminToken = customToken.adminToken;
+        session.admin = customToken.admin;
       } else {
         console.warn(
           "Session token is missing user data or API token. Session will be incomplete.",
@@ -111,6 +123,8 @@ declare module "next-auth" {
     token?: string;
     cProfile?: boolean;
     rProfile?: boolean;
+    adminToken?: string;
+    admin?: { id: string; email: string; name?: string };
   }
 }
 
@@ -121,5 +135,7 @@ declare module "next-auth/jwt" {
     user?: User;
     token?: string;
     picture?: string;
+    adminToken?: string;
+    admin?: { id: string; email: string; name?: string };
   }
 }
