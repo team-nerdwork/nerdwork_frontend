@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import ReaderOnboarding from "../../_components/ReaderOnboarding";
 import CreatorOnboarding from "../../_components/CreatorOnboarding";
 
@@ -6,10 +6,10 @@ const UserOnboarding = ({
   params,
   searchParams,
 }: {
-  params: Promise<{ userRole: string }>;
+  params: { userRole: string };
   searchParams?: { redirect?: string };
 }) => {
-  const { userRole } = use(params);
+  const { userRole } = params;
   const redirectUrl = searchParams?.redirect;
   return (
     <>
