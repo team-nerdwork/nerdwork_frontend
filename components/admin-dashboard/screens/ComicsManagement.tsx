@@ -1,51 +1,78 @@
 ﻿"use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, Flag, Check, X } from "lucide-react";
-
-const pendingComics = [
-  {
-    id: "COM001",
-    title: "Cyber Legends Vol. 1",
-    creator: "CryptoArtist",
-    submitted: "2024-01-15",
-    pages: 24,
-    genre: "Sci-Fi",
-  },
-  {
-    id: "COM002",
-    title: "Neon Dreams",
-    creator: "DigitalDreamer",
-    submitted: "2024-01-16",
-    pages: 18,
-    genre: "Cyberpunk",
-  },
-];
-
-const publishedComics = [
-  {
-    id: "COM010",
-    title: "Cosmic Warriors",
-    creator: "PixelMaster",
-    published: "2023-12-10",
-    views: 15420,
-    sales: 234,
-    rating: 4.8,
-  },
-  {
-    id: "COM011",
-    title: "Dark City Chronicles",
-    creator: "NeonNinja",
-    published: "2023-12-05",
-    views: 12890,
-    sales: 189,
-    rating: 4.6,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getAdminComics, updateAdminComicStatus } from "@/actions/admin.actions";
 
 export function ComicsManagement() {
+  const [activeTab, setActiveTab] = useState("pending");
+  const [actionComicId, setActionComicId] = useState<string | null>(null);
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["admin-comics", activeTab],
+    queryFn: async () =>
+      await getAdminComics({
+        status: activeTab,
+        page: 1,
+        pageSize: 20,
+      }),
+  });
+
+  const isFailed = data?.success === false;
+  const comics = data?.data?.data ?? [];
+
+  const { data: totalData } = useQuery({
+    queryKey: ["admin-comics-total"],
+    queryFn: async () => await getAdminComics({ page: 1, pageSize: 1 }),
+  });
+
+  const { data: pendingData } = useQuery({
+    queryKey: ["admin-comics-pending"],
+    queryFn: async () =>
+      await getAdminComics({ status: "pending", page: 1, pageSize: 1 }),
+  });
+
+  const { data: flaggedData } = useQuery({
+    queryKey: ["admin-comics-flagged"],
+    queryFn: async () =>
+      await getAdminComics({ status: "flagged", page: 1, pageSize: 1 }),
+  });
+
+  const totalComics = totalData?.data?.pagination?.total ?? 0;
+  const pendingCount = pendingData?.data?.pagination?.total ?? 0;
+  const flaggedCount = flaggedData?.data?.pagination?.total ?? 0;
+  const totalViews = comics.reduce(
+    (sum: number, comic: any) => sum + (comic.views ?? 0),
+    0,
+  );
+
+  const handleModeration = async (comicId: string, status: string) => {
+    setActionComicId(comicId);
+    await updateAdminComicStatus(comicId, { status });
+    await refetch();
+    setActionComicId(null);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError || isFailed) {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl text-white mb-2">Comics & Content Management</h1>
+        <p className="text-red-500">Failed to load comics.</p>
+      </div>
+    );
+  }
   return (
     <div className="p-8 space-y-6">
       <div>
@@ -57,30 +84,30 @@ export function ComicsManagement() {
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Total Comics</p>
-            <p className="text-2xl text-white">8,456</p>
+            <p className="text-2xl text-white">{totalComics.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Pending Review</p>
-            <p className="text-2xl text-white">23</p>
+            <p className="text-2xl text-white">{pendingCount.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
             <p className="text-[#9CA3AF] text-sm mb-1">Flagged Content</p>
-            <p className="text-2xl text-white">7</p>
+            <p className="text-2xl text-white">{flaggedCount.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="bg-[#121218] border-[rgba(139,92,246,0.15)]">
           <CardContent className="p-6">
-            <p className="text-[#9CA3AF] text-sm mb-1">Views (30d)</p>
-            <p className="text-2xl text-white">1.2M</p>
+            <p className="text-[#9CA3AF] text-sm mb-1">Views (Current)</p>
+            <p className="text-2xl text-white">{totalViews.toLocaleString()}</p>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="pending" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-[#121218] border border-[rgba(139,92,246,0.15)]">
           <TabsTrigger value="pending" className="data-[state=active]:bg-[#8B5CF6]">
             Pending Review
@@ -100,50 +127,66 @@ export function ComicsManagement() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {pendingComics.map((comic) => (
-                  <div
-                    key={comic.id}
-                    className="flex items-center justify-between p-4 bg-[#1A1A24] rounded-lg"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-20 bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] rounded" />
-                      <div>
-                        <h3 className="text-white mb-1">{comic.title}</h3>
-                        <p className="text-sm text-[#9CA3AF]">
-                          by {comic.creator} - {comic.pages} pages - {comic.genre}
-                        </p>
-                        <p className="text-xs text-[#9CA3AF] mt-1">
-                          Submitted: {comic.submitted}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
-                      >
-                        <Eye size={16} className="mr-2" />
-                        Review
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-[#10B981] hover:bg-[#059669] text-white"
-                      >
-                        <Check size={16} className="mr-2" />
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10"
-                      >
-                        <X size={16} className="mr-2" />
-                        Reject
-                      </Button>
-                    </div>
+                {comics.length === 0 ? (
+                  <div className="text-center py-10 text-[#9CA3AF]">
+                    No pending comics to review.
                   </div>
-                ))}
+                ) : (
+                  comics.map((comic: any) => {
+                    const submitted = comic.submitted
+                      ? new Date(comic.submitted).toLocaleDateString()
+                      : "-";
+                    return (
+                      <div
+                        key={comic.id}
+                        className="flex items-center justify-between p-4 bg-[#1A1A24] rounded-lg"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-20 bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] rounded" />
+                          <div>
+                            <h3 className="text-white mb-1">{comic.title}</h3>
+                            <p className="text-sm text-[#9CA3AF]">
+                              by {comic.creator || "Unknown"} -{" "}
+                              {comic.chapters ?? 0} chapters - {comic.genre || "-"}
+                            </p>
+                            <p className="text-xs text-[#9CA3AF] mt-1">
+                              Submitted: {submitted}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                          >
+                            <Eye size={16} className="mr-2" />
+                            Review
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-[#10B981] hover:bg-[#059669] text-white"
+                            disabled={actionComicId === comic.id}
+                            onClick={() => handleModeration(comic.id, "published")}
+                          >
+                            <Check size={16} className="mr-2" />
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10"
+                            disabled={actionComicId === comic.id}
+                            onClick={() => handleModeration(comic.id, "flagged")}
+                          >
+                            <X size={16} className="mr-2" />
+                            Reject
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </CardContent>
           </Card>
@@ -156,32 +199,40 @@ export function ComicsManagement() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {publishedComics.map((comic) => (
-                  <div
-                    key={comic.id}
-                    className="flex items-center justify-between p-4 bg-[#1A1A24] rounded-lg"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-20 bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded" />
-                      <div>
-                        <h3 className="text-white mb-1">{comic.title}</h3>
-                        <p className="text-sm text-[#9CA3AF]">by {comic.creator}</p>
-                        <div className="flex gap-4 mt-2 text-xs text-[#9CA3AF]">
-                          <span>{comic.views.toLocaleString()} views</span>
-                          <span>{comic.sales} sales</span>
-                          <span>Rating {comic.rating}</span>
+                {comics.length === 0 ? (
+                  <div className="text-center py-10 text-[#9CA3AF]">
+                    No published comics found.
+                  </div>
+                ) : (
+                  comics.map((comic: any) => (
+                    <div
+                      key={comic.id}
+                      className="flex items-center justify-between p-4 bg-[#1A1A24] rounded-lg"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-20 bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded" />
+                        <div>
+                          <h3 className="text-white mb-1">{comic.title}</h3>
+                          <p className="text-sm text-[#9CA3AF]">
+                            by {comic.creator || "Unknown"}
+                          </p>
+                          <div className="flex gap-4 mt-2 text-xs text-[#9CA3AF]">
+                            <span>{Number(comic.views ?? 0).toLocaleString()} views</span>
+                            <span>{Number(comic.sales ?? 0).toLocaleString()} sales</span>
+                            <span>${Number(comic.revenue ?? 0).toLocaleString()} revenue</span>
+                          </div>
                         </div>
                       </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                      >
+                        Manage
+                      </Button>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
-                    >
-                      Manage
-                    </Button>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -193,10 +244,53 @@ export function ComicsManagement() {
               <CardTitle className="text-white">Flagged Content</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
-                <Flag size={48} className="mx-auto text-[#9CA3AF] mb-4" />
-                <p className="text-[#9CA3AF]">No flagged content to review</p>
-              </div>
+              {comics.length === 0 ? (
+                <div className="text-center py-12">
+                  <Flag size={48} className="mx-auto text-[#9CA3AF] mb-4" />
+                  <p className="text-[#9CA3AF]">No flagged content to review</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {comics.map((comic: any) => (
+                    <div
+                      key={comic.id}
+                      className="flex items-center justify-between p-4 bg-[#1A1A24] rounded-lg"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-20 bg-gradient-to-br from-[#EF4444] to-[#F59E0B] rounded" />
+                        <div>
+                          <h3 className="text-white mb-1">{comic.title}</h3>
+                          <p className="text-sm text-[#9CA3AF]">
+                            by {comic.creator || "Unknown"} - {comic.genre || "-"}
+                          </p>
+                          <p className="text-xs text-[#9CA3AF] mt-1">
+                            Views: {Number(comic.views ?? 0).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-[rgba(139,92,246,0.15)] text-[#D1D5DB]"
+                        >
+                          <Eye size={16} className="mr-2" />
+                          Review
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-[#10B981] hover:bg-[#059669] text-white"
+                          disabled={actionComicId === comic.id}
+                          onClick={() => handleModeration(comic.id, "published")}
+                        >
+                          <Check size={16} className="mr-2" />
+                          Restore
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
