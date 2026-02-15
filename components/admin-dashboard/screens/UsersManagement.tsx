@@ -40,6 +40,7 @@ import {
   getAdminUsers,
   updateAdminUserStatus,
 } from "@/actions/admin.actions";
+import { ApiResult, AdminUser, Paginated } from "@/lib/types/admin";
 
 export function UsersManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +63,9 @@ export function UsersManagement() {
 
   const normalizedStatus = statusFilter === "all" ? undefined : statusFilter;
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery<
+    ApiResult<Paginated<AdminUser>>
+  >({
     queryKey: ["admin-users", query, statusFilter, page],
     queryFn: async () =>
       await getAdminUsers({
@@ -78,28 +81,26 @@ export function UsersManagement() {
   const totalUsers = data?.data?.pagination?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalUsers / pageSize));
 
-  const getStatus = (user: any) => {
+  const getStatus = (user: AdminUser) => {
     const lockedUntil = user.lockedUntil ? new Date(user.lockedUntil) : null;
     const isLocked = lockedUntil && lockedUntil > new Date();
     if (isLocked) return "suspended";
     return user.isActive ? "active" : "inactive";
   };
 
-  const getDisplayName = (user: any) => {
+  const getDisplayName = (user: AdminUser) => {
     if (user.displayName) return user.displayName;
     const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ");
     if (fullName) return fullName;
     return user.username || user.email || "Unknown";
   };
 
-  const activeCount = users.filter((user: any) => getStatus(user) === "active")
+  const activeCount = users.filter((user) => getStatus(user) === "active")
     .length;
-  const suspendedCount = users.filter(
-    (user: any) => getStatus(user) === "suspended",
-  ).length;
-  const inactiveCount = users.filter(
-    (user: any) => getStatus(user) === "inactive",
-  ).length;
+  const suspendedCount = users.filter((user) => getStatus(user) === "suspended")
+    .length;
+  const inactiveCount = users.filter((user) => getStatus(user) === "inactive")
+    .length;
 
   const handleStatusUpdate = async (
     userId: string,
@@ -232,7 +233,7 @@ export function UsersManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user: any) => {
+              {users.map((user) => {
                 const status = getStatus(user);
                 const joined = user.createdAt
                   ? new Date(user.createdAt).toLocaleDateString()

@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminOverview } from "@/actions/admin.actions";
+import { ApiResult, AdminOverviewResponse } from "@/lib/types/admin";
 import {
   AreaChart,
   Area,
@@ -24,7 +25,7 @@ import {
 } from "lucide-react";
 
 export function AdminOverview() {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<ApiResult<AdminOverviewResponse>>({
     queryKey: ["admin-overview"],
     queryFn: async () => await getAdminOverview(),
   });
@@ -262,7 +263,7 @@ export function AdminOverview() {
             <p className="text-sm text-[#9CA3AF]">Platform health</p>
           </CardHeader>
           <CardContent className="space-y-4">
-            {systemStatus.map((service: any) => {
+            {systemStatus.map((service) => {
               const status = String(service.status || "").toLowerCase();
               const isOperational = status === "operational";
               const isDegraded = status === "degraded";

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { getAuditLogs } from "@/actions/admin.actions";
+import { ApiResult, AdminAuditLog, Paginated } from "@/lib/types/admin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,7 +14,7 @@ export function AuditLogs() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<ApiResult<Paginated<AdminAuditLog>>>({
     queryKey: ["admin-audit-logs", page],
     queryFn: async () => await getAuditLogs({ page, pageSize }),
   });
@@ -65,7 +66,7 @@ export function AuditLogs() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {auditLogs.map((log: any) => {
+              {auditLogs.map((log) => {
                 const status = log.status || "unknown";
                 const timestamp = log.createdAt
                   ? new Date(log.createdAt).toLocaleString()
