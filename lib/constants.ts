@@ -1,3 +1,5 @@
+import type { ExchangeRate, FiatCurrency } from "@/lib/types/payment.types";
+
 export const GENRES = [
   "Fantasy",
   "Science Fiction",
@@ -29,3 +31,26 @@ export const CONTENT_RATINGS = [
   { value: "mature-17+", label: "Mature - Age 17+" },
   { value: "adults-18+", label: "Adults - Age 18+" },
 ] as const;
+
+// ===== Payment Constants =====
+
+export const EXCHANGE_RATES: Record<FiatCurrency, ExchangeRate> = {
+  USD: {
+    currency: "USD",
+    ratePerNWT: 0.1,
+    symbol: "$",
+    smallestUnitName: "cents",
+    smallestUnitMultiplier: 100,
+  },
+  NGN: {
+    currency: "NGN",
+    ratePerNWT: 150,
+    symbol: "\u20A6",
+    smallestUnitName: "kobo",
+    smallestUnitMultiplier: 100,
+  },
+} as const;
+
+export const TRANSACTION_FEE_RATE = 0.01;
+
+export const NWT_SUGGESTED_AMOUNTS = [10, 30, 50, 100] as const;

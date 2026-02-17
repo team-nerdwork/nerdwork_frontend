@@ -18,6 +18,7 @@ import { getReaderTransactionHistory } from "@/actions/transaction.action";
 import { ReaderTransaction } from "@/lib/types";
 import LoaderScreen from "@/components/loading-screen";
 import { toast } from "sonner";
+import { EXCHANGE_RATES } from "@/lib/constants";
 
 const ReaderWalletPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
@@ -26,9 +27,8 @@ const ReaderWalletPage = () => {
   const { profile } = useUserSession();
   const readerProfile = profile?.readerProfile;
 
-  const usdPerNwt = 0.1;
-  const calculateUSD = (amount: number) => amount * usdPerNwt;
-  const usdEquivalent = calculateUSD(readerProfile?.walletBalance);
+  const usdEquivalent =
+    (readerProfile?.walletBalance ?? 0) * EXCHANGE_RATES.USD.ratePerNWT;
 
   const {
     data: transactions,
@@ -140,13 +140,17 @@ const ReaderWalletPage = () => {
                   Rates are updated every 2 minutes
                 </p>
               </div>
-              <div className="font-medium">
+              <div className="font-medium space-y-1">
                 <p className="flex justify-between">
                   10 NWT <span>$1.00</span>
                 </p>
-                {/* <p className="flex justify-between">
-                  1 SOL <span>$10.05</span>
-                </p> */}
+                <p className="flex justify-between">
+                  1 NWT{" "}
+                  <span>
+                    {EXCHANGE_RATES.NGN.symbol}
+                    {EXCHANGE_RATES.NGN.ratePerNWT.toLocaleString()}
+                  </span>
+                </p>
               </div>
             </div>
             <div>
