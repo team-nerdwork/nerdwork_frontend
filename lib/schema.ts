@@ -122,7 +122,7 @@ export const nftFormSchema = z.object({
     .min(10, { message: "Description must be at least 10 characters." })
     .max(1000, { message: "Description must be at most 1000 characters." }),
   supply: z.number().min(1, { message: "Supply must be at least 1." }),
-  price: z.number().nonnegative({ message: "Price cannot be negative." }),
+  // price: z.number().nonnegative({ message: "Price cannot be negative." }),
   properties: z.array(
     z.object({
       type: z.string().optional(),
