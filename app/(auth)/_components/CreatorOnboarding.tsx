@@ -4,7 +4,11 @@ import { useState } from "react";
 import { PaymentDetailsForm } from "./PaymentSetup"; // Your second component
 import { CreatorProfileForm } from "./CreatorProfileForm";
 
-export default function CreatorOnboarding() {
+export default function CreatorOnboarding({
+  redirectUrl,
+}: {
+  redirectUrl?: string;
+}) {
   const [step, setStep] = useState(1);
 
   const handleNextStep = () => {
@@ -16,7 +20,7 @@ export default function CreatorOnboarding() {
       case 1:
         return <CreatorProfileForm onNext={handleNextStep} />;
       case 2:
-        return <PaymentDetailsForm />;
+        return <PaymentDetailsForm redirectUrl={redirectUrl} />;
       default:
         return null;
     }

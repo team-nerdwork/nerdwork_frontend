@@ -18,9 +18,9 @@ const SignUpClient = () => {
 
   useEffect(() => {
     if (status === "authenticated" && session) {
-      router.push("/onboarding");
+      router.push(callbackUrl);
     }
-  }, [status, session, router]);
+  }, [status, session, router, callbackUrl]);
 
   return (
     <main className="bg-[#171719] min-h-screen w-full font-inter text-white flex flex-col items-center justify-between py-20 px-5">

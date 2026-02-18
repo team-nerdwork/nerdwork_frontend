@@ -20,7 +20,7 @@ import { useUserSession } from "@/lib/api/queries";
 import { toast } from "sonner";
 import { setReaderPin } from "@/actions/profile.actions";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { purchaseChapterComic } from "@/actions/comic.actions";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -55,6 +55,8 @@ const ComicPaymentFlow = ({
   const queryClient = useQueryClient();
 
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
   const pathSegments = pathname.split("/");
   const chapterIndex = pathSegments.indexOf("chapter");
   const basePath = internal
@@ -128,6 +130,11 @@ const ComicPaymentFlow = ({
       refetch();
       toast.success("Chapter Purchased Successfully!");
       setStep("success");
+      if (redirectUrl) {
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 800);
+      }
       await queryClient.invalidateQueries({
         queryKey: ["reader-transactions"],
       });
@@ -279,11 +286,24 @@ const ComicPaymentFlow = ({
               <p className="text-[#F5F5F5] text-sm">
                 Transaction was successful and comic added to library
               </p>
-              <Link href={`${basePath}/chapter/${chapter.uniqueCode}`}>
-                <Button className="w-full" variant={"primary"}>
-                  Start Reading
-                </Button>
-              </Link>
+              <div className="flex flex-col w-full gap-3">
+                <Link href={`${basePath}/chapter/${chapter.uniqueCode}`}>
+                  <Button className="w-full" variant={"primary"}>
+                    Start Reading
+                  </Button>
+                </Link>
+                {redirectUrl && (
+                  <Button
+                    className="w-full"
+                    variant={"outline"}
+                    onClick={() => {
+                      window.location.href = redirectUrl;
+                    }}
+                  >
+                    Open in App
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>

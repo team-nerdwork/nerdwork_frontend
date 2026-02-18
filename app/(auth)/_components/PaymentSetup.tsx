@@ -17,7 +17,11 @@ import { useSession } from "next-auth/react";
 
 const wallet = new Solflare();
 
-export function PaymentDetailsForm() {
+export function PaymentDetailsForm({
+  redirectUrl,
+}: {
+  redirectUrl?: string;
+}) {
   const [selectedWallet, setSelectedWallet] = useState<string>("");
   const router = useRouter();
   const { refetch } = useUserSession();
@@ -54,6 +58,10 @@ export function PaymentDetailsForm() {
           cProfile: true,
         });
         toast.success("Bank details set successfully!");
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+          return;
+        }
         router.push("/creator/comics");
       } catch (err) {
         toast.error("An unexpected error occurred.");
@@ -92,6 +100,10 @@ export function PaymentDetailsForm() {
         ...(response.data?.token && { token: response.data.token }),
       });
       toast.success("Wallet address set successfully!");
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+        return;
+      }
       router.push("/creator/comics");
     } catch (err) {
       toast.error("An unexpected error occurred.");
