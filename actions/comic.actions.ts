@@ -9,13 +9,40 @@ import {
 import { ChapterFormData, ComicSeriesFormData } from "@/lib/schema";
 import axios from "axios";
 
+const MAX_FILE_SIZE_MB = 10;
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+
 export const uploadImage = async (data: FormData) => {
   try {
     const file = data.get("file") as File;
 
     if (!file) {
-      return { error: "No file provided." };
+      return {
+        success: false,
+        status: 400,
+        message: "No file provided.",
+      };
     }
+
+    // Validate file type
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      return {
+        success: false,
+        status: 400,
+        message: "Invalid file type. Only JPG, PNG, GIF, and WebP images are allowed.",
+      };
+    }
+
+    // Validate file size
+    const fileSizeMB = file.size / (1024 * 1024);
+    if (fileSizeMB > MAX_FILE_SIZE_MB) {
+      return {
+        success: false,
+        status: 400,
+        message: `File size exceeds ${MAX_FILE_SIZE_MB}MB limit. Please choose a smaller file.`,
+      };
+    }
+
     const response = await axiosPostData("/file-upload/media", data);
 
     return {

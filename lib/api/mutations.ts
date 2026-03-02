@@ -1,5 +1,6 @@
 import { uploadImage } from "@/actions/comic.actions";
 import { useMutation } from "@tanstack/react-query";
+import { handleUnauthorized } from "@/lib/utils/actionHandler";
 
 export type UploadResultItem = {
   success: boolean;
@@ -34,6 +35,17 @@ export const useUploadImage = () => {
 
       try {
         const result = (await uploadImage(data)) as UploadResultItem;
+
+        // Handle 401 unauthorized
+        if (handleUnauthorized(result)) {
+          clearInterval(intervalId);
+          const unauthorizedResult: UploadResultItem = {
+            success: false,
+            error: "Unauthorized - session expired",
+            status: 401,
+          };
+          return unauthorizedResult;
+        }
 
         clearInterval(intervalId);
         onProgressUpdate(100);
@@ -84,6 +96,18 @@ export const useUploadMultiImages = () => {
             formData.append("file", file);
 
             const result = (await uploadImage(formData)) as UploadResultItem;
+
+            // Handle 401 unauthorized
+            if (handleUnauthorized(result)) {
+              clearInterval(intervalId);
+              const unauthorizedResult: UploadResultItem = {
+                success: false,
+                error: "Unauthorized - session expired",
+                status: 401,
+              };
+              resolve(unauthorizedResult);
+              return;
+            }
 
             clearInterval(intervalId);
             overallCompletedFiles++;

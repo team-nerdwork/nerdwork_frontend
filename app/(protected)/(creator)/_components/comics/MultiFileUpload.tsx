@@ -35,6 +35,8 @@ export type Page = {
 };
 
 const MAX_TOTAL_SIZE_MB = 50;
+const MAX_INDIVIDUAL_FILE_SIZE_MB = 10;
+const ALLOWED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
 
 const SortableFileItem = ({
   id,
@@ -151,10 +153,9 @@ export function MultiFileUpload({
         .map((result, idx) => {
           if (result?.success && result.data) {
             const fullUrl = result.data as string;
-            const cleanUrl = fullUrl.split("?")[0];
             const fileSize = filesRef.current[idx]?.size || 0;
             return {
-              id: cleanUrl,
+              id: fullUrl, // Backend will handle URL processing, use full URL
               previewUrl: fullUrl,
               size: fileSize,
             };
@@ -164,11 +165,13 @@ export function MultiFileUpload({
         .filter((p): p is Page => p !== null);
 
       if (newPagesData.length > 0) {
-        setPagesData((prev) => [...prev, ...newPagesData]);
-        field.onChange([
-          ...pagesData.map((p) => p.id),
-          ...newPagesData.map((p) => p.id),
-        ]);
+        // Use functional update to avoid stale closure
+        setPagesData((prev) => {
+          const updated = [...prev, ...newPagesData];
+          // Update field value with full URLs (backend will handle processing)
+          field.onChange(updated.map((p) => p.id));
+          return updated;
+        });
       }
 
       const successfulUploads = newPagesData.length;
@@ -188,7 +191,7 @@ export function MultiFileUpload({
       filesRef.current = [];
       reset();
     }
-  }, [isSuccess, uploadResults, error, field, initialPages, reset]);
+  }, [isSuccess, uploadResults, error, field, reset]);
 
   useEffect(() => {
     if (onInitialLoad && pagesData.length > 0) {
@@ -203,17 +206,55 @@ export function MultiFileUpload({
     })
   );
 
+  const validateFiles = (files: File[]): { valid: File[]; invalid: string[] } => {
+    const valid: File[] = [];
+    const invalid: string[] = [];
+
+    files.forEach((file) => {
+      // Check file type
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        invalid.push(`${file.name}: Invalid file type (must be JPG, PNG, GIF, or WebP)`);
+        return;
+      }
+
+      // Check individual file size
+      const fileSizeMB = file.size / (1024 * 1024);
+      if (fileSizeMB > MAX_INDIVIDUAL_FILE_SIZE_MB) {
+        invalid.push(`${file.name}: File too large (max ${MAX_INDIVIDUAL_FILE_SIZE_MB}MB per file)`);
+        return;
+      }
+
+      valid.push(file);
+    });
+
+    return { valid, invalid };
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
-      filesRef.current = filesArray;
+
+      // Validate files
+      const { valid: validFiles, invalid: invalidFiles } = validateFiles(filesArray);
+
+      if (invalidFiles.length > 0) {
+        invalidFiles.forEach((error) => toast.error(error));
+        if (validFiles.length === 0) {
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+          return;
+        }
+      }
+
+      filesRef.current = validFiles;
 
       // Calculate the total size of all pages (existing + new)
       const currentTotalSize = pagesData.reduce(
         (acc, page) => acc + page.size,
         0
       );
-      const newFilesTotalSize = filesArray.reduce(
+      const newFilesTotalSize = validFiles.reduce(
         (acc, file) => acc + file.size,
         0
       );
@@ -232,11 +273,11 @@ export function MultiFileUpload({
         return;
       }
 
-      totalFilesRef.current = filesArray.length;
+      totalFilesRef.current = validFiles.length;
       setUploadPercentage(0);
 
       mutate({
-        filesToUpload: filesArray,
+        filesToUpload: validFiles,
         onProgressUpdate: updateProgress,
       });
       if (fileInputRef.current) {
@@ -251,13 +292,23 @@ export function MultiFileUpload({
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const filesArray = Array.from(e.dataTransfer.files);
 
-      filesRef.current = filesArray; // Store files in the ref
+      // Validate files
+      const { valid: validFiles, invalid: invalidFiles } = validateFiles(filesArray);
+
+      if (invalidFiles.length > 0) {
+        invalidFiles.forEach((error) => toast.error(error));
+        if (validFiles.length === 0) {
+          return;
+        }
+      }
+
+      filesRef.current = validFiles; // Store files in the ref
 
       const currentTotalSize = pagesData.reduce(
         (acc, page) => acc + page.size,
         0
       );
-      const newFilesTotalSize = filesArray.reduce(
+      const newFilesTotalSize = validFiles.reduce(
         (acc, file) => acc + file.size,
         0
       );
@@ -273,12 +324,12 @@ export function MultiFileUpload({
         return;
       }
 
-      totalFilesRef.current = filesArray.length;
+      totalFilesRef.current = validFiles.length;
 
       setUploadPercentage(0);
 
       mutate({
-        filesToUpload: filesArray,
+        filesToUpload: validFiles,
         onProgressUpdate: updateProgress,
       });
     }
