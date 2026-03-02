@@ -1,4 +1,4 @@
-import { NFTCollectible, Transaction } from "@/lib/types";
+import { Transaction } from "@/lib/types";
 
 export const eventsData = [
   {
