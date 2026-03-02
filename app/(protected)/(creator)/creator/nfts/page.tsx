@@ -14,7 +14,6 @@ const NFTsPage = () => {
   const creatorProfile = profile?.creatorProfile;
 
   const NFTs = nftData?.data;
-  console.log("Fetched NFTs:", NFTs);
 
   return (
     <main className="font-inter text-white">

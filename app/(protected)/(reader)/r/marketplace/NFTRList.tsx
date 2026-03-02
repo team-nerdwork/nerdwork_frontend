@@ -11,27 +11,27 @@ export default function NFTRList({ data }: { data: NFTCollectible[] }) {
       <div className="flex flex-wrap gap-4">
         {data.map((nft) => (
           <div
-            key={nft.id}
+            key={nft.listingId}
             className="rounded-md w-[173px] overflow-hidden cursor-pointer group"
           >
             <figure className="relative h-[268px] flex items-center">
-              <Link href={`/r/marketplace/${nft.id}`}>
+              <Link href={`/r/marketplace/${nft.listingId}`}>
                 <Image
-                  src={nft.image}
+                  src={nft.imageUrl}
                   width={173}
                   height={268}
-                  alt={`${nft.name} image`}
+                  alt={`${nft.title} image`}
                   className="rounded-md"
                 />
               </Link>
               <div className="absolute bottom-2 left-2 text-xs text-white bg-black rounded-full px-2 py-1">
-                {nft.total_copies - nft.sold_copies}
+                {nft.remainingSupply}
               </div>
             </figure>
             <div className="bg-[#FFFFFF0D] p-4 flex flex-col gap-1 group-hover:bg-nerd-default">
-              <Link href={`/r/marketplace/${nft.id}`}>
+              <Link href={`/r/marketplace/${nft.listingId}`}>
                 <h4 className="font-medium truncate hover:underline">
-                  {nft.name}
+                  {nft.title}
                 </h4>
               </Link>
               <p className="text-sm flex items-center gap-2">

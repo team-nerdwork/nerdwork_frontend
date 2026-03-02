@@ -119,7 +119,7 @@ const AllNFTs = ({ data }: { data: NFTCollectible[] }) => {
                 <p className="flex justify-between items-center text-nerd-muted">
                   <span>
                     {comic.status == "listed"
-                      ? "issued"
+                      ? "Listed"
                       : comic.status == "sold"
                         ? "Sold out"
                         : "Frozen"}
@@ -131,7 +131,7 @@ const AllNFTs = ({ data }: { data: NFTCollectible[] }) => {
 
                 <Progress
                   value={
-                    (comic.supply - comic.remainingSupply / comic.supply) * 100
+                    ((comic.supply - comic.remainingSupply) / comic.supply) * 100
                   }
                 />
               </div>

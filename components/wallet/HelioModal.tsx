@@ -7,6 +7,7 @@ import Helio from "@/assets/helio.svg";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { handlePayment } from "@/lib/api/payment";
+import type { handlePaymentRequest } from "@/lib/api/payment";
 import { useUserSession } from "@/lib/api/queries";
 import {
   Drawer,
@@ -30,7 +31,7 @@ const HelioCheckout = dynamic(
         <span className="ml-2 text-white">Loading payment form...</span>
       </div>
     ),
-  }
+  },
 );
 
 interface HelioModalProps {
@@ -63,14 +64,17 @@ const HelioModal: React.FC<HelioModalProps> = ({
     setIsClient(true);
   }, []);
 
-  // eslint-disable-next-line
-  const handlePaymentSuccess = async (payment: any) => {
+  const handlePaymentSuccess = async (payment: unknown) => {
     try {
-      const response = await handlePayment(payment);
+      // Helio's onSuccess payload may not exactly match our server's handlePaymentRequest
+      // Cast at runtime and pass through. If structure differs, map fields accordingly.
+      const payload = payment as handlePaymentRequest;
+
+      const response = await handlePayment(payload);
 
       if (!response?.success) {
         toast.error(
-          response?.message ?? "An error occurred while submitting the form."
+          response?.message ?? "An error occurred while submitting the form.",
         );
         return;
       }
@@ -90,8 +94,7 @@ const HelioModal: React.FC<HelioModalProps> = ({
     }
   };
 
-  // eslint-disable-next-line
-  const handlePaymentError = (error: any) => {
+  const handlePaymentError = (error: unknown) => {
     console.error("Payment failed:", error);
     setPaymentStatus("failed");
     toast.error("Payment failed. Please try again.");

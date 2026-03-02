@@ -1,9 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { auth } from "@/auth";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+const axiosInstance = axios.create();
+
+// Add response interceptor to log 401 errors
+// The actual redirect/signout is handled by handleUnauthorized() in client components
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      console.error("Unauthorized access detected - 401 error from API");
+    }
+    return Promise.reject(error);
+  },
+);
 
 async function getToken(): Promise<string> {
   try {
@@ -24,7 +38,7 @@ async function axiosGet<T = any>(
   url: string,
   params = {},
   contentType?: string,
-  otherHeaders = {}
+  otherHeaders = {},
 ): Promise<AxiosResponse<T>> {
   const customContentType = contentType ? contentType : "application/json";
   const headers = await getAuthHeader();
@@ -38,13 +52,13 @@ async function axiosGet<T = any>(
   };
   const fullUrl = `${apiUrl}${url}`;
   try {
-    const response = await axios.get<T>(fullUrl, config);
+    const response = await axiosInstance.get<T>(fullUrl, config);
     return response;
   } catch (error) {
     console.error(
       "Error in GET request to %s:",
       encodeURIComponent(fullUrl),
-      error
+      error,
     );
     throw error;
   }
@@ -53,7 +67,7 @@ async function axiosGet<T = any>(
 async function axiosPost<T = any, D = any>(
   url: string,
   body: D,
-  params = {}
+  params = {},
 ): Promise<AxiosResponse<T>> {
   const headers = await getAuthHeader();
   const config = {
@@ -65,13 +79,13 @@ async function axiosPost<T = any, D = any>(
   };
   const fullUrl = `${apiUrl}${url}`;
   try {
-    const response = await axios.post<T>(fullUrl, body, config);
+    const response = await axiosInstance.post<T>(fullUrl, body, config);
     return response;
   } catch (error) {
     console.error(
       "Error in POST request to %s:",
       encodeURIComponent(fullUrl),
-      error
+      error,
     );
     throw error;
   }
@@ -80,7 +94,7 @@ async function axiosPost<T = any, D = any>(
 async function axiosPatch<T = any, D = any>(
   url: string,
   body: D,
-  params = {}
+  params = {},
 ): Promise<AxiosResponse<T>> {
   const headers = await getAuthHeader();
   const config = {
@@ -92,13 +106,13 @@ async function axiosPatch<T = any, D = any>(
   };
   const fullUrl = `${apiUrl}${url}`;
   try {
-    const response = await axios.patch<T>(fullUrl, body, config);
+    const response = await axiosInstance.patch<T>(fullUrl, body, config);
     return response;
   } catch (error) {
     console.error(
       "Error in PATCH request to %s:",
       encodeURIComponent(fullUrl),
-      error
+      error,
     );
     throw error;
   }
@@ -107,7 +121,7 @@ async function axiosPatch<T = any, D = any>(
 async function axiosPut<T = any, D = any>(
   url: string,
   body: D,
-  params = {}
+  params = {},
 ): Promise<AxiosResponse<T>> {
   const headers = await getAuthHeader();
   const config = {
@@ -119,13 +133,13 @@ async function axiosPut<T = any, D = any>(
   };
   const fullUrl = `${apiUrl}${url}`;
   try {
-    const response = await axios.put<T>(fullUrl, body, config);
+    const response = await axiosInstance.put<T>(fullUrl, body, config);
     return response;
   } catch (error) {
     console.error(
       "Error in PUT request to %s:",
       encodeURIComponent(fullUrl),
-      error
+      error,
     );
     throw error;
   }
@@ -134,7 +148,7 @@ async function axiosPut<T = any, D = any>(
 async function axiosPostData<T = any>(
   url: string,
   body: FormData,
-  params = {}
+  params = {},
 ): Promise<AxiosResponse<T>> {
   const headers = await getAuthHeader();
   const config = {
@@ -146,13 +160,13 @@ async function axiosPostData<T = any>(
   };
   const fullUrl = `${apiUrl}${url}`;
   try {
-    const response = await axios.post<T>(fullUrl, body, config);
+    const response = await axiosInstance.post<T>(fullUrl, body, config);
     return response;
   } catch (error) {
     console.error(
       "Error in FormData Post request to %s:",
       encodeURIComponent(fullUrl),
-      error
+      error,
     );
     throw error;
   }
@@ -160,7 +174,7 @@ async function axiosPostData<T = any>(
 
 async function axiosDelete<T = any>(
   url: string,
-  params = {}
+  params = {},
 ): Promise<AxiosResponse<T>> {
   const headers = await getAuthHeader();
   const config = {
@@ -172,13 +186,13 @@ async function axiosDelete<T = any>(
   };
   const fullUrl = `${apiUrl}${url}`;
   try {
-    const response = await axios.delete<T>(fullUrl, config);
+    const response = await axiosInstance.delete<T>(fullUrl, config);
     return response;
   } catch (error) {
     console.error(
       "Error in DELETE request to %s:",
       encodeURIComponent(fullUrl),
-      error
+      error,
     );
     throw error;
   }

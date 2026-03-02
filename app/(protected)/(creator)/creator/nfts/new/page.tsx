@@ -69,8 +69,6 @@ const NewNFTPage = () => {
   };
 
   const onSubmit = async (data: NFTFormData) => {
-    console.log("Form submitted successfully:", data);
-
     try {
       await createNFTMutation.mutateAsync(data);
       toast.success("NFT created successfully!");
@@ -79,7 +77,7 @@ const NewNFTPage = () => {
       }, 1500);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create NFT"
+        error instanceof Error ? error.message : "Failed to create NFT",
       );
     }
   };
@@ -350,18 +348,19 @@ const NewNFTPage = () => {
 
               {/* Action buttons at the bottom */}
               <div className="flex justify-end gap-4 mt-8 w-full">
-                <Button
+                {/* <Button
                   type="button"
                   variant="outline"
                   className="text-white border-[#292a2e] hover:bg-[#1d1e21]"
                   disabled={createNFTMutation.isPending}
                 >
                   Preview
-                </Button>
+                </Button> */}
                 <Button
                   type="submit"
                   variant="primary"
                   disabled={createNFTMutation.isPending}
+                  className="w-[120px]"
                 >
                   {createNFTMutation.isPending ? (
                     <>

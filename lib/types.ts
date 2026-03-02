@@ -77,6 +77,8 @@ export type CreatorTransaction = {
 
 export type NFTCollectible = {
   id: string;
+  nftId?: string;
+  listingId?: string;
   title: string;
   description: string;
   imageUrl: string;

@@ -11,6 +11,7 @@ import {
   purchaseNFT,
 } from "@/actions/nfts.actions";
 import { NFTFormData } from "@/lib/schema";
+import { handleUnauthorized } from "@/lib/utils/actionHandler";
 
 // Query Keys
 export const nftKeys = {
@@ -32,6 +33,12 @@ export const useGetCreatorNFTs = () => {
     queryKey: nftKeys.creatorNfts(),
     queryFn: async () => {
       const response = await getCreatorNFTs();
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response.success) {
         throw new Error(response.message || "Failed to fetch creator NFTs");
       }
@@ -50,6 +57,12 @@ export const useGetSingleNFT = (id: string, enabled: boolean = true) => {
     queryKey: nftKeys.singleNft(id),
     queryFn: async () => {
       const response = await getSingleNFT(id);
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response.success) {
         throw new Error(response.message || "Failed to fetch NFT");
       }
@@ -70,6 +83,12 @@ export const useGetMarketplaceNFTs = () => {
     queryKey: nftKeys.marketplace(),
     queryFn: async () => {
       const response = await getMarketplaceNFTs();
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response.success) {
         throw new Error(response.message || "Failed to fetch marketplace NFTs");
       }
@@ -85,12 +104,18 @@ export const useGetMarketplaceNFTs = () => {
  */
 export const useGetSingleListedNFT = (
   listingId: string,
-  enabled: boolean = true
+  enabled: boolean = true,
 ) => {
   return useQuery({
     queryKey: nftKeys.singleListed(listingId),
     queryFn: async () => {
       const response = await getSingleListedNFT(listingId);
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response.success) {
         throw new Error(response.message || "Failed to fetch listed NFT");
       }
@@ -109,6 +134,12 @@ export const useGetPurchasedNFTs = () => {
     queryKey: nftKeys.purchased(),
     queryFn: async () => {
       const response = await getPurchasedNFTs();
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response.success) {
         throw new Error(response.message || "Failed to fetch purchased NFTs");
       }
@@ -130,6 +161,12 @@ export const useCreateNFT = () => {
   return useMutation({
     mutationFn: async (data: NFTFormData) => {
       const response = await createNFT(data);
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response?.success) {
         throw new Error(response?.message || "Failed to create NFT");
       }
@@ -151,6 +188,12 @@ export const useListNFT = () => {
   return useMutation({
     mutationFn: async ({ nftId, price }: { nftId: string; price: number }) => {
       const response = await listNFT(nftId, price);
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response.success) {
         throw new Error(response.message || "Failed to list NFT");
       }
@@ -173,6 +216,12 @@ export const useDeleteNFT = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await deleteNFT(id);
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response.success) {
         throw new Error(response.message || "Failed to delete NFT");
       }
@@ -204,6 +253,13 @@ export const usePurchaseNFT = () => {
       quantity: number;
     }) => {
       const response = await purchaseNFT(listingId, quantity);
+      console.log("Purchase response:", response); // Debug log to check the response structure
+
+      // Handle 401 unauthorized
+      if (handleUnauthorized(response)) {
+        throw new Error("Unauthorized");
+      }
+
       if (!response?.success) {
         throw new Error(response?.message || "Failed to purchase NFT");
       }
