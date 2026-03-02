@@ -75,12 +75,12 @@ export default function CreatorNav() {
             >
               Comics
             </li>
-            <li
+            <Link
+              href={"/r/marketplace"}
               className="cursor-pointer hover:opacity-75"
-              onClick={() => toast.info("Feature coming soon!")}
             >
               Marketplace
-            </li>
+            </Link>
           </ul>
         </div>
         <div className="flex items-center justify-between gap-4">

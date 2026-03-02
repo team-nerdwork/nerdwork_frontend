@@ -37,6 +37,7 @@ import {
   Search,
   User2,
   Wallet2,
+  Package,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { usePathname } from "next/navigation";
@@ -53,6 +54,7 @@ const ReaderNav = () => {
   const navItems = [
     { title: "Comics", path: "/r/comics" },
     { title: "Marketplace", path: "/r/marketplace" },
+    { title: "My NFTs", path: "/r/my-nfts" },
     { title: "Library", path: "/r/library" },
     { title: "Create", path: "/onboarding" },
   ];
@@ -214,6 +216,24 @@ const ReaderNav = () => {
                   <MenubarItem asChild>
                     <Link
                       className="cursor-pointer flex items-center gap-3 w-full"
+                      href={"/r/marketplace"}
+                    >
+                      <ShoppingBag className="text-white" />
+                      Marketplace
+                    </Link>
+                  </MenubarItem>
+                  <MenubarItem asChild>
+                    <Link
+                      className="cursor-pointer flex items-center gap-3 w-full"
+                      href={"/r/my-nfts"}
+                    >
+                      <Package className="text-white" />
+                      My NFTs
+                    </Link>
+                  </MenubarItem>
+                  <MenubarItem asChild>
+                    <Link
+                      className="cursor-pointer flex items-center gap-3 w-full"
                       href={"/r/library"}
                     >
                       <BookOpen className="text-white" />
@@ -336,6 +356,14 @@ const ReaderNav = () => {
                   href={"/r/marketplace"}
                 >
                   <ShoppingBag className="text-white" /> Marketplace
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  className="cursor-pointer flex items-center gap-3 w-full"
+                  href={"/r/my-nfts"}
+                >
+                  <Package className="text-white" /> My NFTs
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

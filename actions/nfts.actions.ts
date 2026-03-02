@@ -20,15 +20,13 @@ export const createNFT = async (data: NFTFormData) => {
       })),
     };
 
-    console.log("Creating NFT with data:", requestBody);
+    const response = await axiosPost("/nft", requestBody);
 
-    // const response = await axiosPost("/nft", requestBody);
-
-    // return {
-    //   success: true,
-    //   data: response.data,
-    //   message: "NFT created successfully.",
-    // };
+    return {
+      success: true,
+      data: response.data,
+      message: "NFT created successfully.",
+    };
   } catch (error: unknown) {
     console.error("NFT listing failed:", error);
 
@@ -243,7 +241,7 @@ export const getSingleListedNFT = async (listingId: string) => {
 
 export const getPurchasedNFTs = async () => {
   try {
-    const response = await axiosGet("/nfts/my-purchases");
+    const response = await axiosGet("/nft/my-purchases");
 
     return {
       success: true,
@@ -278,15 +276,13 @@ export const purchaseNFT = async (listingId: string, quantity: number) => {
       quantity,
     };
 
-    console.log("Purchasing NFT with data:", requestBody);
+    const response = await axiosPost("/nft/buy", requestBody);
 
-    // const response = await axiosPost("/nft/buy", requestBody);
-
-    // return {
-    //   success: true,
-    //   data: response.data,
-    //   message: "NFT purchased successfully.",
-    // };
+    return {
+      success: true,
+      data: response.data,
+      message: "NFT purchased successfully.",
+    };
   } catch (error: unknown) {
     console.error("NFT purchase failed:", error);
 

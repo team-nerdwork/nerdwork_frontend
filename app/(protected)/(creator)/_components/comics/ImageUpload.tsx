@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ControllerRenderProps } from "react-hook-form";
 import { ComicSeriesFormData, NFTFormData } from "@/lib/schema";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
 import { UploadResultItem, useUploadImage } from "@/lib/api/mutations";
 import { Progress } from "@/components/ui/progress";
 
@@ -16,10 +15,19 @@ interface ImageUploadProps {
     | ControllerRenderProps<NFTFormData, "coverImage">;
 }
 
+const MAX_FILE_SIZE_MB = 5;
+const ALLOWED_FILE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+];
+
 export const ImageUpload = ({ field }: ImageUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const queryClient = useQueryClient();
-  const [previewURL, setPreviewURL] = useState("");
+  // Initialize preview from field value if it exists
+  const [previewURL, setPreviewURL] = useState(field.value || "");
   const [uploadPercentage, setUploadPercentage] = useState(0);
 
   const {
@@ -45,28 +53,66 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
     setUploadPercentage(percentage);
   }, []);
 
+  // Sync preview URL with field value changes
+  useEffect(() => {
+    if (field.value && field.value !== previewURL) {
+      setPreviewURL(field.value);
+    } else if (!field.value && previewURL) {
+      setPreviewURL("");
+    }
+  }, [field.value, previewURL]);
+
   useEffect(() => {
     if (isSuccess && uploadedData) {
       if (uploadedData.success && uploadedData.data) {
         toast.success("Image uploaded successfully!");
         setPreviewURL(uploadedData.data);
-
-        const cleanUrl = uploadedData.data.split("?")[0];
-        field.onChange(cleanUrl);
+        // Backend will handle URL processing, send full URL with query params
+        field.onChange(uploadedData.data);
       } else {
+        // Don't clear existing image on upload failure
         toast.error(uploadedData.message || "Upload failed.");
-        field.onChange(null);
       }
     }
     if (error) {
       console.error("Upload error:", error);
       toast.error("An unexpected error occurred during upload.");
     }
-  }, [isSuccess, uploadedData, error, field]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, uploadedData, error]);
+
+  const validateFile = (file: File): boolean => {
+    // Check file type
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      toast.error(
+        "Invalid file type. Please upload a JPG, PNG, GIF, or WebP image.",
+      );
+      return false;
+    }
+
+    // Check file size
+    const fileSizeMB = file.size / (1024 * 1024);
+    if (fileSizeMB > MAX_FILE_SIZE_MB) {
+      toast.error(
+        `File size exceeds ${MAX_FILE_SIZE_MB}MB limit. Please choose a smaller file.`,
+      );
+      return false;
+    }
+
+    return true;
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     if (selectedFile) {
+      // Validate file before uploading
+      if (!validateFile(selectedFile)) {
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
       const formData = new FormData();
       formData.append("file", selectedFile);
 
@@ -82,6 +128,11 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files?.[0] || null;
     if (droppedFile) {
+      // Validate file before uploading
+      if (!validateFile(droppedFile)) {
+        return;
+      }
+
       const formData = new FormData();
       formData.append("file", droppedFile);
 
@@ -92,8 +143,8 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
 
   const handleDelete = () => {
     field.onChange(null);
+    setPreviewURL("");
     reset();
-    queryClient.resetQueries();
   };
 
   return (
@@ -106,11 +157,14 @@ export const ImageUpload = ({ field }: ImageUploadProps) => {
           className="mx-auto flex flex-col border-dashed items-center justify-center group max-md:max-w-[335px] max-md:h-[496] md:max-w-[352px] md:h-[521px] border rounded-lg cursor-pointer bg-transparent border-[#9D9D9F] hover:border-[#646464]"
         >
           {isPending ? (
-            <div className="flex flex-col gap-2 items-center justify-center pt-5 pb-6">
-              <p className="text-sm font-semibold flex text-center items-center gap-1">
-                <Loader2 size={16} className="animate-spin" /> Uploading
-              </p>
-              <Progress value={uploadPercentage} className="w-full h-2" />
+            <div className="flex flex-col gap-4 items-center justify-center pt-5 pb-6 w-full px-8">
+              <Loader2 size={32} className="animate-spin text-white" />
+              <div className="w-full space-y-2">
+                <p className="text-sm font-semibold text-center">
+                  Uploading... {uploadPercentage}%
+                </p>
+                <Progress value={uploadPercentage} className="w-full h-2" />
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center pt-5 pb-6">

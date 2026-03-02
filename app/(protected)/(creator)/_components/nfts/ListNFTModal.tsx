@@ -100,7 +100,7 @@ export const ListNFTModal = ({
                 required
               />
               <p className="text-xs text-nerd-muted">
-                Enter the price in SOL for this NFT listing.
+                Enter the price in NWT for this NFT listing.
               </p>
             </div>
           </div>

@@ -22,14 +22,6 @@ export const NewSeriesSchema = z.object({
   genre: z.array,
 });
 
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
 export const comicSeriesSchema = z.object({
   title: z
     .string()
@@ -134,13 +126,8 @@ export const nftFormSchema = z.object({
     .min(1, { message: "Please add at least one tag." })
     .max(10, { message: "You can add up to 10 tags." }),
   coverImage: z
-    .any()
-    .refine((file) => file instanceof File, "Cover image is required.")
-    .refine((file) => file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-    .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported.",
-    ),
+    .string({ message: "Cover image is required." })
+    .min(1, { message: "Cover image is required." }),
 });
 
 export type NFTFormData = z.infer<typeof nftFormSchema>;
