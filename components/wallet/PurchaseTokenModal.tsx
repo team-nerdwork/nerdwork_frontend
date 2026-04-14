@@ -19,8 +19,14 @@ import Helio from "@/assets/helio.svg";
 import { toast } from "sonner";
 import { createPaymentLink, createPaymentWebhook } from "@/lib/api/payment";
 import HelioModal from "./HelioModal";
-import PaystackCheckout from "./PaystackCheckout";
+import dynamic from "next/dynamic";
 import type { PaymentProvider } from "@/lib/types/payment.types";
+
+// Dynamic import to avoid SSR issues with react-paystack
+const PaystackCheckout = dynamic(() => import("./PaystackCheckout"), {
+  ssr: false,
+});
+
 import {
   EXCHANGE_RATES,
   TRANSACTION_FEE_RATE,
