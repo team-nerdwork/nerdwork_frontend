@@ -77,14 +77,21 @@ export type CreatorTransaction = {
 
 export type NFTCollectible = {
   id: string;
-  name: string;
+  nftId?: string;
+  listingId?: string;
+  title: string;
   description: string;
-  image: string;
-  status: "active" | "scheduled" | "sold out";
-  total_copies: number;
-  sold_copies: number;
+  imageUrl: string;
+  imageCID: string;
+  metadataCID: string;
+  createdAt: string;
+  supply: number;
+  remainingSupply: number;
+  royaltyBps: number;
+  status: "draft" | "frozen" | "listed" | "sold";
+  tokenURI: string;
+  updatedAt: string;
   price: number;
-  commission: number;
 };
 
 export interface User {

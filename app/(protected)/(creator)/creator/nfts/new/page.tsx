@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft, Plus, X } from "lucide-react";
+import { ArrowLeft, Plus, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { NFTFormData, nftFormSchema } from "@/lib/schema";
@@ -21,11 +21,12 @@ import { ImageUpload } from "../../../_components/comics/ImageUpload";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useCreateNFT } from "@/lib/api/nfts";
 
 const NewNFTPage = () => {
   const [newTag, setNewTag] = useState("");
-
   const router = useRouter();
+  const createNFTMutation = useCreateNFT();
 
   const form = useForm<NFTFormData>({
     resolver: zodResolver(nftFormSchema),
@@ -33,7 +34,7 @@ const NewNFTPage = () => {
       name: "",
       description: "",
       supply: 1,
-      price: 0,
+      // price: 0,
       properties: [{ type: "", name: "" }],
       tags: [],
       coverImage: "",
@@ -67,14 +68,20 @@ const NewNFTPage = () => {
     }
   };
 
-  const onSubmit = (data: NFTFormData) => {
-    console.log("Form submitted successfully:", data);
-    toast.success("NFT created successfully!");
-
-    setTimeout(() => {
-      router.push("/creator/nfts");
-    }, 3000);
+  const onSubmit = async (data: NFTFormData) => {
+    try {
+      await createNFTMutation.mutateAsync(data);
+      toast.success("NFT created successfully!");
+      setTimeout(() => {
+        router.push("/creator/nfts");
+      }, 1500);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create NFT",
+      );
+    }
   };
+
   return (
     <>
       <main className="max-w-[1000px] mx-auto px-5 font-inter py-5">
@@ -172,7 +179,7 @@ const NewNFTPage = () => {
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="price"
                     render={({ field }) => (
@@ -192,7 +199,7 @@ const NewNFTPage = () => {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                 </div>
               </div>
 
@@ -341,15 +348,28 @@ const NewNFTPage = () => {
 
               {/* Action buttons at the bottom */}
               <div className="flex justify-end gap-4 mt-8 w-full">
-                <Button
+                {/* <Button
                   type="button"
                   variant="outline"
                   className="text-white border-[#292a2e] hover:bg-[#1d1e21]"
+                  disabled={createNFTMutation.isPending}
                 >
                   Preview
-                </Button>
-                <Button type="submit" variant="primary">
-                  Mint
+                </Button> */}
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={createNFTMutation.isPending}
+                  className="w-[120px]"
+                >
+                  {createNFTMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Minting...
+                    </>
+                  ) : (
+                    "Mint"
+                  )}
                 </Button>
               </div>
             </div>

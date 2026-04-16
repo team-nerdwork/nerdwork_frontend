@@ -1,22 +1,26 @@
 "use client";
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { nftData } from "@/components/data";
 import AllNFTs from "./AllNFTs";
+import { NFTCollectible } from "@/lib/types";
 
-const NFTList = () => {
-  const NFTs = nftData ?? [];
+interface NFTListProps {
+  nfts: NFTCollectible[];
+}
+
+const NFTList = ({ nfts }: NFTListProps) => {
+  const NFTs = nfts ?? [];
   const [tab, setTab] = useState<string>("all");
 
   const counts = {
     all: NFTs.length,
-    active: NFTs.filter((b) => b.status === "active").length,
-    scheduled: NFTs.filter((b) => b.status === "scheduled").length,
-    soldOut: NFTs.filter((b) => b.status === "sold out").length,
+    frozen: NFTs.filter((b) => b.status === "frozen").length,
+    listed: NFTs.filter((b) => b.status === "listed").length,
+    sold: NFTs.filter((b) => b.status === "sold").length,
   };
 
   const filteredNFTs = NFTs.filter((nft) =>
-    tab === "all" ? true : nft.status === tab
+    tab === "all" ? true : nft.status === tab,
   );
   return (
     <section className=" text-white font-inter">
@@ -36,21 +40,21 @@ const NFTList = () => {
             </TabsTrigger>
             <TabsTrigger
               className="data-[state=active]:border-b !data-[state=active]:border-white pb-5 max-md:font-normal border-white !data-[state=active]:shadow-none text-white rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none !data-[state=active]:shadow-none"
-              value="active"
+              value="listed"
             >
-              Live ({counts.active})
+              Listed ({counts.listed})
             </TabsTrigger>
             <TabsTrigger
               className="data-[state=active]:border-b !data-[state=active]:border-white pb-5 max-md:font-normal border-white !data-[state=active]:shadow-none text-white rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none !data-[state=active]:shadow-none"
-              value="scheduled"
+              value="frozen"
             >
-              Scheduled ({counts.scheduled})
+              Frozen ({counts.frozen})
             </TabsTrigger>
             <TabsTrigger
               className="data-[state=active]:border-b !data-[state=active]:border-white pb-5 max-md:font-normal border-white !data-[state=active]:shadow-none text-white rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none !data-[state=active]:shadow-none"
-              value="sold out"
+              value="sold"
             >
-              Sold Out ({counts.soldOut})
+              Sold Out ({counts.sold})
             </TabsTrigger>
           </TabsList>
         </div>

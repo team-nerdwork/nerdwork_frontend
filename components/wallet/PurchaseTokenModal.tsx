@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { WalletCardsIcon, Loader2 } from "lucide-react";
+import { WalletCardsIcon, Loader2, CreditCard, Bitcoin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -19,33 +19,54 @@ import Helio from "@/assets/helio.svg";
 import { toast } from "sonner";
 import { createPaymentLink, createPaymentWebhook } from "@/lib/api/payment";
 import HelioModal from "./HelioModal";
+import dynamic from "next/dynamic";
+import type { PaymentProvider } from "@/lib/types/payment.types";
+
+// Dynamic import to avoid SSR issues with react-paystack
+const PaystackCheckout = dynamic(() => import("./PaystackCheckout"), {
+  ssr: false,
+});
+
+import {
+  EXCHANGE_RATES,
+  TRANSACTION_FEE_RATE,
+  NWT_SUGGESTED_AMOUNTS,
+} from "@/lib/constants";
 
 const PurchaseTokenModal = () => {
   const [nwtAmount, setNwtAmount] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+
+  // Payment method & currency state
+  const [paymentMethod, setPaymentMethod] =
+    React.useState<PaymentProvider>("paystack");
+  // Helio modal state
   const [helioModalOpen, setHelioModalOpen] = React.useState(false);
   const [paymentData, setPaymentData] = React.useState<{
     paymentLink?: string;
     paylinkId?: string;
   }>({});
 
-  const usdPerNwt = 0.1;
-  const transactionFeeRate = 0.01;
-  const suggestedAmounts = [10, 30, 50, 100];
+  // Paystack modal state
+  const [paystackModalOpen, setPaystackModalOpen] = React.useState(false);
+
+  // Paystack = NGN, Helio = USD
+  const activeRate =
+    paymentMethod === "helio" ? EXCHANGE_RATES.USD : EXCHANGE_RATES.NGN;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setNwtAmount(isNaN(value) ? 0 : value);
   };
 
-  const calculateUSD = (amount: number) => amount * usdPerNwt;
+  const calculateFiat = (amount: number) => amount * activeRate.ratePerNWT;
   const calculateFee = (amount: number) =>
-    calculateUSD(amount) * transactionFeeRate;
+    calculateFiat(amount) * TRANSACTION_FEE_RATE;
   const calculateTotal = (amount: number) =>
-    calculateUSD(amount) + calculateFee(amount);
+    calculateFiat(amount) + calculateFee(amount);
 
-  const usdEquivalent = calculateUSD(nwtAmount);
+  const fiatEquivalent = calculateFiat(nwtAmount);
   const transactionFee = calculateFee(nwtAmount);
   const totalToPay = calculateTotal(nwtAmount);
 
@@ -55,10 +76,18 @@ const PurchaseTokenModal = () => {
       return;
     }
 
+    if (paymentMethod === "paystack") {
+      setIsOpen(false);
+      setPaystackModalOpen(true);
+      return;
+    }
+
+    // Helio flow (existing)
     setIsLoading(true);
 
     try {
       toast.info("Creating payment link...");
+      const usdEquivalent = nwtAmount * EXCHANGE_RATES.USD.ratePerNWT;
       const paymentResponse = await createPaymentLink({
         amount: usdEquivalent,
         name: "NWT_Purchase",
@@ -68,8 +97,6 @@ const PurchaseTokenModal = () => {
       if (!paymentResponse.success) {
         throw new Error("Failed to create payment link");
       }
-
-      console.log(paymentResponse);
 
       if (paymentResponse.success && paymentResponse.data) {
         const webhook = await createPaymentWebhook({
@@ -101,6 +128,11 @@ const PurchaseTokenModal = () => {
     }
   };
 
+  // USD values for Helio modal (it expects USD)
+  const helioUsdEquivalent = nwtAmount * EXCHANGE_RATES.USD.ratePerNWT;
+  const helioTransactionFee = helioUsdEquivalent * TRANSACTION_FEE_RATE;
+  const helioTotalToPay = helioUsdEquivalent + helioTransactionFee;
+
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -118,7 +150,9 @@ const PurchaseTokenModal = () => {
                 continue to payment
               </DialogDescription>
             </DialogHeader>
+
             <div className="space-y-4">
+              {/* NWT Amount Input */}
               <div className="flex items-center space-x-2">
                 <Input
                   type="number"
@@ -128,11 +162,14 @@ const PurchaseTokenModal = () => {
                   className="bg-[#1D1E21] border-[#292A2E] text-white placeholder:text-nerd-muted"
                 />
               </div>
+
+              {/* Suggested Amounts */}
               <div className="flex space-x-2 flex-wrap">
-                {suggestedAmounts.map((amount) => (
+                {NWT_SUGGESTED_AMOUNTS.map((amount) => (
                   <Button
                     key={amount}
                     variant="outline"
+                    type="button"
                     className={`flex items-center gap-1.5 ${
                       nwtAmount === amount
                         ? "bg-white text-black"
@@ -145,29 +182,93 @@ const PurchaseTokenModal = () => {
                   </Button>
                 ))}
               </div>
+
+              {/* Payment Method Selection */}
+              <div className="space-y-2">
+                <p className="text-sm text-nerd-muted">Payment Method</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className={`flex-1 flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors ${
+                      paymentMethod === "paystack"
+                        ? "border-[#AE7A5B] bg-[#AE7A5B]/10 text-white"
+                        : "border-[#292A2E] bg-[#1D1E21] text-nerd-muted hover:border-[#3A3B3F]"
+                    }`}
+                    onClick={() => setPaymentMethod("paystack")}
+                  >
+                    <CreditCard size={18} />
+                    <div className="text-left">
+                      <p className="font-medium">Card Payment</p>
+                      <p className="text-xs opacity-70">Paystack</p>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    className={`flex-1 flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors ${
+                      paymentMethod === "helio"
+                        ? "border-[#AE7A5B] bg-[#AE7A5B]/10 text-white"
+                        : "border-[#292A2E] bg-[#1D1E21] text-nerd-muted hover:border-[#3A3B3F]"
+                    }`}
+                    onClick={() => setPaymentMethod("helio")}
+                  >
+                    <Bitcoin size={18} />
+                    <div className="text-left">
+                      <p className="font-medium">Crypto</p>
+                      <p className="text-xs opacity-70">Helio</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Currency info (Paystack = NGN, Helio = USD) */}
+              {paymentMethod === "paystack" && (
+                <p className="text-xs text-nerd-muted">
+                  Paystack payments are charged in {EXCHANGE_RATES.NGN.symbol}
+                  NGN
+                </p>
+              )}
             </div>
+
+            {/* Price Breakdown */}
             <div className="space-y-2 mt-4 text-sm text-nerd-muted border-t pt-3 border-[#292A2E]">
               <div className="flex justify-between">
                 <span>Token Amount</span>
                 <span>{nwtAmount}</span>
               </div>
               <div className="flex justify-between">
-                <span>USD Equivalent</span>
-                <span>${usdEquivalent.toFixed(2)}</span>
+                <span>{activeRate.currency} Equivalent</span>
+                <span>
+                  {activeRate.symbol}
+                  {fiatEquivalent.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>1% Transaction Fee</span>
-                <span>${transactionFee.toFixed(2)}</span>
+                <span>
+                  {activeRate.symbol}
+                  {transactionFee.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between border-t pt-3 border-[#292A2E] text-white">
                 <span>Total to pay</span>
-                <span>${totalToPay.toFixed(2)}</span>
+                <span>
+                  {activeRate.symbol}
+                  {totalToPay.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
             </div>
+
             <DialogFooter className="flex !flex-col">
               <Button
                 onClick={handleSubmit}
                 variant={"primary"}
+                type="button"
                 className="w-full mt-3"
                 disabled={isLoading || nwtAmount <= 0}
               >
@@ -181,13 +282,27 @@ const PurchaseTokenModal = () => {
                 )}
               </Button>
               <p className="text-xs text-center text-nerd-muted flex items-center justify-center gap-2">
-                Powered by Helio{" "}
-                <Image src={Helio} width={14} height={14} alt="helio" />
+                {paymentMethod === "helio" ? (
+                  <>
+                    Powered by Helio{" "}
+                    <Image src={Helio} width={14} height={14} alt="helio" />
+                  </>
+                ) : (
+                  "Powered by Paystack"
+                )}
               </p>
             </DialogFooter>
           </DialogContent>
         </form>
       </Dialog>
+
+      {/* Paystack Checkout Modal */}
+      <PaystackCheckout
+        isOpen={paystackModalOpen}
+        onOpenChange={setPaystackModalOpen}
+        nwtAmount={nwtAmount}
+        currency="NGN"
+      />
 
       {/* Helio Payment Modal */}
       <HelioModal
@@ -196,9 +311,9 @@ const PurchaseTokenModal = () => {
         paymentLink={paymentData.paymentLink}
         paylinkId={paymentData.paylinkId}
         amount={nwtAmount}
-        usdEquivalent={usdEquivalent}
-        transactionFee={transactionFee}
-        totalToPay={totalToPay}
+        usdEquivalent={helioUsdEquivalent}
+        transactionFee={helioTransactionFee}
+        totalToPay={helioTotalToPay}
       />
     </div>
   );
