@@ -5,6 +5,8 @@ import Logo from "@/assets/nerdwork.png";
 import Link from "next/link";
 import {
   BookMarkedIcon,
+  ChartAreaIcon,
+  Coins,
   LibraryBig,
   Menu,
   // HelpCircle,
@@ -212,7 +214,7 @@ export default function CreatorNav() {
               <DropdownMenuItem asChild>
                 <Link
                   className="cursor-pointer flex items-center gap-3"
-                  href={""}
+                  href={"/r/marketplace"}
                 >
                   <ShoppingBag className="text-white" /> Marketplace
                 </Link>
@@ -230,6 +232,24 @@ export default function CreatorNav() {
                 >
                   <BookMarkedIcon className="text-white" />
                   My Comics
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  className="flex items-center gap-3"
+                  href={"/creator/nfts"}
+                >
+                  <Coins className="text-white" />
+                  My NFTs
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  className="flex items-center gap-3"
+                  href={"/creator/analytics"}
+                >
+                  <ChartAreaIcon className="text-white" />
+                  Analytics
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
